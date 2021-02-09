@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"os/exec"
 	"log"
-	"internal/basicauth"
+	"mama/internal/basicauth"
 )
 
 type Script struct {

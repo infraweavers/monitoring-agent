@@ -2,7 +2,7 @@ package apiv1
 
 import (
 	"net/http"
-	"internal/basicauth"
+	"mama/internal/basicauth"
 )
 
 func InfoGetHandler(w http.ResponseWriter, r *http.Request) {

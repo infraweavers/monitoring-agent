@@ -2,7 +2,7 @@ package httpserver
  
 import (
     "net/http"
- 	"internal/apiv1"
+ 	"mama/internal/apiv1"
 )
  
 type Route struct {

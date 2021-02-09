@@ -1,7 +1,7 @@
 package main
 
 import (
-	"internal/httpserver"
+	"mama/internal/httpserver"
 )
 
 func main() {
