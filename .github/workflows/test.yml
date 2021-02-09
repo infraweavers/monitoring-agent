@@ -20,6 +20,6 @@ jobs:
       - name: Test
         run: |
           go get github.com/gorilla/mux
-          go test go test -cover $(go list ./...)
+          go test -cover $(go list ./...)
         env:
           GOPATH: /home/runner/work/mama/go
