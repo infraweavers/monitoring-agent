@@ -1,14 +1,12 @@
 <h1 align="center">MAMA</h1>
 <h3 align="center">MAintainable Monitoring Agent</h3>
-
 ---
 
-## About
+### About
 
 MAMA aims to be a flexible, easy to maintain monitoring agent that works cross platform. It is currently in active development and an official release candidate should be available soon.
 
-
-## Example of current usage:
+### Example of current usage:
 
 ```
 $ curl -k -H "Content-Type: application/json" --data '{ "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "args": [ "-command", "write-host \"Hello, World\"" ] }' https://test:secret@10.2.16.142:9000/v1/runscript
@@ -16,9 +14,9 @@ $ curl -k -H "Content-Type: application/json" --data '{ "path": "C:\\Windows\\Sy
 
 ```
 
-## Status
+### Status
 
-In development
+In active development.
 
 ### Current Features
 
@@ -29,7 +27,7 @@ In development
 * Continuous Integration/Delivery
 * Tests
 
-### Future Iterations
+### Future Planned Features
 
 * Configuration mechanism
 * Windows service
@@ -39,9 +37,9 @@ In development
 * Packaging for debian/ubuntu
 * Cross platform
 
-## Compiling and Executing
+### Compiling and Executing
 
-### Windows
+#### Windows
 
 1. Install [GO](https://golang.org/doc/install)
 2. `git clone `https://github.com/infraweavers/`
