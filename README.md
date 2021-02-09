@@ -41,6 +41,5 @@ In active development.
 #### Windows
 
 1. Install [GO](https://golang.org/doc/install)
-2. `git clone `https://github.com/infraweavers/`
-3. `cd <working copy path>/cmd/mamasrv`
-4. `go run .` 
+1. `git clone `https://github.com/infraweavers/mama %GOPATH%\src\mama`
+1. `go run %GOPATH%/src/mama/cmd/mamasrv` 
