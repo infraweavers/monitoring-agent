@@ -1,6 +1,5 @@
 <h1 align="center">MAMA</h1>
 <h3 align="center">MAintainable Monitoring Agent</h3>
----
 
 ### About
 
