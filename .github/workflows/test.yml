@@ -5,7 +5,7 @@ jobs:
   test:
     strategy:
       matrix:
-        go-version: [1.14.x, 1.15.x]
+        go-version: [1.15.x]
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
@@ -13,13 +13,13 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go-version }}
-      - name: Debug
-        run: |
-          pwd
-          echo ${GOPATH}
-          echo ${GOROOT}
       - name: Checkout code
         uses: actions/checkout@v2
+        path: go/src/github.com/infraweavers/mama
 
       - name: Test
-        run: go test ${GOPATH}/cmd/mamasrv
+        run: |
+          go get github.com/gorilla/mux
+          go test go test -cover $(go list ./...)
+        env:
+        GOPATH: /home/runner/work/woodpecker/go
