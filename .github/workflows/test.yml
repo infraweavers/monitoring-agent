@@ -16,7 +16,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          path: go/src/infraweavers/mama
+          path: go/src/mama
       - name: Test
         run: |
           go get github.com/gorilla/mux
