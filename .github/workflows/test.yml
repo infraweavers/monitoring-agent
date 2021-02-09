@@ -16,10 +16,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         path: go/src/github.com/infraweavers/mama
-
       - name: Test
         run: |
           go get github.com/gorilla/mux
           go test go test -cover $(go list ./...)
         env:
-        GOPATH: /home/runner/work/woodpecker/go
+        GOPATH: /home/runner/work/mama/go
