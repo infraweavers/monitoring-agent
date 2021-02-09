@@ -13,7 +13,11 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go-version }}
-      
+      - name: Debug
+        run: |
+          pwd
+          echo ${GOPATH}
+          echo ${GOROOT}
       - name: Checkout code
         uses: actions/checkout@v2
 
