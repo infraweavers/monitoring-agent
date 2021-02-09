@@ -22,4 +22,4 @@ jobs:
           go get github.com/gorilla/mux
           go test -cover $(go list ./...)
         env:
-          GOPATH: /home/runner/work/mama/go
+          GOPATH: /home/runner/work/mama/mama/go
