@@ -4,11 +4,11 @@ import (
     "net/http"
 )
 
-var users = map[string]string{
-    "test": "secret",
-}
-
 func IsKnownCredential(username string, password string) bool {
+    var users = map[string]string{
+        "test": "secret",
+    }
+
     _password, ok := users[username]
     if !ok {
         return false
