@@ -1,6 +1,8 @@
 <h1 align="center">MAMA</h1>
 <h3 align="center">MAintainable Monitoring Agent</h3>
 
+[![Build Status](https://github.com/infraweavers/mama/workflows/ubuntu-test/badge.svg)](https://github.com/infraweavers/mama/actions?query=workflow:ubuntu-test)
+
 ### About
 
 MAMA aims to be a flexible, easy to maintain monitoring agent that works cross platform. It is currently in active development and an official release candidate should be available soon.
