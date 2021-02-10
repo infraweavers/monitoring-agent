@@ -4,6 +4,7 @@
 [![Build Status](https://github.com/infraweavers/mama/workflows/Ubuntu-Test/badge.svg)](https://github.com/infraweavers/mama/actions?query=workflow:Ubuntu-Test)
 [![Build Status](https://github.com/infraweavers/mama/workflows/Windows-Test/badge.svg)](https://github.com/infraweavers/mama/actions?query=workflow:Windows-Test)
 [![Go Report Card](https://goreportcard.com/badge/github.com/infraweavers/mama)](https://goreportcard.com/report/github.com/infraweavers/mama)
+[![License: MIT] (https://img.shields.io/github/license/infraweavers/mama)](https://mit-license.org/)
 
 ### About
 
