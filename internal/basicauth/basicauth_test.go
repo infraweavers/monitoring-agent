@@ -6,23 +6,22 @@ import (
     "testing"
 )
 
-
-var testCredentials = []struct {
-    username    string
-    password    string
-    expected    bool
-}{
-    {"test",    "secret",       true},
-    {"user",    "secret",       false},
-    {"test",    "password",     false},
-    {"user",    "password",     false},
-    {"test",    "",             false},
-    {"",        "password",     false},
-    {"",        "",             false},
-}
-
 func TestIsAuthorised(t *testing.T) {
 
+    var testCredentials = []struct {
+        username    string
+        password    string
+        expected    bool
+    }{
+        {"test",    "secret",       true},
+        {"user",    "secret",       false},
+        {"test",    "password",     false},
+        {"user",    "password",     false},
+        {"test",    "",             false},
+        {"",        "password",     false},
+        {"",        "",             false},
+    }
+    
 	request, _ := http.NewRequest("GET", "/", nil)
     responseWriter := httptest.NewRecorder()
 
