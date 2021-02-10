@@ -2,7 +2,7 @@ package basicauth
 
 import (
 	"net/http"
-	"net/http/httptest"
+    "net/http/httptest"
     "testing"
 )
 
@@ -21,23 +21,15 @@ var testCredentials = []struct {
     {"",        "",             false},
 }
 
-func TestIsKnownCredential(t *testing.T) {
-    for _, test := range testCredentials {
-        if output := IsKnownCredential(test.username, test.password); output != test.expected {
-            t.Error("Test Failed: Input: {}:{}, Expected: {}, Got: {}", test.username, test.expected, output)
-        }
-    }
-}
-
 func TestIsAuthorised(t *testing.T) {
 
 	request, _ := http.NewRequest("GET", "/", nil)
-    wwriter := http.ResponseWriter
+    responseWriter := httptest.NewRecorder()
 
     for _, test := range testCredentials {
-        req.SetBasicAuth(username, password)
+        request.SetBasicAuth(test.username, test.password)
 
-        if output := IsAuthorised(writer, request)); output != test.expected {
+        if output := IsAuthorised(responseWriter, request); output != test.expected {
             t.Error("Test Failed: Input: {}:{}, Expected: {}, Got: {}", test.username, test.expected, output)
         }
     }
