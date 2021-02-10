@@ -27,7 +27,7 @@ func TestDefaultHandler(t *testing.T) {
         outputBodyBytes, _ := ioutil.ReadAll(response.Body)
         outputBody := string(outputBodyBytes)
         
-        if expectedBody != outputBody {
+        if outputBody != expectedBody {
             t.Error("Test Failed: Expected: {}, Got: {}", expectedBody, outputBody)
         }
     })
@@ -42,7 +42,7 @@ func TestDefaultHandler(t *testing.T) {
         expectedStatusCode := 401
         outputStatusCode := response.StatusCode
         
-        if expectedStatusCode != outputStatusCode {
+        if outputStatusCode != expectedStatusCode {
             t.Error("Test Failed: Expected: {}, Got: {}", expectedStatusCode, outputStatusCode)
         }
     })
@@ -58,7 +58,7 @@ func TestDefaultHandler(t *testing.T) {
         expectedStatusCode := 403
         outputStatusCode := response.StatusCode
         
-        if expectedStatusCode != outputStatusCode {
+        if outputStatusCode != expectedStatusCode {
             t.Error("Test Failed: Expected: {}, Got: {}", expectedStatusCode, outputStatusCode)
         }
     })
