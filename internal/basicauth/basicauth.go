@@ -29,7 +29,7 @@ func IsAuthorised(w http.ResponseWriter, r *http.Request) bool {
 
     if !IsKnownCredential(username, password) {
         w.Header().Add("WWW-Authenticate", `Basic realm="Access restricted"`)
-        w.WriteHeader(http.StatusUnauthorized)
+        w.WriteHeader(http.StatusForbidden)
         w.Write([]byte(`{"message": "Invalid username and/or password"}`))
         return false
     }
