@@ -16,7 +16,7 @@ type Routes []Route
 
 var routes = Routes{
 	// Default
-    Route{ "Index",				"GET",	"/",				defaultHandler, 			},
+    Route{ "Index",				"GET",	"/",				DefaultHandler, 			},
 	// API Version 1
     Route{ "apiv1Index",		"GET",  "/v1",         		apiv1.HomeGetHandler,		},
     Route{ "apiv1Runscript",    "GET",  "/v1/runscript",    apiv1.RunscriptGetHandler,  },
