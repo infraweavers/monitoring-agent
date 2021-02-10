@@ -1,7 +1,8 @@
 <h1 align="center">MAMA</h1>
 <h3 align="center">MAintainable Monitoring Agent</h3>
 
-[![Build Status](https://github.com/infraweavers/mama/workflows/ubuntu-test/badge.svg)](https://github.com/infraweavers/mama/actions?query=workflow:ubuntu-test)
+[![Build Status](https://github.com/infraweavers/mama/workflows/Ubuntu-Test/badge.svg)](https://github.com/infraweavers/mama/actions?query=workflow:Ubuntu-Test)
+[![Build Status](https://github.com/infraweavers/mama/workflows/Windows-Test/badge.svg)](https://github.com/infraweavers/mama/actions?query=workflow:Windows-Test)
 
 ### About
 
