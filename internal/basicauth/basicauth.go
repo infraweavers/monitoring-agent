@@ -8,7 +8,7 @@ var users = map[string]string{
     "test": "secret",
 }
 
-func isKnownCredential(username, password string) bool {
+func IsKnownCredential(username string, password string) bool {
     _password, ok := users[username]
     if !ok {
         return false
@@ -27,7 +27,7 @@ func IsAuthorised(w http.ResponseWriter, r *http.Request) bool {
         return false
     }
 
-    if !isKnownCredential(username, password) {
+    if !IsKnownCredential(username, password) {
         w.Header().Add("WWW-Authenticate", `Basic realm="Access restricted"`)
         w.WriteHeader(http.StatusUnauthorized)
         w.Write([]byte(`{"message": "Invalid username and/or password"}`))
