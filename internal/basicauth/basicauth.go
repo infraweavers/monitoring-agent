@@ -4,7 +4,7 @@ import (
     "net/http"
 )
 
-func IsKnownCredential(username string, password string) bool {
+func isKnownCredential(username string, password string) bool {
     var users = map[string]string{
         "test": "secret",
     }
@@ -27,7 +27,7 @@ func IsAuthorised(w http.ResponseWriter, r *http.Request) bool {
         return false
     }
 
-    if !IsKnownCredential(username, password) {
+    if !isKnownCredential(username, password) {
         w.Header().Add("WWW-Authenticate", `Basic realm="Access restricted"`)
         w.WriteHeader(http.StatusForbidden)
         w.Write([]byte(`{"message": "Invalid username and/or password"}`))
