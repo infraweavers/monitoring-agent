@@ -23,7 +23,9 @@ jobs:
 
       - name: Dependencies
         run: go get ./...
-          
+        env:
+          GOPATH: /home/runner/work/mama/mama/go
+
       - name: build linux 386
         run: GOOS=linux GOARCH=386 go build -o linux-386 cmd/mamasrv/mamasrv.go
         env:
