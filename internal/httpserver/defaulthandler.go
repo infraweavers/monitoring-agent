@@ -1,8 +1,8 @@
 package httpserver
 
 import (
-	"net/http"
 	"mama/internal/basicauth"
+	"net/http"
 )
 
 func DefaultHandler(w http.ResponseWriter, r *http.Request) {

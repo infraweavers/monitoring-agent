@@ -1,9 +1,9 @@
 package main
 
 import (
-    "mama/internal/httpserver"
+	"mama/internal/httpserver"
 )
 
 func main() {
-    httpserver.Launch()
+	httpserver.Launch()
 }
