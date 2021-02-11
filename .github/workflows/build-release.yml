@@ -2,9 +2,6 @@ name: Build and release
 
 on: [push]
 
-env:
-  GOPATH: /home/runner/work/mama/mama/go
-
 jobs:
   build-release:
     runs-on: ubuntu-latest
@@ -29,15 +26,23 @@ jobs:
           
       - name: build linux 386
         run: GOOS=linux GOARCH=386 go build -o linux-386 cmd/mamasrv/mamasrv.go
+        env:
+          GOPATH: /home/runner/work/mama/mama/go
       
       - name: build linux amd64
         run: GOOS=linux GOARCH=amd64 go build -o linux-amd64 cmd/mamasrv/mamasrv.go
+        env:
+          GOPATH: /home/runner/work/mama/mama/go
         
       - name: build windows 386
         run: GOOS=windows GOARCH=386 go build -o windows-386.exe cmd\mamasrv\mamasrv.go
+        env:
+          GOPATH: /home/runner/work/mama/mama/go
         
       - name: build windows amd64
         run: GOOS=windows GOARCH=amd64 go build -o windows-amd64.exe cmd\mamasrv\mamasrv.go
+        env:
+          GOPATH: /home/runner/work/mama/mama/go
 
       - name: Create release
         id: create_release
