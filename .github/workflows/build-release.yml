@@ -85,3 +85,9 @@ jobs:
           asset_path: ./windows-amd64.exe
           asset_name: "release-windows-amd64.exe"
           asset_content_type: application/executable
+          
+      - uses: dev-drprasad/delete-older-releases@v0.1.0
+        with:
+          keep_latest: 16
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
