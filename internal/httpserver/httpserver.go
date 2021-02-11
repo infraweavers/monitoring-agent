@@ -1,14 +1,14 @@
 package httpserver
 
 import (
-    "log"
     "crypto/tls"
+    "log"
     "net/http"
 )
 
 func Launch() {
     tlsCert, _ := tls.LoadX509KeyPair("../../assets/tls/test.crt", "../../assets/tls/test.key")
-    
+
     router := newRouter()
 
     server := &http.Server{
@@ -18,6 +18,6 @@ func Launch() {
             Certificates: []tls.Certificate{tlsCert},
         },
     }
-    log.Println("Launching web server: https://127.0.0.1:9000")
+    log.Println("Launching web server: https://0.0.0.0:9000")
     log.Fatal(server.ListenAndServeTLS("", ""))
 }
