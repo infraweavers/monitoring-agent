@@ -24,6 +24,6 @@ jobs:
           path: go/src/mama
 
       - name: Build
-        run: go build -o release
+        run: go build ./...
         env:
           GOPATH: /home/runner/work/mama/mama/go
