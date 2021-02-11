@@ -1,5 +1,5 @@
 on: [push, pull_request]
-name: Ubuntu-Test
+name: Test-Ubuntu
 
 jobs:
   test:
