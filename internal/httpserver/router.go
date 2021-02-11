@@ -1,5 +1,5 @@
 package httpserver
- 
+
 import (
     "github.com/gorilla/mux"
 )
@@ -15,4 +15,3 @@ func newRouter() *mux.Router {
     }
     return router
 }
- 
