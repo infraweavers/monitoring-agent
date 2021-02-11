@@ -19,7 +19,9 @@ jobs:
           path: go/src/mama
       
       - name: Make Binaries
-        uses: sosedoff/actions/golang-build@master
+        uses: izumin5210/action-go-crossbuild@v1
+        with:
+          package: ./cmd/mamasrv
         
         env:
           GOPATH: /home/runner/work/mama/mama/go
