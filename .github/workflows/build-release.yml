@@ -28,10 +28,10 @@ jobs:
         run: go get ./...
           
       - name: build linux 386
-        run: GOOS=linux GOARCH=386 go build -o linux-386 cmd\mamasrv\mamasrv.go
+        run: GOOS=linux GOARCH=386 go build -o linux-386 cmd/mamasrv/mamasrv.go
       
       - name: build linux amd64
-        run: GOOS=linux GOARCH=amd64 go build -o linux-amd64 cmd\mamasrv\mamasrv.go
+        run: GOOS=linux GOARCH=amd64 go build -o linux-amd64 cmd/mamasrv/mamasrv.go
         
       - name: build windows 386
         run: GOOS=windows GOARCH=386 go build -o windows-386.exe cmd\mamasrv\mamasrv.go
