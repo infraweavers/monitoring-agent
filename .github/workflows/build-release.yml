@@ -17,6 +17,13 @@ jobs:
           echo ${GOROOT}
           echo ${GOCACHE}
           echo ${GOENV}
-      
+          
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: go/src/mama
+
       - name: Build
         run: go build -o release
+        env:
+          GOPATH: /home/runner/work/mama/mama/go
