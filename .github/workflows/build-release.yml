@@ -35,53 +35,8 @@ jobs:
         env:
           GOPATH: /home/runner/work/mama/mama/go
       
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+      - name: Release
+        uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.sha }}
-          release_name: "${{github.sha}}"
-          prerelease: true
-          draft: true
+          files: release-*-*
       
-      - name: Upload Asset linux-386
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./linux-386
-          asset_name: "release-linux-386"
-          asset_content_type: application/executable
-
-      - name: Upload Asset linux-amd64
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./linux-amd64
-          asset_name: "release-linux-amd64"
-          asset_content_type: application/executable
-
-      - name: Upload Asset windows-386.exe
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./windows-386.exe
-          asset_name: "release-windows-386.exe"
-          asset_content_type: application/executable
-
-      - name: Upload Asset windows-amd64.exe
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./windows-amd64.exe
-          asset_name: "release-windows-amd64.exe"
-          asset_content_type: application/executable
