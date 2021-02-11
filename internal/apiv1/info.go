@@ -5,9 +5,10 @@ import (
 	"net/http"
 )
 
-func InfoGetHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	basicauth.IsAuthorised(w, r)
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"endpoints": ["Not yet implemented. Will return agent info and status?"]}`))
+// InfoGetHandler creates a http response for the API /info path
+func InfoGetHandler(reponseWriter http.ResponseWriter, request *http.Request) {
+	reponseWriter.Header().Set("Content-Type", "application/json")
+	basicauth.IsAuthorised(reponseWriter, request)
+	reponseWriter.WriteHeader(http.StatusOK)
+	reponseWriter.Write([]byte(`{"info": ["Not yet implemented. Will return agent info (version, memory consumption, cpu utilisation etc.)"]}`))
 }

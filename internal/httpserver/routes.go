@@ -5,21 +5,21 @@ import (
 	"net/http"
 )
 
-type Route struct {
+type route struct {
 	Name        string
 	Method      string
 	Pattern     string
 	HandlerFunc http.HandlerFunc
 }
 
-type Routes []Route
+type routes []route
 
-var routes = Routes{
+var declaredRoutes = routes{
 	// Default
-	Route{"Index", "GET", "/", DefaultHandler},
+	route{"Index", "GET", "/", DefaultHandler},
 	// API Version 1
-	Route{"apiv1Index", "GET", "/v1", apiv1.HomeGetHandler},
-	Route{"apiv1Runscript", "GET", "/v1/runscript", apiv1.RunscriptGetHandler},
-	Route{"apiv1Runscript", "POST", "/v1/runscript", apiv1.RunscriptPostHandler},
-	Route{"apiv1Info", "GET", "/v1/info", apiv1.InfoGetHandler},
+	route{"apiv1Index", "GET", "/v1", apiv1.HomeGetHandler},
+	route{"apiv1Runscript", "GET", "/v1/runscript", apiv1.RunscriptGetHandler},
+	route{"apiv1Runscript", "POST", "/v1/runscript", apiv1.RunscriptPostHandler},
+	route{"apiv1Info", "GET", "/v1/info", apiv1.InfoGetHandler},
 }

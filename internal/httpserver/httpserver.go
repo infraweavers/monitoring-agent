@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+// Launch instantiates a multiplexer and uses it to configure and launch an HTTP server
 func Launch() {
 	tlsCert, _ := tls.LoadX509KeyPair("../../assets/tls/test.crt", "../../assets/tls/test.key")
 

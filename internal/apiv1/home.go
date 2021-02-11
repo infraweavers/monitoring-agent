@@ -5,11 +5,12 @@ import (
 	"net/http"
 )
 
-func HomeGetHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	basicauth.IsAuthorised(w, r)
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"endpoints": ["runscript", "info"]}`))
+// HomeGetHandler creates a http response for the API root path
+func HomeGetHandler(reponseWriter http.ResponseWriter, request *http.Request) {
+	reponseWriter.Header().Set("Content-Type", "application/json")
+	basicauth.IsAuthorised(reponseWriter, request)
+	reponseWriter.WriteHeader(http.StatusOK)
+	reponseWriter.Write([]byte(`{"endpoints": ["runscript", "info"]}`))
 }
 
 // w.WriteHeader(http.StatusMethodNotAllowed)

@@ -8,22 +8,22 @@ import (
 	"os/exec"
 )
 
-type Script struct {
+type script struct {
 	Path string   `json:"path"`
 	Args []string `json:"args"`
 }
 
-type Result struct {
+type result struct {
 	Exitcode int    `json:"exitcode"`
 	Output   string `json:"output"`
 }
 
-func runsScript(s Script) Result {
+func runsScript(scriptToRun script) result {
 
 	var exitcode int = 0
-	log.Printf("Executing: %+v", s)
+	log.Printf("Executing: %+v", scriptToRun)
 
-	cmd := exec.Command(s.Path, s.Args...)
+	cmd := exec.Command(scriptToRun.Path, scriptToRun.Args...)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		if exitError, ok := err.(*exec.ExitError); ok {
@@ -33,34 +33,36 @@ func runsScript(s Script) Result {
 	}
 	log.Printf("Result: %s", output)
 
-	result := Result{
+	scriptResult := result{
 		Exitcode: exitcode,
 		Output:   string(output),
 	}
 
-	return result
+	return scriptResult
 }
 
-func RunscriptGetHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	basicauth.IsAuthorised(w, r)
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"endpoints": ["executes a script sent via HTTP POST request"]}`))
+// RunscriptGetHandler creates a http response for the API /runscript http get requests
+func RunscriptGetHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	responseWriter.Header().Set("Content-Type", "application/json")
+	basicauth.IsAuthorised(responseWriter, request)
+	responseWriter.WriteHeader(http.StatusOK)
+	responseWriter.Write([]byte(`{"endpoints": ["executes a script sent via HTTP POST request"]}`))
 }
 
-func RunscriptPostHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	basicauth.IsAuthorised(w, r)
+// RunscriptPostHandler creates executes a script as specified in a http request and updates the http response with the result
+func RunscriptPostHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	responseWriter.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	basicauth.IsAuthorised(responseWriter, request)
 
-	dec := json.NewDecoder(r.Body)
+	dec := json.NewDecoder(request.Body)
 	dec.DisallowUnknownFields()
-	var script Script
+	var script script
 	err := dec.Decode(&script)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(responseWriter, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	result := runsScript(script)
-	json.NewEncoder(w).Encode(result)
+	json.NewEncoder(responseWriter).Encode(result)
 }

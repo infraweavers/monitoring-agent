@@ -10,10 +10,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	return
-}
-
 var routePathTemplates []string
 var router *mux.Router
 var server *httptest.Server
