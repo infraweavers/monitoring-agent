@@ -1,0 +1,26 @@
+name: Build and release
+
+on: [push]
+
+jobs:
+
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug
+        run: |
+          pwd
+          echo GOPATH: ${GOPATH}
+          echo GOROOT: ${GOROOT}
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: go/src/mama
+      
+      - name: Make Binaries
+        uses: sosedoff/actions/golang-build@master
+        
+        env:
+          GOPATH: /home/runner/work/mama/mama/go
+      
