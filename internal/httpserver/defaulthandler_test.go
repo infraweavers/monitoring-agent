@@ -1,40 +1,45 @@
 package httpserver
 
 import (
-	"net/http"
-	"net/http/httptest"
-	"testing"
+    "net/http"
+    "net/http/httptest"
+    "testing"
 )
 
+type credential struct {
+    username string
+    password string
+}
+
+func tester(t *testing.T, cred credential) int {
+    request, _ := http.NewRequest(http.MethodGet, "/", nil)
+    responseWriter := httptest.NewRecorder()
+
+    if cred.username != "" && cred.password != "" {
+        request.SetBasicAuth("cred.username", "cred.password")
+    }
+
+    DefaultHandler(responseWriter, request)
+    return responseWriter.Result().StatusCode
+}
+
 func TestDefaultHandler(t *testing.T) {
-	t.Run("with no credentials, returns 401 unauthorized", func(t *testing.T) {
-		request, _ := http.NewRequest(http.MethodGet, "/", nil)
-		responseWriter := httptest.NewRecorder()
+    var testCases = []struct {
+        testCredential credential
+        expectedResult int
+    }{
+        {credential{"", ""}, http.StatusUnauthorized},
+        {credential{"foo", "bah"}, http.StatusForbidden},
+    }
 
-		DefaultHandler(responseWriter, request)
-		response := responseWriter.Result()
+    for _, testCase := range testCases {
+        t.Run("with no credentials, returns 401 unauthorized", func(t *testing.T) {
 
-		expectedStatusCode := 401
-		outputStatusCode := response.StatusCode
+            outputStatusCode := tester(t, testCase.testCredential)
 
-		if outputStatusCode != expectedStatusCode {
-			t.Error("Test Failed: Expected: {}, Got: {}", expectedStatusCode, outputStatusCode)
-		}
-	})
-
-	t.Run("with invalid credentials, returns 403 forbidden", func(t *testing.T) {
-		request, _ := http.NewRequest(http.MethodGet, "/", nil)
-		request.SetBasicAuth("foo", "bar")
-		responseWriter := httptest.NewRecorder()
-
-		DefaultHandler(responseWriter, request)
-		response := responseWriter.Result()
-
-		expectedStatusCode := 403
-		outputStatusCode := response.StatusCode
-
-		if outputStatusCode != expectedStatusCode {
-			t.Error("Test Failed: Expected: {}, Got: {}", expectedStatusCode, outputStatusCode)
-		}
-	})
+            if outputStatusCode != testCase.expectedResult {
+                t.Error("Test Failed: Expected: {}, Got: {}", testCase.expectedResult, outputStatusCode)
+            }
+        })
+    }
 }
