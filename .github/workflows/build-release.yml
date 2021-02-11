@@ -2,14 +2,15 @@ name: Build and release
 
 on: [push]
 
+env:
+  GOPATH: /home/runner/work/mama/mama/go
+
 jobs:
   build-release:
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
         uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.go-version }}
       
       - name: Debug
         run: |
@@ -23,9 +24,18 @@ jobs:
         with:
           path: go/src/mama
 
-      - name: Build
-        run: |
-          go get ./...
-          go build ./...
-        env:
-          GOPATH: /home/runner/work/mama/mama/go
+      - name: Dependencies
+        run: go get ./...
+          
+      - name: build linux 386
+        run: GOOS=linux GOARCH=386 go build ./...
+      
+      - name: build linux amd64
+        run: GOOS=linux GOARCH=amd64 go build ./...
+        
+      - name: build windows 386
+        run: GOOS=windows GOARCH=386 go build ./...
+        
+      - name: build windows amd64
+        run: GOOS=windows GOARCH=amd64 go build ./...
+
