@@ -1,11 +1,11 @@
 <h1 align="center">MAMA</h1>
 <h3 align="center">MAintainable Monitoring Agent</h3>
 
-[![Build Status](https://github.com/infraweavers/mama/workflows/Test-Ubuntu/badge.svg)](https://github.com/infraweavers/mama/actions?query=workflow:Test-Ubuntu)
-[![Build Status](https://github.com/infraweavers/mama/workflows/Test-Windows/badge.svg)](https://github.com/infraweavers/mama/actions?query=workflow:Test-Windows)
-![Build and Release](https://github.com/infraweavers/mama/workflows/Build%20and%20Release/badge.svg)
-[![Go Report Card](https://goreportcard.com/badge/github.com/infraweavers/mama)](https://goreportcard.com/report/github.com/infraweavers/mama)
-[![License: MIT](https://img.shields.io/github/license/infraweavers/mama)](https://mit-license.org/)
+* ![Build and Release](https://github.com/infraweavers/mama/workflows/Build%20and%20Release/badge.svg)
+* [![Tests Status](https://github.com/infraweavers/mama/workflows/Test-Ubuntu/badge.svg)](https://github.com/infraweavers/mama/actions?query=workflow:Test-Ubuntu)
+* [![Tests Status](https://github.com/infraweavers/mama/workflows/Test-Windows/badge.svg)](https://github.com/infraweavers/mama/actions?query=workflow:Test-Windows)
+* [![Go Report Card](https://goreportcard.com/badge/github.com/infraweavers/mama)](https://goreportcard.com/report/github.com/infraweavers/mama)
+* [![License: MIT](https://img.shields.io/github/license/infraweavers/mama)](https://mit-license.org/)
 
 ### About
 
