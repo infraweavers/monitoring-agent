@@ -6,6 +6,7 @@ import (
 	"mama/internal/basicauth"
 	"net/http"
 	"os/exec"
+	"time"
 )
 
 type script struct {
@@ -18,12 +19,22 @@ type result struct {
 	Output   string `json:"output"`
 }
 
+const scriptTimeout = 29 * time.Second
+
 func runsScript(scriptToRun script) result {
 
 	var exitcode int = 0
 	log.Printf("Executing: %+v", scriptToRun)
 
 	cmd := exec.Command(scriptToRun.Path, scriptToRun.Args...)
+
+	processKiller := time.NewTimer(scriptTimeout)
+
+	go func() {
+		<-processKiller.C
+		cmd.Process.Kill()
+	}()
+
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		if exitError, ok := err.(*exec.ExitError); ok {
