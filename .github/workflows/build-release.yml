@@ -6,16 +6,18 @@ jobs:
   build-release:
     runs-on: ubuntu-latest
     steps:
+      - name: Get current time
+        uses: gerred/actions/current-time@master
+        id: current-time
+
+      - uses: benjlevesque/short-sha@v1.2
+        id: short-sha
+        with:
+          length: 7
+
       - name: Install Go
         uses: actions/setup-go@v2
-      
-      - name: Debug
-        run: |
-          echo ${GOPATH}
-          echo ${GOROOT}
-          echo ${GOCACHE}
-          echo ${GOENV}
-          
+
       - name: Checkout code
         uses: actions/checkout@v2
         with:
@@ -28,63 +30,23 @@ jobs:
 
       - name: Build Executables
         run: |
-          GOOS=linux GOARCH=386 go build -o ./linux-386 ./go/src/mama/cmd/mamasrv/mamasrv.go
-          GOOS=linux GOARCH=amd64 go build -o ./linux-amd64 ./go/src/mama/cmd/mamasrv/mamasrv.go
-          GOOS=windows GOARCH=386 go build -o ./windows-386.exe ./go/src/mama/cmd/mamasrv/mamasrv.go
-          GOOS=windows GOARCH=amd64 go build -o ./windows-amd64.exe ./go/src/mama/cmd/mamasrv/mamasrv.go
+          GOOS=linux GOARCH=386 go build -o ./release-linux-386 ./go/src/mama/cmd/mamasrv/mamasrv.go
+          GOOS=linux GOARCH=amd64 go build -o ./release-linux-amd64 ./go/src/mama/cmd/mamasrv/mamasrv.go
+          GOOS=windows GOARCH=386 go build -o ./release-windows-386.exe ./go/src/mama/cmd/mamasrv/mamasrv.go
+          GOOS=windows GOARCH=amd64 go build -o ./release-windows-amd64.exe ./go/src/mama/cmd/mamasrv/mamasrv.go
         env:
           GOPATH: /home/runner/work/mama/mama/go
       
       - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+        uses: meeDamian/github-release@2.0
         with:
-          tag_name: ${{ github.sha }}
-          release_name: "${{github.sha}}"
-          prerelease: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: "build-${{ steps.current-time.outputs.time }}-${{ steps.short-sha.outputs.sha }}"
+          tag: "build-${{ steps.short-sha.outputs.sha }}"
           draft: true
-      
-      - name: Upload Asset linux-386
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./linux-386
-          asset_name: "release-linux-386"
-          asset_content_type: application/executable
-
-      - name: Upload Asset linux-amd64
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./linux-amd64
-          asset_name: "release-linux-amd64"
-          asset_content_type: application/executable
-
-      - name: Upload Asset windows-386.exe
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./windows-386.exe
-          asset_name: "release-windows-386.exe"
-          asset_content_type: application/executable
-
-      - name: Upload Asset windows-amd64.exe
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./windows-amd64.exe
-          asset_name: "release-windows-amd64.exe"
-          asset_content_type: application/executable
+          prerelease: true
+          files: >
+            release-*-*
           
       - uses: dev-drprasad/delete-older-releases@v0.1.0
         with:

@@ -1,9 +1,9 @@
 <h1 align="center">MAMA</h1>
 <h3 align="center">MAintainable Monitoring Agent</h3>
 
-[![Build Status](https://github.com/infraweavers/mama/workflows/Test-Ubuntu/badge.svg)](https://github.com/infraweavers/mama/actions?query=workflow:Test-Ubuntu)
-[![Build Status](https://github.com/infraweavers/mama/workflows/Test-Windows/badge.svg)](https://github.com/infraweavers/mama/actions?query=workflow:Test-Windows)
-![Build and Release](https://github.com/infraweavers/mama/workflows/Build%20and%20Release/badge.svg)
+[![Build and Release](https://github.com/infraweavers/mama/workflows/Build%20and%20Release/badge.svg)](https://github.com/infraweavers/mama/actions?query=workflow%3A%22Build+and+Release%22)
+[![Tests Status](https://github.com/infraweavers/mama/workflows/Test-Ubuntu/badge.svg)](https://github.com/infraweavers/mama/actions?query=workflow:Test-Ubuntu)
+[![Tests Status](https://github.com/infraweavers/mama/workflows/Test-Windows/badge.svg)](https://github.com/infraweavers/mama/actions?query=workflow:Test-Windows)
 [![Go Report Card](https://goreportcard.com/badge/github.com/infraweavers/mama)](https://goreportcard.com/report/github.com/infraweavers/mama)
 [![License: MIT](https://img.shields.io/github/license/infraweavers/mama)](https://mit-license.org/)
 
@@ -26,10 +26,10 @@ In active development.
 ### Current Features
 
 * Execute a passed in script
+* Continuous Integration/Delivery
 
 ### Planned Features (active development)
 
-* Continuous Integration/Delivery
 * Tests
 
 ### Future Planned Features
@@ -47,13 +47,13 @@ In active development.
 #### Windows
 
 1. Install [GO](https://golang.org/doc/install)
-1. `git clone `https://github.com/infraweavers/mama %GOPATH%\src\mama`
-1. `go get github.com/gorilla/mux`
-1. `go run %GOPATH%/src/mama/cmd/mamasrv` 
+2. `git clone https://github.com/infraweavers/mama %GOPATH%\src\mama`
+3. `go get github.com/gorilla/mux`
+4. `go run %GOPATH%/src/mama/cmd/mamasrv` 
 
 #### Linux
 
 1. Install [GO](https://golang.org/doc/install)
-1. `git clone `https://github.com/infraweavers/mama $GOPATH\src\mama`
-1. `go get github.com/gorilla/mux`
-1. `go run $GOPATH/src/mama/cmd/mamasrv` 
+2. `git clone https://github.com/infraweavers/mama $GOPATH/src/mama`
+3. `go get github.com/gorilla/mux`
+4. `go run $GOPATH/src/mama/cmd/mamasrv` 
