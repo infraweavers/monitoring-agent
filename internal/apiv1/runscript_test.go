@@ -22,8 +22,8 @@ type TestCase struct {
 
 var testCases = map[string]TestCase{
 	"linux": {
-		Path:     "/usr/bin/sh",
-		Args:     []string{"-c", "/usr/bin/uname"},
+		Path:     "sh",
+		Args:     []string{"-c", "uname"},
 		Expected: `{"exitcode":0,"output":"Linux\n"}`,
 	},
 	"windows": {
