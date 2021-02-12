@@ -54,6 +54,6 @@ In active development.
 #### Linux
 
 1. Install [GO](https://golang.org/doc/install)
-2. `git clone https://github.com/infraweavers/mama $GOPATH\src\mama`
+2. `git clone https://github.com/infraweavers/mama $GOPATH/src/mama`
 3. `go get github.com/gorilla/mux`
 4. `go run $GOPATH/src/mama/cmd/mamasrv` 
