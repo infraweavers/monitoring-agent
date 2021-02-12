@@ -23,10 +23,11 @@ func Launch(configurationDirectory string) {
 	}
 
 	router := NewRouter()
+	handlerWithTimeout := http.TimeoutHandler(router, requestTimeout, "Request Timeout\n")
 
 	server := &http.Server{
 		Addr:    "0.0.0.0:9000",
-		Handler: router,
+		Handler: handlerWithTimeout,
 		TLSConfig: &tls.Config{
 			Certificates: []tls.Certificate{tlsCert},
 		},
