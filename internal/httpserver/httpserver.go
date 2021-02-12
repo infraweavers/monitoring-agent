@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"time"
 )
 
 // Launch instantiates a multiplexer and uses it to configure and launch an HTTP server
@@ -27,6 +28,8 @@ func Launch(configurationDirectory string) {
 		TLSConfig: &tls.Config{
 			Certificates: []tls.Certificate{tlsCert},
 		},
+		WriteTimeout: 30 * time.Second,
+		ReadTimeout:  30 * time.Second,
 	}
 	log.Println("Launching web server: https://0.0.0.0:9000")
 	log.Fatal(server.ListenAndServeTLS("", ""))
