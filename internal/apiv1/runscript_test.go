@@ -59,11 +59,11 @@ func TestRunscriptApiHandler(t *testing.T) {
 		output := testhelpers.TestHTTPRequest(t, request)
 
 		if output.ResponseStatus != http.StatusOK {
-			t.Error("Test Failed: Expected: {}, Got: {}", http.StatusOK, output.ResponseStatus)
+			t.Errorf("Test Failed: Expected: %d, Got: %d", http.StatusOK, output.ResponseStatus)
 		}
 
 		if output.ResponseBody != testCase.Expected {
-			t.Error("Test Failed: Expected: {}, Got: {}", testCase.Expected, output.ResponseBody)
+			t.Errorf("Test Failed: Expected: %s, Got: %s", testCase.Expected, output.ResponseBody)
 		}
 	})
 
@@ -84,11 +84,11 @@ func TestRunscriptApiHandler(t *testing.T) {
 		output := testhelpers.TestHTTPRequest(t, request)
 
 		if output.ResponseStatus != expectedResponseStatus {
-			t.Error("Test Failed: Expected: {}, Got: {}", expectedResponseStatus, output.ResponseStatus)
+			t.Errorf("Test Failed: Expected: %d, Got: %d", expectedResponseStatus, output.ResponseStatus)
 		}
 
 		if output.ResponseBody != expectedResponseBody {
-			t.Error("Test Failed: Expected: {}, Got: {}", expectedResponseBody, output.ResponseBody)
+			t.Errorf("Test Failed: Expected: %s, Got: %s", expectedResponseBody, output.ResponseBody)
 		}
 	})
 }
