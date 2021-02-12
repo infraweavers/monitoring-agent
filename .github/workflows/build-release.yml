@@ -40,7 +40,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: "build-${{ github.sha }}"
-          commitish: "${{github.sha}}"
+          tag: "build-${{github.sha}}"
           draft: true
           prerelease: true
           files: >
