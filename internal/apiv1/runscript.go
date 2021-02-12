@@ -2,30 +2,45 @@ package apiv1
 
 import (
 	"encoding/json"
-	"log"
+	"fmt"
 	"mama/internal/basicauth"
 	"net/http"
 	"os/exec"
 	"time"
 )
 
-type script struct {
+// Script represents an object submitted to the runscript endpoint
+type Script struct {
 	Path string   `json:"path"`
 	Args []string `json:"args"`
 }
 
-type result struct {
+// Result represents the object returned from the runscript endpoint
+type Result struct {
 	Exitcode int    `json:"exitcode"`
 	Output   string `json:"output"`
 }
 
 const scriptTimeout = 29 * time.Second
 
-func runsScript(scriptToRun script) result {
+func processResult(responseWriter http.ResponseWriter, exitCode int, output string) []byte {
 
+	result := Result{
+		Exitcode: exitCode,
+		Output:   output,
+	}
+
+	resultJSON, err := json.Marshal(result)
+	if err != nil {
+		responseWriter.WriteHeader(http.StatusBadRequest)
+		return processResult(responseWriter, 3, err.Error())
+	}
+
+	return resultJSON
+}
+
+func runScript(responseWriter http.ResponseWriter, scriptToRun Script) []byte {
 	var exitcode int = 0
-	log.Printf("Executing: %+v", scriptToRun)
-
 	cmd := exec.Command(scriptToRun.Path, scriptToRun.Args...)
 
 	processKiller := time.NewTimer(scriptTimeout)
@@ -40,16 +55,9 @@ func runsScript(scriptToRun script) result {
 		if exitError, ok := err.(*exec.ExitError); ok {
 			exitcode = exitError.ExitCode()
 		}
-		log.Println("Error:", err)
-	}
-	log.Printf("Result: %s", output)
-
-	scriptResult := result{
-		Exitcode: exitcode,
-		Output:   string(output),
 	}
 
-	return scriptResult
+	return processResult(responseWriter, exitcode, string(output))
 }
 
 // RunscriptGetHandler creates a http response for the API /runscript http get requests
@@ -67,14 +75,13 @@ func RunscriptPostHandler(responseWriter http.ResponseWriter, request *http.Requ
 
 	dec := json.NewDecoder(request.Body)
 	dec.DisallowUnknownFields()
-	var script script
+	var script Script
 	err := dec.Decode(&script)
 	if err != nil {
-		http.Error(responseWriter, err.Error(), http.StatusBadRequest)
+		responseWriter.WriteHeader(http.StatusBadRequest)
+		responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request", http.StatusBadRequest)))
 		return
 	}
 
-	result := runsScript(script)
-	resultJson, err := json.Marshal(result)
-	responseWriter.Write(resultJson)
+	responseWriter.Write(runScript(responseWriter, script))
 }

@@ -38,7 +38,7 @@ func TestIsAuthorised(t *testing.T) {
 			output := tester(t, testCase.testCredential)
 
 			if output != testCase.expected {
-				t.Error("Test Failed: Input: {}, Expected: {}, Got: {}", testCase.testCredential, testCase.expected, output)
+				t.Errorf("Test Failed: Input: %v, Expected: %t, Got: %t", testCase.testCredential, testCase.expected, output)
 			}
 		})
 	}
@@ -50,7 +50,7 @@ func TestIsAuthorised(t *testing.T) {
 		output := IsAuthorised(responseWriter, request)
 
 		if output != expected {
-			t.Error("Test Failed: Expected: {}, Got: {}", expected, output)
+			t.Errorf("Test Failed: Expected %t, Got %t", expected, output)
 		}
 	})
 }

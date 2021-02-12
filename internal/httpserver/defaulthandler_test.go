@@ -37,7 +37,6 @@ func TestDefaultHandler(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 
 			outputStatusCode := tester(t, testCase.testCredential)
-
 			if outputStatusCode != testCase.expectedResult {
 				t.Error("Test Failed: Expected: {}, Got: {}", testCase.expectedResult, outputStatusCode)
 			}
