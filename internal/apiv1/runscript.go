@@ -64,5 +64,6 @@ func RunscriptPostHandler(responseWriter http.ResponseWriter, request *http.Requ
 	}
 
 	result := runsScript(script)
-	json.NewEncoder(responseWriter).Encode(result)
+	resultJson, err := json.Marshal(result)
+	responseWriter.Write(resultJson)
 }

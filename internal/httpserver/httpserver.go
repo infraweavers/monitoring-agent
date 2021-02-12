@@ -10,7 +10,7 @@ import (
 func Launch() {
 	tlsCert, _ := tls.LoadX509KeyPair("../../assets/tls/test.crt", "../../assets/tls/test.key")
 
-	router := newRouter()
+	router := NewRouter()
 
 	server := &http.Server{
 		Addr:    "0.0.0.0:9000",

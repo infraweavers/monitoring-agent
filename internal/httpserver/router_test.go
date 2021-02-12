@@ -15,7 +15,7 @@ var router *mux.Router
 var server *httptest.Server
 
 func setup(t *testing.T) {
-	router = newRouter()
+	router = NewRouter()
 	err := router.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
 		pathTemplate, err := route.GetPathTemplate()
 		if err == nil {

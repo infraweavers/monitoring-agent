@@ -4,7 +4,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func newRouter() *mux.Router {
+//NewRouter returns an HTTP multiplexor
+func NewRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 	for _, route := range declaredRoutes {
 		router.
