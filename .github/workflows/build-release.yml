@@ -8,14 +8,7 @@ jobs:
     steps:
       - name: Install Go
         uses: actions/setup-go@v2
-      
-      - name: Debug
-        run: |
-          echo ${GOPATH}
-          echo ${GOROOT}
-          echo ${GOCACHE}
-          echo ${GOENV}
-          
+
       - name: Checkout code
         uses: actions/checkout@v2
         with:
