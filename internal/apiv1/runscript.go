@@ -6,6 +6,7 @@ import (
 	"mama/internal/basicauth"
 	"net/http"
 	"os/exec"
+	"time"
 )
 
 // Script represents an object submitted to the runscript endpoint
@@ -19,6 +20,8 @@ type Result struct {
 	Exitcode int    `json:"exitcode"`
 	Output   string `json:"output"`
 }
+
+const scriptTimeout = 29 * time.Second
 
 func processResult(responseWriter http.ResponseWriter, exitCode int, output string) []byte {
 
@@ -39,6 +42,14 @@ func processResult(responseWriter http.ResponseWriter, exitCode int, output stri
 func runScript(responseWriter http.ResponseWriter, scriptToRun Script) []byte {
 	var exitcode int = 0
 	cmd := exec.Command(scriptToRun.Path, scriptToRun.Args...)
+
+	processKiller := time.NewTimer(scriptTimeout)
+
+	go func() {
+		<-processKiller.C
+		cmd.Process.Kill()
+	}()
+
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		if exitError, ok := err.(*exec.ExitError); ok {
