@@ -30,10 +30,10 @@ func processResult(responseWriter http.ResponseWriter, exitCode int, output stri
 		Output:   output,
 	}
 
-	resultJSON, err := json.Marshal(result)
-	if err != nil {
+	resultJSON, error := json.Marshal(result)
+	if error != nil {
 		responseWriter.WriteHeader(http.StatusBadRequest)
-		return processResult(responseWriter, 3, err.Error())
+		return processResult(responseWriter, 3, error.Error())
 	}
 
 	return resultJSON
@@ -41,18 +41,18 @@ func processResult(responseWriter http.ResponseWriter, exitCode int, output stri
 
 func runScript(responseWriter http.ResponseWriter, scriptToRun Script) []byte {
 	var exitcode int = 0
-	cmd := exec.Command(scriptToRun.Path, scriptToRun.Args...)
+	command := exec.Command(scriptToRun.Path, scriptToRun.Args...)
 
 	processKiller := time.NewTimer(scriptTimeout)
 
 	go func() {
 		<-processKiller.C
-		cmd.Process.Kill()
+		command.Process.Kill()
 	}()
 
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		if exitError, ok := err.(*exec.ExitError); ok {
+	output, error := command.CombinedOutput()
+	if error != nil {
+		if exitError, ok := error.(*exec.ExitError); ok {
 			exitcode = exitError.ExitCode()
 		}
 	}
@@ -76,8 +76,8 @@ func RunscriptPostHandler(responseWriter http.ResponseWriter, request *http.Requ
 	dec := json.NewDecoder(request.Body)
 	dec.DisallowUnknownFields()
 	var script Script
-	err := dec.Decode(&script)
-	if err != nil {
+	error := dec.Decode(&script)
+	if error != nil {
 		responseWriter.WriteHeader(http.StatusBadRequest)
 		responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request", http.StatusBadRequest)))
 		return
