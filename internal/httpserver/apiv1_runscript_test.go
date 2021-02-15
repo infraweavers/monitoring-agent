@@ -1,9 +1,8 @@
-package apiv1
+package httpserver
 
 import (
 	"bytes"
 	"encoding/json"
-	"mama/internal/testhelpers"
 	"net/http"
 	"runtime"
 	"testing"
@@ -35,8 +34,8 @@ var testCases = map[string]TestCase{
 
 func TestRunscriptApiHandler(t *testing.T) {
 
-	testhelpers.Setup(RunscriptPostHandler)
-	defer testhelpers.Teardown()
+	TestSetup()
+	defer TestTeardown()
 
 	t.Run("Runs supplied script, returns HTTP status 200 and expected script output", func(t *testing.T) {
 		testCase := testCases[runtime.GOOS]
@@ -51,12 +50,12 @@ func TestRunscriptApiHandler(t *testing.T) {
 		}
 
 		bytesBuffer := bytes.NewBuffer(jsonBody)
-		request, err := http.NewRequest(http.MethodPost, testhelpers.GetServerURL(t)+"/v1/runscript/", bytesBuffer)
+		request, err := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscript", bytesBuffer)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		output := testhelpers.TestHTTPRequest(t, request)
+		output := TestHTTPRequestWithDefaultCredentials(t, request)
 
 		if output.ResponseStatus != http.StatusOK {
 			t.Errorf("Test Failed: Expected: %d, Got: %d", http.StatusOK, output.ResponseStatus)
@@ -74,14 +73,14 @@ func TestRunscriptApiHandler(t *testing.T) {
 		}
 
 		bytesBuffer := bytes.NewBuffer(jsonBody)
-		request, err := http.NewRequest(http.MethodPost, testhelpers.GetServerURL(t)+"/v1/runscript/", bytesBuffer)
+		request, err := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscript", bytesBuffer)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		expectedResponseStatus := http.StatusBadRequest
 		expectedResponseBody := `{"exitcode":3,"output":"400 Bad Request"}`
-		output := testhelpers.TestHTTPRequest(t, request)
+		output := TestHTTPRequestWithDefaultCredentials(t, request)
 
 		if output.ResponseStatus != expectedResponseStatus {
 			t.Errorf("Test Failed: Expected: %d, Got: %d", expectedResponseStatus, output.ResponseStatus)

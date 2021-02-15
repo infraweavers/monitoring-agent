@@ -1,4 +1,4 @@
-package testhelpers
+package httpserver
 
 import (
 	"io/ioutil"
@@ -6,46 +6,61 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/gorilla/mux"
 )
 
-var routePathTemplates []string
-var router *mux.Router
-var server *httptest.Server
+var testServer *httptest.Server
 
-// HTTPResponse is a struct consisting of responseBody and responseStatus
-type HTTPResponse struct {
+type TestCredential struct {
+	Username string
+	Password string
+}
+
+// TestHTTPResponse is a struct consisting of responseBody and responseStatus
+type TestHTTPResponse struct {
 	ResponseStatus int
 	ResponseBody   string
 }
 
-// Setup instantiates a router and test HTTP server
-func Setup(handlerFunc http.HandlerFunc) {
-
+// TestSetup instantiates a router and test HTTP server
+func TestSetup() {
 	configuration.TestingInitialise()
-
-	server = httptest.NewServer(handlerFunc)
+	router := NewRouter()
+	testServer = httptest.NewServer(router)
 }
 
 // GetServerURL returns the hostname and port for a running test server
-func GetServerURL(t *testing.T) string {
-	if server == nil {
+func GetTestServerURL(t *testing.T) string {
+	if testServer == nil {
 		t.Fatal("HTTP test server URL requested via GetServerURL before Setup() called")
 	}
 
-	return server.URL
+	return testServer.URL
 }
 
-// Teardown closes the http server
-func Teardown() {
-	server.Close()
+// TestTeardown closes the http server
+func TestTeardown() {
+	testServer.Close()
 }
 
-// TestHTTPRequest executes an HTTP request and returns a struct containing the body and HTTP response code
-func TestHTTPRequest(t *testing.T, request *http.Request) HTTPResponse {
+func BuildTestHTTPRequest(t *testing.T, method string, url string) *http.Request {
+	request, error := http.NewRequest(method, GetTestServerURL(t)+url, nil)
+	if error != nil {
+		t.Fatalf(error.Error())
+	}
+	return request
+}
+
+func TestHTTPRequestWithCredentials(t *testing.T, request *http.Request, username string, password string) TestHTTPResponse {
+	request.SetBasicAuth(username, password)
+	return TestHTTPRequest(t, request)
+}
+
+func TestHTTPRequestWithDefaultCredentials(t *testing.T, request *http.Request) TestHTTPResponse {
 	request.SetBasicAuth("test", "secret")
+	return TestHTTPRequest(t, request)
+}
 
+func TestHTTPRequest(t *testing.T, request *http.Request) TestHTTPResponse {
 	response, err := http.DefaultClient.Do(request)
 	if err != nil {
 		t.Fatal(err)
@@ -58,7 +73,7 @@ func TestHTTPRequest(t *testing.T, request *http.Request) HTTPResponse {
 		t.Fatal(err)
 	}
 
-	return HTTPResponse{
+	return TestHTTPResponse{
 		ResponseStatus: response.StatusCode,
 		ResponseBody:   string(body),
 	}

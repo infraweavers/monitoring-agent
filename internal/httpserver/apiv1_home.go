@@ -1,14 +1,12 @@
-package apiv1
+package httpserver
 
 import (
-	"mama/internal/basicauth"
 	"net/http"
 )
 
-// HomeGetHandler creates a http response for the API root path
-func HomeGetHandler(reponseWriter http.ResponseWriter, request *http.Request) {
+// APIV1HomeGetHandler creates a http response for the API root path
+func APIV1HomeGetHandler(reponseWriter http.ResponseWriter, request *http.Request) {
 	reponseWriter.Header().Set("Content-Type", "application/json")
-	basicauth.IsAuthorised(reponseWriter, request)
 	reponseWriter.WriteHeader(http.StatusOK)
 	reponseWriter.Write([]byte(`{"endpoints": ["runscript", "info"]}`))
 }

@@ -1,31 +1,41 @@
-package basicauth
+package httpserver
 
 import (
+	"crypto/subtle"
 	"mama/internal/configuration"
 	"net/http"
 )
 
-func isKnownCredential(username string, password string) bool {
-	return username == configuration.Settings.Username && password == configuration.Settings.Password
+func isKnownValidCredential(suppliedUsername string, suppliedPassword string) bool {
+	if subtle.ConstantTimeCompare([]byte(configuration.Settings.Username), []byte(suppliedUsername)) != 1 {
+		return false
+	}
+	if subtle.ConstantTimeCompare([]byte(configuration.Settings.Password), []byte(suppliedPassword)) != 1 {
+		return false
+	}
+	return true
 }
 
-// IsAuthorised checks whether an http request is authorised. Returns a boolean
-func IsAuthorised(responseWriter http.ResponseWriter, request *http.Request) bool {
-	username, password, ok := request.BasicAuth()
+// BasicAuth is a HTTP handlefunc wrapper that handles HTTP basic authorization
+func BasicAuth(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(responseWriter http.ResponseWriter, request *http.Request) {
 
-	if !ok {
-		responseWriter.Header().Add("WWW-Authenticate", `Basic realm="Access restricted"`)
-		responseWriter.WriteHeader(http.StatusUnauthorized)
-		responseWriter.Write([]byte(`{"message": "Basic authentication required"}`))
-		return false
-	}
+		username, password, ok := request.BasicAuth()
 
-	if !isKnownCredential(username, password) {
-		responseWriter.Header().Add("WWW-Authenticate", `Basic realm="Access restricted"`)
-		responseWriter.WriteHeader(http.StatusForbidden)
-		responseWriter.Write([]byte(`{"message": "Invalid username and/or password"}`))
-		return false
-	}
+		if !ok {
+			responseWriter.Header().Add("WWW-Authenticate", `Basic realm="Access restricted"`)
+			responseWriter.WriteHeader(http.StatusUnauthorized)
+			responseWriter.Write([]byte(`{"message": "Basic authentication required"}`))
+			return
+		}
 
-	return true
+		if !isKnownValidCredential(username, password) {
+			responseWriter.Header().Add("WWW-Authenticate", `Basic realm="Access restricted"`)
+			responseWriter.WriteHeader(http.StatusForbidden)
+			responseWriter.Write([]byte(`{"message": "Invalid username and/or password"}`))
+			return
+		}
+
+		handler.ServeHTTP(responseWriter, request)
+	})
 }

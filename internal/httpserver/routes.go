@@ -1,7 +1,6 @@
 package httpserver
 
 import (
-	"mama/internal/apiv1"
 	"net/http"
 )
 
@@ -16,10 +15,10 @@ type routes []route
 
 var declaredRoutes = routes{
 	// Default
-	route{"Index", "GET", "/", DefaultHandler},
+	route{"IndexGet", "GET", "/", DefaultHandler},
 	// API Version 1
-	route{"apiv1Index", "GET", "/v1", apiv1.HomeGetHandler},
-	route{"apiv1Runscript", "GET", "/v1/runscript", apiv1.RunscriptGetHandler},
-	route{"apiv1Runscript", "POST", "/v1/runscript", apiv1.RunscriptPostHandler},
-	route{"apiv1Info", "GET", "/v1/info", apiv1.InfoGetHandler},
+	route{"apiv1IndexGet", "GET", "/v1", APIV1HomeGetHandler},
+	route{"apiv1RunscriptGet", "GET", "/v1/runscript", APIV1RunscriptGetHandler},
+	route{"apiv1RunscriptPost", "POST", "/v1/runscript", APIV1RunscriptPostHandler},
+	route{"apiv1InfoGet", "GET", "/v1/info", APIV1InfoGetHandler},
 }

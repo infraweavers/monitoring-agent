@@ -1,59 +1,43 @@
-package basicauth
+package httpserver
 
 import (
-	"mama/internal/configuration"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 )
 
-type credential struct {
-	username string
-	password string
-}
-
-func tester(t *testing.T, cred credential) bool {
-	request, _ := http.NewRequest(http.MethodGet, "/", nil)
-	responseWriter := httptest.NewRecorder()
-	request.SetBasicAuth(cred.username, cred.password)
-
-	return IsAuthorised(responseWriter, request)
-}
-
 func TestIsAuthorised(t *testing.T) {
 	var testCases = []struct {
-		testCredential credential
-		expected       bool
+		credential TestCredential
+		expected   int
 	}{
-		{credential{"test", "secret"}, true},
-		{credential{"user", "secret"}, false},
-		{credential{"test", "password"}, false},
-		{credential{"user", "password"}, false},
-		{credential{"test", ""}, false},
-		{credential{"", "password"}, false},
-		{credential{"", ""}, false},
+		{TestCredential{Username: "test", Password: "secret"}, http.StatusOK},
+		{TestCredential{Username: "user", Password: "secret"}, http.StatusForbidden},
+		{TestCredential{Username: "test", Password: "password"}, http.StatusForbidden},
+		{TestCredential{Username: "user", Password: "password"}, http.StatusForbidden},
+		{TestCredential{Username: "test", Password: ""}, http.StatusForbidden},
+		{TestCredential{Username: "", Password: "password"}, http.StatusForbidden},
+		{TestCredential{Username: "", Password: ""}, http.StatusForbidden},
 	}
 
-	configuration.TestingInitialise()
+	TestSetup()
+	defer TestTeardown()
 
 	for _, testCase := range testCases {
 		t.Run("returns appropriate responses with valid/invalid credentials", func(t *testing.T) {
-			output := tester(t, testCase.testCredential)
+			output := TestHTTPRequestWithCredentials(t, BuildTestHTTPRequest(t, http.MethodGet, "/v1"), testCase.credential.Username, testCase.credential.Password)
 
-			if output != testCase.expected {
-				t.Errorf("Test Failed: Input: %v, Expected: %t, Got: %t", testCase.testCredential, testCase.expected, output)
+			if output.ResponseStatus != testCase.expected {
+				t.Errorf("Test Failed: Input: %v, Expected: %d, Got: %d", testCase.credential, testCase.expected, output.ResponseStatus)
 			}
 		})
 	}
 
 	t.Run("returns false when no credentials are supplied", func(t *testing.T) {
-		request, _ := http.NewRequest(http.MethodGet, "/", nil)
-		responseWriter := httptest.NewRecorder()
-		expected := false
-		output := IsAuthorised(responseWriter, request)
+		expected := http.StatusUnauthorized
+		output := TestHTTPRequest(t, BuildTestHTTPRequest(t, http.MethodGet, "/v1"))
 
-		if output != expected {
-			t.Errorf("Test Failed: Expected %t, Got %t", expected, output)
+		if output.ResponseStatus != expected {
+			t.Errorf("Test Failed: Expected %d, Got %d", expected, output.ResponseStatus)
 		}
 	})
 }
