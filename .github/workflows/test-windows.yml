@@ -19,7 +19,7 @@ jobs:
           path: D:\a\mama\mama\go\src\mama
       - name: Test
         run: |
-          go get github.com/gorilla/mux
+          go get ./...
           go test -cover $(go list ./...)
         env:
           GOPATH: D:\a\mama\mama\go

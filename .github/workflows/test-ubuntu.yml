@@ -24,7 +24,7 @@ jobs:
           path: go/src/mama
       - name: Test
         run: |
-          go get github.com/gorilla/mux
+          go get ./...
           go test -cover $(go list ./...)
         env:
           GOPATH: /home/runner/work/mama/mama/go
