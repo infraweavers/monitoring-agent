@@ -28,6 +28,8 @@ jobs:
       - name: Debugs
         run: |
             ls -lah /home/runner/work/mama/mama/go
+            ls -lah /home/runner/work/mama/mama/go/src/
+            ls -lah /home/runner/work/mama/mama/go/pkg/
         env:
           GOPATH: D:\a\mama\mama\go
 
