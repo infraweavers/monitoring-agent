@@ -27,6 +27,6 @@ jobs:
 
       - name: Test
         run: |
-          go test -cover ./...
+          go test -cover $(go list ./...)
         env:
           GOPATH: /home/runner/work/mama/mama/go
