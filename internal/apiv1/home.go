@@ -12,6 +12,3 @@ func HomeGetHandler(reponseWriter http.ResponseWriter, request *http.Request) {
 	reponseWriter.WriteHeader(http.StatusOK)
 	reponseWriter.Write([]byte(`{"endpoints": ["runscript", "info"]}`))
 }
-
-// w.WriteHeader(http.StatusMethodNotAllowed)
-// w.Write([]byte( fmt.Sprintf( "{\"message\": \"HTTP %s not implemented\"}", r.Method ) ))

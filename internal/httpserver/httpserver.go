@@ -3,31 +3,28 @@ package httpserver
 import (
 	"crypto/tls"
 	"log"
+	"mama/internal/configuration"
 	"net/http"
-	"path/filepath"
-	"time"
 )
 
-const requestTimeout = 30 * time.Second
-
 // Launch instantiates a multiplexer and uses it to configure and launch an HTTP server
-func Launch(configurationDirectory string) {
+func Launch() {
 
-	certificatePath := filepath.FromSlash(configurationDirectory + "/server.crt")
-	keyfilePath := filepath.FromSlash(configurationDirectory + "/server.key")
-
-	tlsCert, loadError := tls.LoadX509KeyPair(certificatePath, keyfilePath)
+	tlsCert, loadError := tls.LoadX509KeyPair(configuration.Settings.CertificatePath, configuration.Settings.PrivateKeyPath)
 
 	if loadError != nil {
 		panic(loadError)
 	}
 
+	var requestTimeout = configuration.Settings.RequestTimeout
+
 	router := NewRouter()
 	handlerWithTimeout := http.TimeoutHandler(router, requestTimeout, "Request Timeout\n")
 
 	server := &http.Server{
-		Addr:    "0.0.0.0:9000",
+		Addr:    configuration.Settings.BindAddress,
 		Handler: handlerWithTimeout,
+
 		TLSConfig: &tls.Config{
 			Certificates: []tls.Certificate{tlsCert},
 		},
@@ -36,6 +33,6 @@ func Launch(configurationDirectory string) {
 		ReadHeaderTimeout: requestTimeout,
 		IdleTimeout:       requestTimeout,
 	}
-	log.Println("Launching web server: https://0.0.0.0:9000")
+	log.Println("Launching web server: https://" + configuration.Settings.BindAddress)
 	log.Fatal(server.ListenAndServeTLS("", ""))
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"mama/internal/basicauth"
+	"mama/internal/configuration"
 	"net/http"
 	"os/exec"
 	"time"
@@ -20,8 +21,6 @@ type Result struct {
 	Exitcode int    `json:"exitcode"`
 	Output   string `json:"output"`
 }
-
-const scriptTimeout = 29 * time.Second
 
 func processResult(responseWriter http.ResponseWriter, exitCode int, output string) []byte {
 
@@ -43,7 +42,7 @@ func runScript(responseWriter http.ResponseWriter, scriptToRun Script) []byte {
 	var exitcode int = 0
 	command := exec.Command(scriptToRun.Path, scriptToRun.Args...)
 
-	processKiller := time.NewTimer(scriptTimeout)
+	processKiller := time.NewTimer(configuration.Settings.RequestTimeout)
 
 	go func() {
 		<-processKiller.C

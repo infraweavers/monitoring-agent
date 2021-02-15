@@ -1,20 +1,12 @@
 package basicauth
 
 import (
+	"mama/internal/configuration"
 	"net/http"
 )
 
 func isKnownCredential(username string, password string) bool {
-	var users = map[string]string{
-		"test": "secret",
-	}
-
-	_password, ok := users[username]
-	if !ok {
-		return false
-	}
-
-	return password == _password
+	return username == configuration.Settings.Username && password == configuration.Settings.Password
 }
 
 // IsAuthorised checks whether an http request is authorised. Returns a boolean

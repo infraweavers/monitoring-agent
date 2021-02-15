@@ -1,6 +1,7 @@
 package main
 
 import (
+	"mama/internal/configuration"
 	"mama/internal/httpserver"
 	"os"
 	"path/filepath"
@@ -12,5 +13,6 @@ func main() {
 		panic(error)
 	}
 	configurationDirectory := filepath.Dir(executable)
-	httpserver.Launch(configurationDirectory)
+	configuration.Initialise(configurationDirectory)
+	httpserver.Launch()
 }
