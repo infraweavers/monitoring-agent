@@ -27,8 +27,6 @@ jobs:
 
       - name: Test
         run: |
-          pwd
-          ls
           go test -cover ./go/src/mama/...
         env:
           GOPATH: /home/runner/work/mama/mama/go
