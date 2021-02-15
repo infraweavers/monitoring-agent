@@ -15,8 +15,6 @@ type SettingsValues struct {
 	Username               string
 	Password               string
 	BindAddress            string
-	LogFilePath            string
-	LogLevel               string
 	RequestTimeout         time.Duration
 }
 
@@ -40,10 +38,6 @@ func Initialise(configurationDirectory string) {
 
 	Settings.Username = getIniValueOrPanic(iniFile, "Authentication", "Username")
 	Settings.Password = getIniValueOrPanic(iniFile, "Authentication", "Password")
-
-	Settings.LogFilePath = getIniValueOrPanic(iniFile, "Server", "LogFilePath")
-
-	Settings.LogLevel = getIniValueOrPanic(iniFile, "Server", "LogLevel")
 
 	Settings.BindAddress = getIniValueOrPanic(iniFile, "Server", "BindAddress")
 

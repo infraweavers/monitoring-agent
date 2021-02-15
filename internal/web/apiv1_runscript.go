@@ -1,9 +1,8 @@
-package apiv1
+package web
 
 import (
 	"encoding/json"
 	"fmt"
-	"mama/internal/basicauth"
 	"mama/internal/configuration"
 	"net/http"
 	"os/exec"
@@ -59,18 +58,16 @@ func runScript(responseWriter http.ResponseWriter, scriptToRun Script) []byte {
 	return processResult(responseWriter, exitcode, string(output))
 }
 
-// RunscriptGetHandler creates a http response for the API /runscript http get requests
-func RunscriptGetHandler(responseWriter http.ResponseWriter, request *http.Request) {
+// APIV1RunscriptGetHandler creates a http response for the API /runscript http get requests
+func APIV1RunscriptGetHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	responseWriter.Header().Set("Content-Type", "application/json")
-	basicauth.IsAuthorised(responseWriter, request)
 	responseWriter.WriteHeader(http.StatusOK)
 	responseWriter.Write([]byte(`{"endpoints": ["executes a script sent via HTTP POST request"]}`))
 }
 
-// RunscriptPostHandler creates executes a script as specified in a http request and updates the http response with the result
-func RunscriptPostHandler(responseWriter http.ResponseWriter, request *http.Request) {
+// APIV1RunscriptPostHandler creates executes a script as specified in a http request and updates the http response with the result
+func APIV1RunscriptPostHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	responseWriter.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	basicauth.IsAuthorised(responseWriter, request)
 
 	dec := json.NewDecoder(request.Body)
 	dec.DisallowUnknownFields()

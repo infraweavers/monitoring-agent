@@ -2,8 +2,8 @@ package main
 
 import (
 	"mama/internal/configuration"
-	"mama/internal/httpserver"
 	"mama/internal/logwrapper"
+	"mama/internal/web"
 	"os"
 	"path/filepath"
 )
@@ -13,11 +13,10 @@ func main() {
 	if error != nil {
 		panic(error)
 	}
-
 	configurationDirectory := filepath.Dir(executable)
-
 	configuration.Initialise(configurationDirectory)
+
 	logwrapper.Initialise()
 
-	httpserver.Launch()
+	web.Launch()
 }
