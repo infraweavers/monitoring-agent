@@ -2,7 +2,7 @@ package main
 
 import (
 	"mama/internal/configuration"
-	"mama/internal/httpserver"
+	"mama/internal/web"
 	"os"
 	"path/filepath"
 )
@@ -14,5 +14,5 @@ func main() {
 	}
 	configurationDirectory := filepath.Dir(executable)
 	configuration.Initialise(configurationDirectory)
-	httpserver.Launch()
+	web.Launch()
 }
