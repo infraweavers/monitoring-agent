@@ -3,6 +3,7 @@ package httpserver
 import (
 	"fmt"
 	"io/ioutil"
+	"mama/internal/configuration"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -30,6 +31,7 @@ func setup(t *testing.T) {
 	}
 
 	server = httptest.NewServer(router)
+	configuration.TestingInitialise()
 }
 
 func teardown() {

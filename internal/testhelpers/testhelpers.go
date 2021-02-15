@@ -2,6 +2,7 @@ package testhelpers
 
 import (
 	"io/ioutil"
+	"mama/internal/configuration"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -21,6 +22,9 @@ type HTTPResponse struct {
 
 // Setup instantiates a router and test HTTP server
 func Setup(handlerFunc http.HandlerFunc) {
+
+	configuration.TestingInitialise()
+
 	server = httptest.NewServer(handlerFunc)
 }
 

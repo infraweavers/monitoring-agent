@@ -1,6 +1,7 @@
 package basicauth
 
 import (
+	"mama/internal/configuration"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -32,6 +33,8 @@ func TestIsAuthorised(t *testing.T) {
 		{credential{"", "password"}, false},
 		{credential{"", ""}, false},
 	}
+
+	configuration.TestingInitialise()
 
 	for _, testCase := range testCases {
 		t.Run("returns appropriate responses with valid/invalid credentials", func(t *testing.T) {

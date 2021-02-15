@@ -58,3 +58,15 @@ func getIniValueOrPanic(input ini.File, group string, key string) string {
 	}
 	return value
 }
+
+// TestingInitialise only for use in integration tests
+func TestingInitialise() {
+	Settings.BindAddress = "127.0.0.1:9000"
+
+	Settings.CertificatePath = "NOTUSED"
+	Settings.PrivateKeyPath = "NOTUSED"
+
+	Settings.RequestTimeout = time.Second * 10
+	Settings.Username = "test"
+	Settings.Password = "secret"
+}
