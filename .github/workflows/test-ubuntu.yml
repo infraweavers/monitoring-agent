@@ -25,16 +25,8 @@ jobs:
         env:
           GOPATH: /home/runner/work/mama/mama/go
 
-      - name: Debugs
-        run: |
-            ls -lah /home/runner/work/mama/mama/go
-            ls -lah /home/runner/work/mama/mama/go/src/
-            ls -lah /home/runner/work/mama/mama/go/pkg/
-        env:
-          GOPATH: D:\a\mama\mama\go
-
       - name: Test
         run: |
-          go test -cover $(go list ./...)
+          go test -cover src/mama/...
         env:
           GOPATH: /home/runner/work/mama/mama/go
