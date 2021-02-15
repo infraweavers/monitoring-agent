@@ -36,11 +36,25 @@ func Initialise(configurationDirectory string) {
 		panic(loadError)
 	}
 
-	Settings.Username, _ = iniFile.Get("Authentication", "Username")
-	Settings.Password, _ = iniFile.Get("Authentication", "Password")
+	Settings.Username = getIniValueOrPanic(iniFile, "Authentication", "Username")
+	Settings.Password = getIniValueOrPanic(iniFile, "Authentication", "Password")
 
-	Settings.BindAddress, _ = iniFile.Get("Server", "BindAddress") // "0.0.0.0:9000",
+	Settings.BindAddress = getIniValueOrPanic(iniFile, "Server", "BindAddress")
 
-	stringValue, _ := iniFile.Get("Server", "RequestTimeout")
-	Settings.RequestTimeout, _ = time.ParseDuration(stringValue) // "30s"
+	stringValue := getIniValueOrPanic(iniFile, "Server", "RequestTimeout")
+	durationValue, parseError := time.ParseDuration(stringValue)
+
+	if parseError != nil {
+		panic(parseError)
+	}
+
+	Settings.RequestTimeout = durationValue
+}
+
+func getIniValueOrPanic(input ini.File, group string, key string) string {
+	value, wasFound := input.Get(group, key)
+	if wasFound == false {
+		panic("[" + group + "] " + key + " was not configured")
+	}
+	return value
 }
