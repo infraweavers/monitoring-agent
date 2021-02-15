@@ -27,6 +27,6 @@ jobs:
 
       - name: Test
         run: |
-          go test -cover .\src\mama\...
+          go test -cover .\go\src\mama\...
         env:
           GOPATH: D:\a\mama\mama\go
