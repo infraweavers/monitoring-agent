@@ -19,6 +19,7 @@ jobs:
           path: D:\a\mama\mama\go\src\mama
       - name: Test
         run: |
+          go get "github.com/stretchr/testify/require"
           go get ./...
           go test -cover $(go list ./...)
         env:

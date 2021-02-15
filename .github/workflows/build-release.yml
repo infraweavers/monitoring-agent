@@ -24,7 +24,9 @@ jobs:
           path: go/src/mama
 
       - name: Dependencies
-        run: go get ./...
+        run: |
+            go get "github.com/stretchr/testify/require"
+            go get ./...
         env:
           GOPATH: /home/runner/work/mama/mama/go
 
