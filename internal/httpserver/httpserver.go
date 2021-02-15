@@ -3,7 +3,7 @@ package httpserver
 import (
 	"crypto/tls"
 	"mama/internal/configuration"
-	"mama/internal/logging"
+	"mama/internal/logwrapper"
 	"net/http"
 )
 
@@ -34,6 +34,6 @@ func Launch() {
 		IdleTimeout:       requestTimeout,
 	}
 
-	logging.Log.Info("Launching web server: https://" + configuration.Settings.BindAddress)
-	logging.Log.Info(server.ListenAndServeTLS("", ""))
+	logwrapper.Log.Info("Launching web server: https://" + configuration.Settings.BindAddress)
+	logwrapper.Log.Info(server.ListenAndServeTLS("", ""))
 }
