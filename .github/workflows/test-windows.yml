@@ -13,14 +13,20 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go-version }}
+
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           path: D:\a\mama\mama\go\src\mama
+
+      - name: Dependencies
+        run: |
+            go get ./...
+        env:
+          GOPATH: D:\a\mama\mama\go
+
       - name: Test
         run: |
-          go get "github.com/stretchr/testify/require"
-          go get ./...
-          go test -cover $(go list ./...)
+          go test -cover ./...
         env:
           GOPATH: D:\a\mama\mama\go
