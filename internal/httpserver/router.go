@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// MiddlewareFunc is an interface required for middleware wrapped around HTTP handler functions
 type MiddlewareFunc func(http.Handler) http.Handler
 
 //NewRouter returns an HTTP multiplexor
