@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"mama/internal/configuration"
+	"mama/internal/logwrapper"
 	"net/http"
 	"os/exec"
 	"time"
@@ -46,6 +47,7 @@ func runScript(responseWriter http.ResponseWriter, scriptToRun Script) []byte {
 	go func() {
 		<-processKiller.C
 		command.Process.Kill()
+		logwrapper.Log.Warningf("Request Timed Out: '%s' %#v", scriptToRun.Path, scriptToRun.Args)
 	}()
 
 	output, error := command.CombinedOutput()

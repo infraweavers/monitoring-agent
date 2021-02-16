@@ -26,7 +26,7 @@ func (program *program) Stop(s service.Service) error {
 	return nil
 }
 
-func findConfigurationDirectory() string {
+func configurationDirectory() string {
 
 	executable, error := os.Executable()
 	if error != nil {
@@ -60,7 +60,7 @@ func findConfigurationDirectory() string {
 }
 
 func main() {
-	configuration.Initialise(findConfigurationDirectory())
+	configuration.Initialise(configurationDirectory())
 	logwrapper.Initialise(service.Interactive())
 
 	serviceConfiguration := &service.Config{
