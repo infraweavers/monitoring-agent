@@ -7,8 +7,8 @@ import (
 	"net/http"
 )
 
-// Launch instantiates a multiplexer and uses it to configure and launch an HTTP server
-func Launch() {
+// LaunchServer instantiates a multiplexer and uses it to configure and launch an HTTP server
+func LaunchServer() {
 
 	tlsCert, loadError := tls.LoadX509KeyPair(configuration.Settings.CertificatePath, configuration.Settings.PrivateKeyPath)
 

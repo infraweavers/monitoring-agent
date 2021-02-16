@@ -12,16 +12,17 @@ import (
 
 type program struct{}
 
-func (p *program) Start(s service.Service) error {
-	// Start should not block. Do the actual work async.
-	go p.run()
+func (program *program) Start(s service.Service) error {
+	logwrapper.Log.Info("Service Starting")
+	go program.run()
 	return nil
 }
-func (p *program) run() {
-	web.Launch()
+func (program *program) run() {
+	logwrapper.Log.Info("Launching Webserver")
+	web.LaunchServer()
 }
-func (p *program) Stop(s service.Service) error {
-	// Stop should not block. Return with a few seconds.
+func (program *program) Stop(s service.Service) error {
+	logwrapper.Log.Info("Service Stopping")
 	return nil
 }
 
