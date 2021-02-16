@@ -10,20 +10,19 @@ import (
 	"github.com/kardianos/service"
 )
 
-var logger service.Logger
-
 type program struct{}
 
-func (p *program) Start(s service.Service) error {
-	// Start should not block. Do the actual work async.
-	go p.run()
+func (program *program) Start(s service.Service) error {
+	logwrapper.Log.Info("Service Starting")
+	go program.run()
 	return nil
 }
-func (p *program) run() {
-	web.Launch()
+func (program *program) run() {
+	logwrapper.Log.Info("Launching Webserver")
+	web.LaunchServer()
 }
-func (p *program) Stop(s service.Service) error {
-	// Stop should not block. Return with a few seconds.
+func (program *program) Stop(s service.Service) error {
+	logwrapper.Log.Info("Service Stopping")
 	return nil
 }
 
@@ -50,7 +49,7 @@ func findConfigurationDirectory() string {
 		if os.IsNotExist(error) {
 			statError := os.PathError{
 				Op:   "stat",
-				Path: executableFolder + "|" + goSrcFolder,
+				Path: filepath.FromSlash(executableFolder + "/" + goSrcFolder),
 				Err:  error,
 			}
 			panic(statError)
@@ -62,25 +61,21 @@ func findConfigurationDirectory() string {
 
 func main() {
 	configuration.Initialise(findConfigurationDirectory())
-	logwrapper.Initialise()
+	logwrapper.Initialise(service.Interactive())
 
-	svcConfig := &service.Config{
-		Name:        "Monitoring Agent",
-		DisplayName: "Maintainable Monitoring Agent",
-		Description: "Cross platform monitoring agent written in Go",
+	serviceConfiguration := &service.Config{
+		Name: "Monitoring Agent",
 	}
 
-	prg := &program{}
-	mamasrv, error := service.New(prg, svcConfig)
-	if error != nil {
-		logwrapper.Log.Fatalf(error.Error())
+	program := &program{}
+
+	serverInstance, serverError := service.New(program, serviceConfiguration)
+	if serverError != nil {
+		logwrapper.Log.Fatalf(serverError.Error())
 	}
-	logger, error = mamasrv.Logger(nil)
-	if error != nil {
-		logwrapper.Log.Fatalf(error.Error())
-	}
-	error = mamasrv.Run()
-	if error != nil {
-		logwrapper.Log.Fatalf(error.Error())
+
+	instanceError := serverInstance.Run()
+	if instanceError != nil {
+		logwrapper.Log.Fatalf(instanceError.Error())
 	}
 }
