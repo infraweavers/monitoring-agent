@@ -46,10 +46,10 @@ jobs:
 
       - name: Build Executables
         run: |
-          GOOS=linux GOARCH=386 go build -o ./release/linux-386/monitoring-agent ./go/src/mama/cmd/main.go
-          GOOS=linux GOARCH=amd64 go build -o ./release/linux-amd64/monitoring-agent ./go/src/mama/cmd/main.go
-          GOOS=windows GOARCH=386 go build -o ./release/windows-386/monitoring-agent.exe ./go/src/mama/cmd/main.go
-          GOOS=windows GOARCH=amd64 go build -o ./release/windows-amd64/monitoring-agent.exe ./go/src/mama/cmd/main.go
+          GOOS=linux GOARCH=386 go build -o ./release/linux-386/monitoring-agent ./go/src/mama/main.go
+          GOOS=linux GOARCH=amd64 go build -o ./release/linux-amd64/monitoring-agent ./go/src/mama/main.go
+          GOOS=windows GOARCH=386 go build -o ./release/windows-386/monitoring-agent.exe ./go/src/mama/main.go
+          GOOS=windows GOARCH=amd64 go build -o ./release/windows-amd64/monitoring-agent.exe ./go/src/mama/main.go
         env:
           GOPATH: /home/runner/work/mama/mama/go
       
