@@ -6,7 +6,7 @@ jobs:
   build-release:
     runs-on: ubuntu-latest
     env:
-        GOPATH: /home/runner/work/mama/mama/go
+        GOPATH: ${{ github.workspace }}/go
 
     steps:
       - name: Get current time
@@ -24,7 +24,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          path: go/src/mama
+          path: ${{ github.workspace }}/go/src/mama
 
       - name: Dependencies
         run: |
@@ -36,9 +36,9 @@ jobs:
       - name: Create Release Directories
         run: |
             mkdir release-template
-            cd go/src/mama
-            cp configuration.ini LICENSE server.crt server.key README.md ../../../release-template/
-            cd ../../..
+            cd ${{ github.workspace }}/go/src/mama
+            cp configuration.ini LICENSE server.crt server.key README.md ${{ github.workspace }}/release-template/
+            cd ${{ github.workspace }}
             mkdir release
             cp -r release-template release/linux-386
             cp -r release-template release/linux-amd64
