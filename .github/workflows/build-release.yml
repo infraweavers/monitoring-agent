@@ -7,6 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
         GOPATH: ${{ github.workspace }}/go
+        PROJECT: mama
 
     steps:
       - name: Get current time
@@ -24,7 +25,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          path: ${{ github.workspace }}/go/src/mama
+          path: ${{ github.workspace }}/go/src/${{ env.PROJECT }}
 
       - name: Dependencies
         run: |
@@ -36,7 +37,7 @@ jobs:
       - name: Create Release Directories
         run: |
             mkdir release-template
-            cd ${{ github.workspace }}/go/src/mama
+            cd ${{ github.workspace }}/go/src/${{ env.PROJECT }}
             cp configuration.ini LICENSE server.crt server.key README.md ${{ github.workspace }}/release-template/
             cd ${{ github.workspace }}
             mkdir release
@@ -47,10 +48,10 @@ jobs:
 
       - name: Build Executables
         run: |
-          GOOS=linux GOARCH=386 go build -o ./release/linux-386/monitoring-agent ./go/src/mama/main.go
-          GOOS=linux GOARCH=amd64 go build -o ./release/linux-amd64/monitoring-agent ./go/src/mama/main.go
-          GOOS=windows GOARCH=386 go build -o ./release/windows-386/monitoring-agent.exe ./go/src/mama/main.go
-          GOOS=windows GOARCH=amd64 go build -o ./release/windows-amd64/monitoring-agent.exe ./go/src/mama/main.go
+          GOOS=linux GOARCH=386 go build -o ./release/linux-386/monitoring-agent ${{ github.workspace }}/go/src/${{ env.PROJECT }}
+          GOOS=linux GOARCH=amd64 go build -o ./release/linux-amd64/monitoring-agent ${{ github.workspace }}/go/src/${{ env.PROJECT }}
+          GOOS=windows GOARCH=386 go build -o ./release/windows-386/monitoring-agent.exe ${{ github.workspace }}/go/src/${{ env.PROJECT }}
+          GOOS=windows GOARCH=amd64 go build -o ./release/windows-amd64/monitoring-agent.exe ${{ github.workspace }}/go/src/${{ env.PROJECT }}
 
       - name: Create release
         uses: meeDamian/github-release@2.0
