@@ -71,9 +71,9 @@ func main() {
 	logwrapper.Initialise()
 
 	svcConfig := &service.Config{
-		Name:        "GoServiceExampleSimple",
-		DisplayName: "Go Service Example",
-		Description: "This is an example Go service.",
+		Name:        "Monitoring Agent",
+		DisplayName: "Maintainable Monitoring Agent",
+		Description: "Cross platform monitoring agent written in Go",
 	}
 
 	prg := &program{}
