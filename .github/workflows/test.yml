@@ -1,13 +1,19 @@
 on: [push, pull_request]
-name: Test-Windows
+name: Test
 
 jobs:
   test:
     strategy:
       matrix:
         go-version: [1.15.x]
-        os: [windows-latest]
+        os: [ubuntu-latest, windows-latest]
+
     runs-on: ${{ matrix.os }}
+
+    env:
+        GOPATH: ${{ github.workspace }}/go
+        SRCPATH: ${{ github.workspace }}/go/src/mama
+
     steps:
       - name: Install Go
         uses: actions/setup-go@v2
@@ -17,16 +23,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          path: D:\a\mama\mama\go\src\mama
+          path: ${{env.SRCPATH}}/
 
       - name: Dependencies
         run: |
             go get ./...
-        env:
-          GOPATH: D:\a\mama\mama\go
 
       - name: Test
         run: |
-          go test -cover .\go\src\mama\...
-        env:
-          GOPATH: D:\a\mama\mama\go
+          go test -cover ${{env.SRCPATH}}/...
