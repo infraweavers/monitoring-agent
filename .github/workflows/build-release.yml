@@ -4,7 +4,9 @@ on: [push]
 
 jobs:
   build-release:
+
     runs-on: ubuntu-latest
+
     env:
         GOPATH: ${{ github.workspace }}/go
         SRCPATH: ${{ github.workspace }}/go/src/mama
@@ -27,29 +29,21 @@ jobs:
         with:
           path: ${{ env.SRCPATH }}
 
-      - name: Dependencies
+      - name: Dependencies & Build
         run: |
-            GOOS=linux   GOARCH=386   go get -v ./...
-            GOOS=linux   GOARCH=amd64 go get -v ./...
-            GOOS=windows GOARCH=386   go get -v ./...
-            GOOS=windows GOARCH=amd64 go get -v ./...
-      
-      - name: Create Release Directories
-        run: |
-            mkdir /release-template
-            cp ${{ env.SRCPATH }}/configuration.ini ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ./release-template/
-            mkdir release
-            cp -r release-template release/linux-386
-            cp -r release-template release/linux-amd64
-            cp -r release-template release/windows-386
-            cp -r release-template release/windows-amd64
+          for os in {linux,windows}; do 
+            for arch in {386,amd64}; do 
+              echo "Building $os-$arch"
 
-      - name: Build Executables
-        run: |
-          GOOS=linux   GOARCH=386   go build -o ./release/linux-386/monitoring-agent ${{ env.SRCPATH }}
-          GOOS=linux   GOARCH=amd64 go build -o ./release/linux-amd64/monitoring-agent ${{ env.SRCPATH }}
-          GOOS=windows GOARCH=386   go build -o ./release/windows-386/monitoring-agent.exe ${{ env.SRCPATH }}
-          GOOS=windows GOARCH=amd64 go build -o ./release/windows-amd64/monitoring-agent.exe ${{ env.SRCPATH }}
+              mkdir -p ./release/$os-$arch
+              cp ${{ env.SRCPATH }}/configuration.ini ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ./release/$os-$arch
+
+              GOOS=$os GOARCH=$arch go get ./...
+              GOOS=$os GOARCH=$arch go build -o ./release/$os-$arch/monitoring-agent ${{ env.SRCPATH }}
+
+            done
+          done
+          
 
       - name: Create release
         uses: meeDamian/github-release@2.0
