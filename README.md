@@ -49,11 +49,13 @@ In active development.
 1. Install [GO](https://golang.org/doc/install)
 2. `git clone https://github.com/infraweavers/mama %GOPATH%\src\mama`
 3. `go get .\...`
-4. `go build` 
+4. `go build -o monitoring-agent.exe` 
+5. `.\monitoring-agent.exe`
 
 #### Linux
 
 1. Install [GO](https://golang.org/doc/install)
 2. `git clone https://github.com/infraweavers/mama $GOPATH/src/mama`
 3. `go get ./...
-4. `go build` 
+4. `go build -o monitoring-agent` 
+5. `./monitoring-agent`
