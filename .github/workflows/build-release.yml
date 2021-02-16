@@ -36,7 +36,7 @@ jobs:
               echo "Building $os-$arch"
 
               mkdir -p ./release/$os-$arch
-              cp ${{ env.SRCPATH }}/configuration.ini ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ./release/$os-$arch
+              cp ${{ env.SRCPATH }}/installService.cmd ${{ env.SRCPATH }}/configuration.ini ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ./release/$os-$arch
 
               GOOS=$os GOARCH=$arch go get ./...
               GOOS=$os GOARCH=$arch go build -o ./release/$os-$arch/monitoring-agent ${{ env.SRCPATH }}
