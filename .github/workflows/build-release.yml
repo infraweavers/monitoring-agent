@@ -5,6 +5,9 @@ on: [push]
 jobs:
   build-release:
     runs-on: ubuntu-latest
+    env:
+        GOPATH: ${{ github.workspace }}/go
+
     steps:
       - name: Get current time
         uses: gerred/actions/current-time@master
@@ -21,28 +24,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          path: go/src/mama
+          path: ${{ github.workspace }}/go/src/mama
 
       - name: Dependencies
         run: |
-            go get ./...
-        env:
-          GOPATH: /home/runner/work/mama/mama/go
+            GOOS=linux GOARCH=386 go get -v ./...
+            GOOS=linux GOARCH=amd64 go get -v ./...
+            GOOS=windows GOARCH=386 go get -v ./...
+            GOOS=windows GOARCH=amd64 go get -v ./...
       
       - name: Create Release Directories
         run: |
             mkdir release-template
-            cd go/src/mama
-            cp configuration.ini LICENSE server.crt server.key README.md ../../../release-template/
-            cd ../../..
+            cd ${{ github.workspace }}/go/src/mama
+            cp configuration.ini LICENSE server.crt server.key README.md ${{ github.workspace }}/release-template/
+            cd ${{ github.workspace }}
             mkdir release
             cp -r release-template release/linux-386
             cp -r release-template release/linux-amd64
             cp -r release-template release/windows-386
             cp -r release-template release/windows-amd64
-            
-        env:
-          GOPATH: /home/runner/work/mama/mama/go
 
       - name: Build Executables
         run: |
@@ -50,9 +51,7 @@ jobs:
           GOOS=linux GOARCH=amd64 go build -o ./release/linux-amd64/monitoring-agent ./go/src/mama/main.go
           GOOS=windows GOARCH=386 go build -o ./release/windows-386/monitoring-agent.exe ./go/src/mama/main.go
           GOOS=windows GOARCH=amd64 go build -o ./release/windows-amd64/monitoring-agent.exe ./go/src/mama/main.go
-        env:
-          GOPATH: /home/runner/work/mama/mama/go
-      
+
       - name: Create release
         uses: meeDamian/github-release@2.0
         with:
