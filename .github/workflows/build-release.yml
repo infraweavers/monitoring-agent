@@ -5,6 +5,9 @@ on: [push]
 jobs:
   build-release:
     runs-on: ubuntu-latest
+    env:
+        GOPATH: /home/runner/work/mama/mama/go
+
     steps:
       - name: Get current time
         uses: gerred/actions/current-time@master
@@ -29,8 +32,6 @@ jobs:
             GOOS=linux GOARCH=amd64 go get -v ./...
             GOOS=windows GOARCH=386 go get -v ./...
             GOOS=windows GOARCH=amd64 go get -v ./...
-        env:
-          GOPATH: /home/runner/work/mama/mama/go
       
       - name: Create Release Directories
         run: |
@@ -43,9 +44,6 @@ jobs:
             cp -r release-template release/linux-amd64
             cp -r release-template release/windows-386
             cp -r release-template release/windows-amd64
-            
-        env:
-          GOPATH: /home/runner/work/mama/mama/go
 
       - name: Build Executables
         run: |
@@ -53,9 +51,7 @@ jobs:
           GOOS=linux GOARCH=amd64 go build -o ./release/linux-amd64/monitoring-agent ./go/src/mama/main.go
           GOOS=windows GOARCH=386 go build -o ./release/windows-386/monitoring-agent.exe ./go/src/mama/main.go
           GOOS=windows GOARCH=amd64 go build -o ./release/windows-amd64/monitoring-agent.exe ./go/src/mama/main.go
-        env:
-          GOPATH: /home/runner/work/mama/mama/go
-      
+
       - name: Create release
         uses: meeDamian/github-release@2.0
         with:
