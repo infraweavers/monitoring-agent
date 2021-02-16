@@ -27,15 +27,41 @@ func (p *program) Stop(s service.Service) error {
 	return nil
 }
 
-func main() {
-
+func findConfigurationDirectory() string {
 	executable, error := os.Executable()
 	if error != nil {
 		panic(error)
 	}
-	configurationDirectory := filepath.Dir(executable)
-	configuration.Initialise(configurationDirectory)
 
+	executableFolder := filepath.Dir(executable)
+	goSrcFolder := os.Getenv("GOPATH") + "\\src\\mama\\"
+
+	_, error = os.Stat(executableFolder + "configuration.ini")
+	if error == nil {
+		return executableFolder
+	}
+
+	if os.IsNotExist(error) {
+		_, error = os.Stat(goSrcFolder + "configuration.ini")
+		if error == nil {
+			return goSrcFolder
+		}
+
+		if os.IsNotExist(error) {
+			statError := os.PathError{
+				Op:   "stat",
+				Path: executableFolder + "|" + goSrcFolder,
+				Err:  error,
+			}
+			panic(statError)
+		}
+	}
+
+	panic(error)
+}
+
+func main() {
+	configuration.Initialise(findConfigurationDirectory())
 	logwrapper.Initialise()
 
 	svcConfig := &service.Config{
