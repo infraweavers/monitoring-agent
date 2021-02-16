@@ -11,7 +11,7 @@ import (
 var Log = logging.MustGetLogger("default")
 
 // Initialise Configure the logging
-func Initialise() {
+func Initialise(runningInteractively bool) {
 
 	logFile, logError := os.OpenFile(configuration.Settings.LogFilePath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
 
@@ -21,7 +21,12 @@ func Initialise() {
 		Log.Fatal(logError)
 	}
 
-	logging.SetBackend(logging.NewLogBackend(logFile, "", 0))
+	if runningInteractively {
+		logging.SetBackend(logging.MultiLogger(logging.NewLogBackend(logFile, "", 0), logging.NewLogBackend(os.Stderr, "", 0)))
+	} else {
+		logging.SetBackend(logging.NewLogBackend(logFile, "", 0))
+	}
 
 	Log.Info("Logging Initialised")
+	Log.Infof("Running Interactively: %t", runningInteractively)
 }

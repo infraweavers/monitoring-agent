@@ -10,8 +10,6 @@ import (
 	"github.com/kardianos/service"
 )
 
-var logger service.Logger
-
 type program struct{}
 
 func (p *program) Start(s service.Service) error {
@@ -62,25 +60,21 @@ func findConfigurationDirectory() string {
 
 func main() {
 	configuration.Initialise(findConfigurationDirectory())
-	logwrapper.Initialise()
+	logwrapper.Initialise(service.Interactive())
 
-	svcConfig := &service.Config{
-		Name:        "Monitoring Agent",
-		DisplayName: "Maintainable Monitoring Agent",
-		Description: "Cross platform monitoring agent written in Go",
+	serviceConfiguration := &service.Config{
+		Name: "Monitoring Agent",
 	}
 
-	prg := &program{}
-	mamasrv, error := service.New(prg, svcConfig)
-	if error != nil {
-		logwrapper.Log.Fatalf(error.Error())
+	program := &program{}
+
+	serverInstance, serverError := service.New(program, serviceConfiguration)
+	if serverError != nil {
+		logwrapper.Log.Fatalf(serverError.Error())
 	}
-	logger, error = mamasrv.Logger(nil)
-	if error != nil {
-		logwrapper.Log.Fatalf(error.Error())
-	}
-	error = mamasrv.Run()
-	if error != nil {
-		logwrapper.Log.Fatalf(error.Error())
+
+	instanceError := serverInstance.Run()
+	if instanceError != nil {
+		logwrapper.Log.Fatalf(instanceError.Error())
 	}
 }
