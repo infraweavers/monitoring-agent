@@ -6,7 +6,6 @@ import (
 	"mama/internal/web"
 	"os"
 	"path/filepath"
-	"runtime"
 
 	"github.com/kardianos/service"
 )
@@ -29,10 +28,6 @@ func (p *program) Stop(s service.Service) error {
 }
 
 func findConfigurationDirectory() string {
-	directorySeparator := "/"
-	if runtime.GOOS == "windows" {
-		directorySeparator = "\\"
-	}
 
 	executable, error := os.Executable()
 	if error != nil {
@@ -40,15 +35,14 @@ func findConfigurationDirectory() string {
 	}
 
 	executableFolder := filepath.Dir(executable)
-	goSrcFolder := os.Getenv("GOPATH") + directorySeparator + "src" + directorySeparator + "mama" + directorySeparator
-
-	_, error = os.Stat(executableFolder + "configuration.ini")
+	_, error = os.Stat(filepath.FromSlash(executableFolder + "/configuration.ini"))
 	if error == nil {
 		return executableFolder
 	}
 
 	if os.IsNotExist(error) {
-		_, error = os.Stat(goSrcFolder + "configuration.ini")
+		goSrcFolder := filepath.FromSlash(os.Getenv("GOPATH") + "/src/mama/")
+		_, error = os.Stat(filepath.FromSlash(goSrcFolder + "/configuration.ini"))
 		if error == nil {
 			return goSrcFolder
 		}
