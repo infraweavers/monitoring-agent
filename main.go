@@ -49,7 +49,7 @@ func findConfigurationDirectory() string {
 		if os.IsNotExist(error) {
 			statError := os.PathError{
 				Op:   "stat",
-				Path: executableFolder + "|" + goSrcFolder,
+				Path: filepath.FromSlash(executableFolder + "/" + goSrcFolder),
 				Err:  error,
 			}
 			panic(statError)
