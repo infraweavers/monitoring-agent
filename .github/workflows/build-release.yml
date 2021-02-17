@@ -35,7 +35,7 @@ jobs:
             for arch in {386,amd64}; do 
               echo "Building $os-$arch"
               
-              suffix=$([ "os" == "windows" ] && echo ".exe" || echo "")
+              suffix=$([ "$os" == "windows" ] && echo ".exe" || echo "")
 
               mkdir -p ./release/$os-$arch
               cp ${{ env.SRCPATH }}/installService.cmd ${{ env.SRCPATH }}/configuration.ini ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ./release/$os-$arch
