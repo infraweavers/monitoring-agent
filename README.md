@@ -49,7 +49,7 @@ In active development.
 1. Install [GO](https://golang.org/doc/install)
 2. `git clone https://github.com/infraweavers/mama %GOPATH%\src\mama`
 3. `cd %GOPATH%\src\mama`
-4. `go get .\...`
+4. `go get ...`
 5. `go build -o monitoring-agent.exe` 
 6. `.\monitoring-agent.exe`
 
