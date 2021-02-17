@@ -51,6 +51,11 @@ func runScript(responseWriter http.ResponseWriter, scriptToRun Script) []byte {
 	}()
 
 	output, error := command.CombinedOutput()
+
+	if processKiller.Stop() == false {
+		<-processKiller.C
+	}
+
 	if error != nil {
 		if exitError, ok := error.(*exec.ExitError); ok {
 			exitcode = exitError.ExitCode()
