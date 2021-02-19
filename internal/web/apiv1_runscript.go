@@ -7,6 +7,7 @@ import (
 	"mama/internal/logwrapper"
 	"net/http"
 	"os/exec"
+	"sync"
 	"time"
 )
 
@@ -20,6 +21,28 @@ type Script struct {
 type Result struct {
 	Exitcode int    `json:"exitcode"`
 	Output   string `json:"output"`
+}
+
+type safeCollection struct {
+	collection map[*exec.Cmd]bool
+	mutex      sync.Mutex
+}
+
+var runningProcesses = safeCollection{}
+
+func init() {
+	runningProcesses.collection = make(map[*exec.Cmd]bool)
+}
+
+// KillAllRunningProcs self explanatory
+func KillAllRunningProcs() {
+	logwrapper.Log.Info("Killing all procs")
+	runningProcesses.mutex.Lock()
+	for item := range runningProcesses.collection {
+		logwrapper.Log.Debugf("Killing: %#v", item)
+		item.Process.Kill()
+	}
+	runningProcesses.mutex.Unlock()
 }
 
 func processResult(responseWriter http.ResponseWriter, exitCode int, output string) []byte {
@@ -39,8 +62,14 @@ func processResult(responseWriter http.ResponseWriter, exitCode int, output stri
 }
 
 func runScript(responseWriter http.ResponseWriter, scriptToRun Script) []byte {
+
 	var exitcode int = 0
+
 	command := exec.Command(scriptToRun.Path, scriptToRun.Args...)
+
+	runningProcesses.mutex.Lock()
+	runningProcesses.collection[command] = true
+	runningProcesses.mutex.Unlock()
 
 	processKiller := time.NewTimer(configuration.Settings.RequestTimeout)
 
@@ -55,6 +84,10 @@ func runScript(responseWriter http.ResponseWriter, scriptToRun Script) []byte {
 	if processKiller.Stop() == false {
 		<-processKiller.C
 	}
+
+	runningProcesses.mutex.Lock()
+	delete(runningProcesses.collection, command)
+	runningProcesses.mutex.Unlock()
 
 	if error != nil {
 		if exitError, ok := error.(*exec.ExitError); ok {

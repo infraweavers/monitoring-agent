@@ -22,6 +22,7 @@ func (program *program) run() {
 	web.LaunchServer()
 }
 func (program *program) Stop(s service.Service) error {
+	web.KillAllRunningProcs()
 	logwrapper.Log.Info("Service Stopping")
 	return nil
 }
