@@ -71,13 +71,10 @@ func runScript(responseWriter http.ResponseWriter, scriptToRun Script) []byte {
 	runningProcesses.collection[command] = true
 	runningProcesses.mutex.Unlock()
 
-	processKiller := time.NewTimer(configuration.Settings.RequestTimeout)
-
-	go func() {
-		<-processKiller.C
+	processKiller := time.AfterFunc(configuration.Settings.RequestTimeout, func() {
 		command.Process.Kill()
 		logwrapper.Log.Warningf("Request Timed Out: '%s' %#v", scriptToRun.Path, scriptToRun.Args)
-	}()
+	})
 
 	output, error := command.CombinedOutput()
 	processKiller.Stop()
