@@ -13,10 +13,15 @@ MAMA aims to be a flexible, easy to maintain monitoring agent that works cross p
 
 ### Example of current usage:
 
+Linux:
 ```
-$ curl -k -H "Content-Type: application/json" --data '{ "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "args": [ "-command", "write-host \"Hello, World\"" ] }' https://test:secret@10.2.16.142:9000/v1/runscript
+$ curl -k -H "Content-Type: application/json" --data '{ "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "args": [ "-command", "write-host \"Hello, World\"" ] }' https://test:secret@127.0.0.1:9000/v1/runscript
 {"exitcode":0,"output":"Hello, World\n"}
+```
 
+Windows:
+```
+curl -k -H "Content-Type: application/json" --data "{ ""path"": ""C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"", ""args"": [""-Command"", ""Write-Host 1""]  }" https://test:secret@127.0.0.1:9000/v1/runscript
 ```
 
 ### Status
