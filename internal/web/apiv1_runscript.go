@@ -80,10 +80,7 @@ func runScript(responseWriter http.ResponseWriter, scriptToRun Script) []byte {
 	}()
 
 	output, error := command.CombinedOutput()
-
-	if processKiller.Stop() == false {
-		<-processKiller.C
-	}
+	processKiller.Stop()
 
 	runningProcesses.mutex.Lock()
 	delete(runningProcesses.collection, command)
