@@ -2,6 +2,7 @@ package configuration
 
 import (
 	"path/filepath"
+	"strconv"
 	"time"
 
 	ini "github.com/vaughan0/go-ini"
@@ -18,6 +19,7 @@ type SettingsValues struct {
 	LogFilePath            string
 	LogLevel               string
 	RequestTimeout         time.Duration
+	LoadPprof              bool
 }
 
 // Settings is the loaded/updated settings from the configuration file
@@ -54,6 +56,15 @@ func Initialise(configurationDirectory string) {
 	}
 
 	Settings.RequestTimeout = durationValue
+
+	loadPprofValue := getIniValueOrPanic(iniFile, "Server", "LoadPprof")
+	boolValue, parseError := strconv.ParseBool(loadPprofValue)
+
+	if parseError != nil {
+		panic(parseError)
+	}
+
+	Settings.LoadPprof = boolValue
 }
 
 func getIniValueOrPanic(input ini.File, group string, key string) string {

@@ -1,7 +1,9 @@
 package web
 
 import (
+	"mama/internal/configuration"
 	"net/http"
+	_ "net/http/pprof"
 
 	"github.com/gorilla/mux"
 )
@@ -18,6 +20,10 @@ func NewRouter() *mux.Router {
 			Path(route.Pattern).
 			Name(route.Name).
 			Handler(route.HandlerFunc)
+	}
+
+	if configuration.Settings.LoadPprof {
+		router.PathPrefix("/debug/pprof").Handler(http.DefaultServeMux)
 	}
 	router.Use(BasicAuth)
 	return router
