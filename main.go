@@ -41,16 +41,17 @@ func configurationDirectory() string {
 	}
 
 	if os.IsNotExist(error) {
-		goSrcFolder := filepath.FromSlash(os.Getenv("GOPATH") + "/src/mama/")
-		_, error = os.Stat(filepath.FromSlash(goSrcFolder + "/configuration.ini"))
+
+		workingDirectory, error := os.Getwd()
+		_, error = os.Stat(filepath.FromSlash(workingDirectory + "/configuration.ini"))
 		if error == nil {
-			return goSrcFolder
+			return workingDirectory
 		}
 
 		if os.IsNotExist(error) {
 			statError := os.PathError{
 				Op:   "stat",
-				Path: filepath.FromSlash(executableFolder + "/" + goSrcFolder),
+				Path: filepath.FromSlash(workingDirectory + "/configuration.ini"),
 				Err:  error,
 			}
 			panic(statError)
