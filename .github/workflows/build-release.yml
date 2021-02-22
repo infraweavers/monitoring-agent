@@ -31,7 +31,7 @@ jobs:
 
       - name: Dependencies & Build
         run: |
-          for os in {linux,windows}; do 
+          for os in {linux,windows,freebsd}; do 
             for arch in {386,amd64}; do 
               echo "Building $os-$arch"
               
