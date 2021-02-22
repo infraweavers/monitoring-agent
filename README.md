@@ -33,13 +33,8 @@ In active development.
 * Execute a passed in script
 * Continuous Integration/Delivery
 
-### Planned Features (active development)
-
-* Tests
-
 ### Future Planned Features
 
-* Configuration mechanism
 * Windows service
 * Windows MSI
 * Script signing enforcement
