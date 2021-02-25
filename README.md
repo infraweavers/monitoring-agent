@@ -9,7 +9,7 @@
 
 ### About
 
-MAMA aims to be a flexible, easy to maintain monitoring agent that works cross platform. It is currently in active development and an official release candidate should be available soon.
+Aiming to be an easy to maintain monitoring agent that works cross platform, it is currently in active development.
 
 ### Example of current usage:
 
