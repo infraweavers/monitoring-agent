@@ -1,5 +1,5 @@
-<h1 align="center">MAMA</h1>
-<h3 align="center">MAintainable Monitoring Agent</h3>
+<h1 align="center">Monitoring Agent</h1>
+<h3 align="center">aka "MAMA" the MAintainable Monitoring Agent</h3>
 
 [![Build and Release](https://github.com/infraweavers/mama/workflows/Build%20and%20Release/badge.svg)](https://github.com/infraweavers/mama/actions?query=workflow%3A%22Build+and+Release%22)
 [![Tests Status](https://github.com/infraweavers/mama/workflows/Test-Ubuntu/badge.svg)](https://github.com/infraweavers/mama/actions?query=workflow:Test-Ubuntu)
