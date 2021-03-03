@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+        GOPATH: ${{ github.workspace }}/go
         SRCPATH: ${{ github.workspace }}/go/src/mama
 
     steps:
