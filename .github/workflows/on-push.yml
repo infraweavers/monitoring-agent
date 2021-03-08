@@ -47,10 +47,6 @@ jobs:
         SRCPATH: ${{ github.workspace }}/go/src/mama
 
     steps:
-
-      - name: Get current time
-        uses: gerred/actions/current-time@master
-        id: current-time
         
       - uses: benjlevesque/short-sha@v1.2
         id: short-sha
