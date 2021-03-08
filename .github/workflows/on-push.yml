@@ -11,21 +11,23 @@ jobs:
 
       runs-on: ubuntu-latest
 
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.go-version }}
-            
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          path: ${{ env.SRCPATH }}
-
-      - name: Run Tests
-        run: |
-          pushd ${{ env.SRCPATH }}
-          GO111MODULE=on GOOS=$os GOARCH=$arch go get ./...
-          GO111MODULE=on go test -cover ./...
+      steps:
+      
+        - name: Install Go
+          uses: actions/setup-go@v2
+          with:
+            go-version: ${{ matrix.go-version }}
+              
+        - name: Checkout code
+          uses: actions/checkout@v2
+          with:
+            path: ${{ env.SRCPATH }}
+  
+        - name: Run Tests
+          run: |
+            pushd ${{ env.SRCPATH }}
+            GO111MODULE=on GOOS=$os GOARCH=$arch go get ./...
+            GO111MODULE=on go test -cover ./...
 
   build-release:
     strategy:
