@@ -1,4 +1,4 @@
-name: Build and Release
+name: Test, Build and Release
 
 on: [push]
 
@@ -37,6 +37,11 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: ${{ env.SRCPATH }}
+
+      - name: Run Tests
+        run: |
+          pushd ${{ env.SRCPATH }}
+          GO111MODULE=on go test -cover ./...
 
       - name: Dependencies & Build
         run: |
