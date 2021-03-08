@@ -3,7 +3,13 @@ name: Build and Release
 on: [push]
 
 jobs:
+
   build-release:
+    strategy:
+      matrix:
+        go-version: [1.15.x, 1.16.x]
+        os: [linux, windows, freebsd]
+        arch: [386, amd64]
 
     runs-on: ubuntu-latest
 
@@ -12,10 +18,11 @@ jobs:
         SRCPATH: ${{ github.workspace }}/go/src/mama
 
     steps:
+
       - name: Get current time
         uses: gerred/actions/current-time@master
         id: current-time
-
+        
       - uses: benjlevesque/short-sha@v1.2
         id: short-sha
         with:
@@ -23,6 +30,8 @@ jobs:
 
       - name: Install Go
         uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go-version }}
             
       - name: Checkout code
         uses: actions/checkout@v2
@@ -31,36 +40,29 @@ jobs:
 
       - name: Dependencies & Build
         run: |
-          for os in {linux,windows,freebsd}; do 
-            for arch in {386,amd64}; do 
-              echo "Building $os-$arch"
-              
-              suffix=$([ "$os" == "windows" ] && echo ".exe" || echo "")
+          os=${{ matrix.os }}
+          arch=${{ matrix.arch }}
+          goversion=${{ matrix.go-version }}
 
-              mkdir -p ./release/$os-$arch
-              cp ${{ env.SRCPATH }}/installService.cmd ${{ env.SRCPATH }}/configuration.ini ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ./release/$os-$arch
-
-              GOOS=$os GOARCH=$arch go get ./...
-              GOOS=$os GOARCH=$arch go build -o ./release/$os-$arch/monitoring-agent$suffix ${{ env.SRCPATH }}
-
-            done
-          done
+          echo "Building $os-$arch-$goversion"
           
+          suffix=$([ "$os" == "windows" ] && echo ".exe" || echo "")
 
-      - name: Create release
-        uses: meeDamian/github-release@2.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          name: "build-${{ steps.current-time.outputs.time }}-${{ steps.short-sha.outputs.sha }}"
-          tag: "build-${{ steps.short-sha.outputs.sha }}"
-          draft: true
-          prerelease: true
-          gzip: folders
-          files: >
-            release/*
+          mkdir -p ./release/$os-$arch-$goversion
+          cp ${{ env.SRCPATH }}/installService.cmd ${{ env.SRCPATH }}/configuration.ini ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ./release/$os-$arch-$goversion
           
-      - uses: dev-drprasad/delete-older-releases@v0.1.0
+          pushd ${{ env.SRCPATH }}
+          
+          GO111MODULE=on GOOS=$os GOARCH=$arch go get ./...
+          GO111MODULE=on GOOS=$os GOARCH=$arch go build -o ${{ env.SRCPATH }}/monitoring-agent$suffix
+
+          popd
+
+          cp ${{ env.SRCPATH }}/monitoring-agent$suffix ./release/$os-$arch-$goversion/monitoring-agent$suffix
+      
+      - name: upload builds
+        uses: actions/upload-artifact@v2
         with:
-          keep_latest: 16
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: "${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}"
+          path: release/
+
