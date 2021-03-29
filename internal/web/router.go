@@ -3,6 +3,8 @@ package web
 import (
 	"mama/internal/configuration"
 	"net/http"
+
+	// Blank import of pprof for side effect of loading its handlers
 	_ "net/http/pprof"
 
 	"github.com/gorilla/mux"
