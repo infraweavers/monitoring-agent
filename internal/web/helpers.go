@@ -22,12 +22,12 @@ type Result struct {
 	Output   string `json:"output"`
 }
 
-type SafeCollection struct {
+type safeCollection struct {
 	collection map[*exec.Cmd]bool
 	mutex      sync.Mutex
 }
 
-var runningProcesses = SafeCollection{}
+var runningProcesses = safeCollection{}
 
 func init() {
 	runningProcesses.collection = make(map[*exec.Cmd]bool)
