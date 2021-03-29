@@ -13,13 +13,13 @@ type ScriptToRun struct {
 	Args []string
 }
 
-type TestCase struct {
+type RunScriptTestCase struct {
 	Path     string
 	Args     []string
 	Expected string
 }
 
-var testCases = map[string]TestCase{
+var testCases = map[string]RunScriptTestCase{
 	"linux": {
 		Path:     "sh",
 		Args:     []string{"-c", "uname"},
