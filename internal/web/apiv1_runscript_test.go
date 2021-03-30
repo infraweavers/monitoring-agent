@@ -8,27 +8,29 @@ import (
 	"testing"
 )
 
-type ScriptToRun struct {
-	Path string
-	Args []string
-}
-
 type RunScriptTestCase struct {
-	Path     string
-	Args     []string
-	Expected string
+	ScriptToRun
+	ExpectedResult
 }
 
-var testCases = map[string]RunScriptTestCase{
+var scriptToRunTestCases = map[string]RunScriptTestCase{
 	"linux": {
-		Path:     "sh",
-		Args:     []string{"-c", "uname"},
-		Expected: `{"exitcode":0,"output":"Linux\n"}`,
+		ScriptToRun{
+			Path: "sh",
+			Args: []string{"-c", "uname"},
+		},
+		ExpectedResult{
+			Output: `{"exitcode":0,"output":"Linux\n"}`,
+		},
 	},
 	"windows": {
-		Path:     `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
-		Args:     []string{"-command", `write-host "Hello, World"`},
-		Expected: `{"exitcode":0,"output":"Hello, World\n"}`,
+		ScriptToRun{
+			Path: `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
+			Args: []string{"-command", `write-host "Hello, World"`},
+		},
+		ExpectedResult{
+			Output: `{"exitcode":0,"output":"Hello, World\n"}`,
+		},
 	},
 }
 
@@ -38,13 +40,7 @@ func TestRunscriptApiHandler(t *testing.T) {
 	defer TestTeardown()
 
 	t.Run("Runs supplied script, returns HTTP status 200 and expected script output", func(t *testing.T) {
-		testCase := testCases[runtime.GOOS]
-		var testScript = ScriptToRun{
-			Path: testCase.Path,
-			Args: testCase.Args,
-		}
-
-		jsonBody, err := json.Marshal(testScript)
+		jsonBody, err := json.Marshal(scriptToRunTestCases[runtime.GOOS].ScriptToRun)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -61,8 +57,8 @@ func TestRunscriptApiHandler(t *testing.T) {
 			t.Errorf("Test Failed: Expected: %d, Got: %d", http.StatusOK, output.ResponseStatus)
 		}
 
-		if output.ResponseBody != testCase.Expected {
-			t.Errorf("Test Failed: Expected: %s, Got: %s", testCase.Expected, output.ResponseBody)
+		if output.ResponseBody != scriptToRunTestCases[runtime.GOOS].ExpectedResult.Output {
+			t.Errorf("Test Failed: Expected: %s, Got: %s", scriptToRunTestCases[runtime.GOOS].ExpectedResult.Output, output.ResponseBody)
 		}
 	})
 

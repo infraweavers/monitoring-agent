@@ -10,6 +10,19 @@ import (
 
 var testServer *httptest.Server
 
+type StdIn struct {
+	StandardInput string
+}
+
+type ExpectedResult struct {
+	Output string
+}
+
+type ScriptToRun struct {
+	Path string
+	Args []string
+}
+
 // TestCredential is a struct for use in setting up test cases
 type TestCredential struct {
 	Username string

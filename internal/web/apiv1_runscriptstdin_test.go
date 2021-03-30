@@ -8,17 +8,9 @@ import (
 	"testing"
 )
 
-type StdIn struct {
-	StandardInput string
-}
-
 type ScriptAsStdInToRun struct {
 	ScriptToRun
 	StdIn
-}
-
-type ExpectedResult struct {
-	Output string
 }
 
 type RunScriptStdInTestCase struct {
@@ -80,8 +72,8 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 			t.Errorf("Test Failed: Expected: %d, Got: %d", http.StatusOK, output.ResponseStatus)
 		}
 
-		if output.ResponseBody != testCase.Expected {
-			t.Errorf("Test Failed: Expected: %s, Got: %s", testCase.Expected, output.ResponseBody)
+		if output.ResponseBody != runScriptStdinTestCases[runtime.GOOS].ExpectedResult.Output {
+			t.Errorf("Test Failed: Expected: %s, Got: %s", runScriptStdinTestCases[runtime.GOOS].ExpectedResult.Output, output.ResponseBody)
 		}
 	})
 
