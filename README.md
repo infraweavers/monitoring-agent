@@ -30,10 +30,10 @@ In active development.
 
 * Execute a passed in script
 * Continuous Integration/Delivery
+* Windows service
 
 ### Future Planned Features
 
-* Windows service
 * Windows MSI
 * Script signing enforcement
 * `systemd` service
