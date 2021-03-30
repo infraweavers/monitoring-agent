@@ -11,7 +11,7 @@ import (
 var testServer *httptest.Server
 
 type StdIn struct {
-	StandardInput string
+	StdIn string
 }
 
 type ExpectedResult struct {

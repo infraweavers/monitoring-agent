@@ -26,7 +26,7 @@ var runScriptStdinTestCases = map[string]RunScriptStdInTestCase{
 				Args: []string{"-s"},
 			},
 			StdIn{
-				StandardInput: "uname",
+				StdIn: "uname",
 			},
 		},
 		ExpectedResult{
@@ -40,7 +40,7 @@ var runScriptStdinTestCases = map[string]RunScriptStdInTestCase{
 				Args: []string{"-command", "-"},
 			},
 			StdIn{
-				StandardInput: `Write-Host "Hello-World"`,
+				StdIn: `Write-Host "Hello, World"`,
 			},
 		},
 		ExpectedResult{
