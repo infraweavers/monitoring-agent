@@ -30,7 +30,8 @@ var runScriptStdinTestCases = map[string]RunScriptStdInTestCase{
 	},
 	"windows": {
 		Path:     `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
-		Args:     []string{"-command", `write-host "Hello, World"`},
+		Args:     []string{"-command", "-"},
+		StdIn:    `Write-Host "Hello-World"`,
 		Expected: `{"exitcode":0,"output":"Hello, World\n"}`,
 	},
 }
