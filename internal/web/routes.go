@@ -20,5 +20,7 @@ var declaredRoutes = routes{
 	route{"apiv1IndexGet", "GET", "/v1", APIV1HomeGetHandler},
 	route{"apiv1RunscriptGet", "GET", "/v1/runscript", APIV1RunscriptGetHandler},
 	route{"apiv1RunscriptPost", "POST", "/v1/runscript", APIV1RunscriptPostHandler},
+	route{"apiv1RunscriptstdinGet", "GET", "/v1/runscriptstdin", APIV1RunscriptstdinGetHandler},
+	route{"apiv1RunscriptstdinPost", "POST", "/v1/runscriptstdin", APIV1RunscriptstdinPostHandler},
 	route{"apiv1InfoGet", "GET", "/v1/info", APIV1InfoGetHandler},
 }

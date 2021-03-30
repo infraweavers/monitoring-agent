@@ -6,14 +6,16 @@ import (
 	"mama/internal/logwrapper"
 	"net/http"
 	"os/exec"
+	"strings"
 	"sync"
 	"time"
 )
 
 // Script represents an object submitted to the runscript endpoint
 type Script struct {
-	Path string   `json:"path"`
-	Args []string `json:"args"`
+	Path  string   `json:"path"`
+	Args  []string `json:"args"`
+	StdIn string
 }
 
 // Result represents the object returned from the runscript endpoint
@@ -63,8 +65,11 @@ func processResult(responseWriter http.ResponseWriter, exitCode int, output stri
 func runScript(responseWriter http.ResponseWriter, scriptToRun Script) []byte {
 
 	var exitcode int = 0
-
 	command := exec.Command(scriptToRun.Path, scriptToRun.Args...)
+
+	if scriptToRun.StdIn != "" {
+		command.Stdin = strings.NewReader(scriptToRun.StdIn)
+	}
 
 	runningProcesses.mutex.Lock()
 	runningProcesses.collection[command] = true
