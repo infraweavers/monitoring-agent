@@ -18,7 +18,7 @@ type RunScriptStdInTestCase struct {
 	ExpectedResult
 }
 
-var runScriptStdinTestCases = map[string]RunScriptStdInTestCase{
+var osSpecificRunScriptStdinTestCases = map[string]RunScriptStdInTestCase{
 	"linux": {
 		ScriptAsStdInToRun{
 			ScriptToRun{
@@ -55,7 +55,7 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 	defer TestTeardown()
 
 	t.Run("Runs supplied script, returns HTTP status 200 and expected script output", func(t *testing.T) {
-		jsonBody, err := json.Marshal(runScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun)
+		jsonBody, err := json.Marshal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -72,8 +72,8 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 			t.Errorf("Test Failed: Expected: %d, Got: %d", http.StatusOK, output.ResponseStatus)
 		}
 
-		if output.ResponseBody != runScriptStdinTestCases[runtime.GOOS].ExpectedResult.Output {
-			t.Errorf("Test Failed: Expected: %s, Got: %s", runScriptStdinTestCases[runtime.GOOS].ExpectedResult.Output, output.ResponseBody)
+		if output.ResponseBody != osSpecificRunScriptStdinTestCases[runtime.GOOS].ExpectedResult.Output {
+			t.Errorf("Test Failed: Expected: %s, Got: %s", osSpecificRunScriptStdinTestCases[runtime.GOOS].ExpectedResult.Output, output.ResponseBody)
 		}
 	})
 

@@ -13,7 +13,7 @@ type RunScriptTestCase struct {
 	ExpectedResult
 }
 
-var scriptToRunTestCases = map[string]RunScriptTestCase{
+var osSpecificRunScriptTestCases = map[string]RunScriptTestCase{
 	"linux": {
 		ScriptToRun{
 			Path: "sh",
@@ -40,7 +40,7 @@ func TestRunscriptApiHandler(t *testing.T) {
 	defer TestTeardown()
 
 	t.Run("Runs supplied script, returns HTTP status 200 and expected script output", func(t *testing.T) {
-		jsonBody, err := json.Marshal(scriptToRunTestCases[runtime.GOOS].ScriptToRun)
+		jsonBody, err := json.Marshal(osSpecificRunScriptTestCases[runtime.GOOS].ScriptToRun)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -57,8 +57,8 @@ func TestRunscriptApiHandler(t *testing.T) {
 			t.Errorf("Test Failed: Expected: %d, Got: %d", http.StatusOK, output.ResponseStatus)
 		}
 
-		if output.ResponseBody != scriptToRunTestCases[runtime.GOOS].ExpectedResult.Output {
-			t.Errorf("Test Failed: Expected: %s, Got: %s", scriptToRunTestCases[runtime.GOOS].ExpectedResult.Output, output.ResponseBody)
+		if output.ResponseBody != osSpecificRunScriptTestCases[runtime.GOOS].ExpectedResult.Output {
+			t.Errorf("Test Failed: Expected: %s, Got: %s", osSpecificRunScriptTestCases[runtime.GOOS].ExpectedResult.Output, output.ResponseBody)
 		}
 	})
 
