@@ -16,7 +16,7 @@ func APIV1RunscriptGetHandler(responseWriter http.ResponseWriter, request *http.
 func APIV1RunscriptPostHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	responseWriter.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
-	script, error := JsonDecodeScript(responseWriter, request)
+	script, error := jsonDecodeScript(responseWriter, request)
 	if error != nil {
 		return
 	}
