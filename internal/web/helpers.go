@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"mama/internal/configuration"
 	"mama/internal/logwrapper"
 	"net/http"
@@ -44,6 +45,20 @@ func KillAllRunningProcs() {
 		item.Process.Kill()
 	}
 	runningProcesses.mutex.Unlock()
+}
+
+func JsonDecodeScript(responseWriter http.ResponseWriter, request *http.Request) (Script, error) {
+	dec := json.NewDecoder(request.Body)
+	dec.DisallowUnknownFields()
+	var script Script
+	error := dec.Decode(&script)
+	if error != nil {
+		responseWriter.WriteHeader(http.StatusBadRequest)
+		responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request", http.StatusBadRequest)))
+		return script, error
+	}
+
+	return script, nil
 }
 
 func processResult(responseWriter http.ResponseWriter, exitCode int, output string) []byte {

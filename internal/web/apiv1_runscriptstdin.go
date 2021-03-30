@@ -1,7 +1,6 @@
 package web
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -17,13 +16,8 @@ func APIV1RunscriptstdinGetHandler(responseWriter http.ResponseWriter, request *
 func APIV1RunscriptstdinPostHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	responseWriter.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
-	dec := json.NewDecoder(request.Body)
-	dec.DisallowUnknownFields()
-	var script Script
-	error := dec.Decode(&script)
+	script, error := JsonDecodeScript(responseWriter, request)
 	if error != nil {
-		responseWriter.WriteHeader(http.StatusBadRequest)
-		responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request", http.StatusBadRequest)))
 		return
 	}
 
