@@ -27,5 +27,11 @@ func APIV1RunscriptstdinPostHandler(responseWriter http.ResponseWriter, request 
 		return
 	}
 
+	if script.StdIn == "" {
+		responseWriter.WriteHeader(http.StatusBadRequest)
+		responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - This endpoint requires stdin", http.StatusBadRequest)))
+		return
+	}
+
 	responseWriter.Write(runScript(responseWriter, script))
 }
