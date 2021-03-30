@@ -42,7 +42,7 @@ func configurationDirectory() string {
 
 	if os.IsNotExist(error) {
 
-		workingDirectory, error := os.Getwd()
+		workingDirectory, _ := os.Getwd()
 		_, error = os.Stat(filepath.FromSlash(workingDirectory + "/configuration.ini"))
 		if error == nil {
 			return workingDirectory
