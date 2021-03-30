@@ -8,31 +8,52 @@ import (
 	"testing"
 )
 
+type StdIn struct {
+	StandardInput string
+}
+
 type ScriptAsStdInToRun struct {
-	Path  string
-	Args  []string
-	StdIn string
+	ScriptToRun
+	StdIn
+}
+
+type ExpectedResult struct {
+	Output string
 }
 
 type RunScriptStdInTestCase struct {
-	Path     string
-	Args     []string
-	StdIn    string
-	Expected string
+	ScriptAsStdInToRun
+	ExpectedResult
 }
 
 var runScriptStdinTestCases = map[string]RunScriptStdInTestCase{
 	"linux": {
-		Path:     "sh",
-		Args:     []string{"-s"},
-		StdIn:    "uname",
-		Expected: `{"exitcode":0,"output":"Linux\n"}`,
+		ScriptAsStdInToRun{
+			ScriptToRun{
+				Path: "sh",
+				Args: []string{"-s"},
+			},
+			StdIn{
+				StandardInput: "uname",
+			},
+		},
+		ExpectedResult{
+			Output: `{"exitcode":0,"output":"Linux\n"}`,
+		},
 	},
 	"windows": {
-		Path:     `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
-		Args:     []string{"-command", "-"},
-		StdIn:    `Write-Host "Hello-World"`,
-		Expected: `{"exitcode":0,"output":"Hello, World\n"}`,
+		ScriptAsStdInToRun{
+			ScriptToRun{
+				Path: `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
+				Args: []string{"-command", "-"},
+			},
+			StdIn{
+				StandardInput: `Write-Host "Hello-World"`,
+			},
+		},
+		ExpectedResult{
+			Output: `{"exitcode":0,"output":"Hello, World\n"}`,
+		},
 	},
 }
 
@@ -42,14 +63,7 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 	defer TestTeardown()
 
 	t.Run("Runs supplied script, returns HTTP status 200 and expected script output", func(t *testing.T) {
-		testCase := runScriptStdinTestCases[runtime.GOOS]
-		var testScript = ScriptAsStdInToRun{
-			Path:  testCase.Path,
-			Args:  testCase.Args,
-			StdIn: testCase.StdIn,
-		}
-
-		jsonBody, err := json.Marshal(testScript)
+		jsonBody, err := json.Marshal(runScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun)
 		if err != nil {
 			t.Fatal(err)
 		}
