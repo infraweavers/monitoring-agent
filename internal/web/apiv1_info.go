@@ -20,6 +20,5 @@ func APIV1InfoGetHandler(reponseWriter http.ResponseWriter, request *http.Reques
 	runtime.ReadMemStats(&response.Memory)
 
 	resultJSON, _ := json.Marshal(response)
-
 	reponseWriter.Write(resultJSON)
 }

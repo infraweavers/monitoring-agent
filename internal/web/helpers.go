@@ -25,6 +25,15 @@ type Result struct {
 	Output   string `json:"output"`
 }
 
+type endpointDescription struct {
+	Endpoint        string `json:"endpoint"`
+	Description     string `json:"description"`
+	MandatoryFields string `json:"mandatoryfields"`
+	OptionalFields  string `json:"optionalfields"`
+	ExampleRequest  string `json:"exampleRequest"`
+	ExampleResponse string `json:"exampleResponse"`
+}
+
 type safeCollection struct {
 	collection map[*exec.Cmd]bool
 	mutex      sync.Mutex
@@ -47,8 +56,7 @@ func KillAllRunningProcs() {
 	runningProcesses.mutex.Unlock()
 }
 
-// JsonDecodeScript when given a http.Request will attempt to decode the JSON body into a Script struct
-func JsonDecodeScript(responseWriter http.ResponseWriter, request *http.Request) (Script, error) {
+func jsonDecodeScript(responseWriter http.ResponseWriter, request *http.Request) (Script, error) {
 	dec := json.NewDecoder(request.Body)
 	dec.DisallowUnknownFields()
 	var script Script
