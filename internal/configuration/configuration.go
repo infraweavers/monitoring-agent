@@ -67,7 +67,7 @@ func Initialise(configurationDirectory string) {
 
 	keyringFileBuffer, _ := os.Open(getIniValueOrPanic(iniFile, "Server", "PublicKeyRingFile"))
 	defer keyringFileBuffer.Close()
-	entityList, _ := openpgp.ReadKeyRing(keyringFileBuffer)
+	entityList, _ := openpgp.ReadArmoredKeyRing(keyringFileBuffer)
 	Settings.PublicKeyRing = entityList
 }
 

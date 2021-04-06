@@ -127,9 +127,11 @@ func verifySignature(stdin string, signature string) bool {
 
 	stdInReader := strings.NewReader(stdin)
 	signatureReader := strings.NewReader(signature)
+
 	signer, error := openpgp.CheckDetachedSignature(configuration.Settings.PublicKeyRing, stdInReader, signatureReader)
 	if signer != nil && error != nil {
 		return true
 	}
+	logwrapper.Log.Debugf("Signature Verification Error: %v", error)
 	return false
 }
