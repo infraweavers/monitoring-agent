@@ -1,9 +1,12 @@
 package configuration
 
 import (
+	"os"
 	"path/filepath"
 	"strconv"
 	"time"
+
+	"golang.org/x/crypto/openpgp"
 
 	ini "github.com/vaughan0/go-ini"
 )
@@ -21,6 +24,7 @@ type SettingsValues struct {
 	RequestTimeout         time.Duration
 	LoadPprof              bool
 	SignedScriptsOnly      bool
+	PublicKeyRing          openpgp.EntityList
 }
 
 // Settings is the loaded/updated settings from the configuration file
@@ -60,6 +64,11 @@ func Initialise(configurationDirectory string) {
 
 	Settings.LoadPprof = getIniBoolOrPanic(iniFile, "Server", "LoadPprof")
 	Settings.SignedScriptsOnly = getIniBoolOrPanic(iniFile, "Server", "SignedScriptsOnly")
+
+	keyringFileBuffer, _ := os.Open(getIniValueOrPanic(iniFile, "Server", "PublicKeyRingFile"))
+	defer keyringFileBuffer.Close()
+	entityList, _ := openpgp.ReadKeyRing(keyringFileBuffer)
+	Settings.PublicKeyRing = entityList
 }
 
 func getIniValueOrPanic(input ini.File, group string, key string) string {

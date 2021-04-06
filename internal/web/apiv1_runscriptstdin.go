@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"mama/internal/configuration"
+	"mama/internal/logwrapper"
 	"net/http"
 )
 
@@ -33,15 +34,24 @@ func APIV1RunscriptstdinPostHandler(responseWriter http.ResponseWriter, request 
 		return
 	}
 
-	if configuration.Settings.SignedScriptsOnly && script.Signature == "" {
-		responseWriter.WriteHeader(http.StatusBadRequest)
-		responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Only signed scripts can be executed", http.StatusBadRequest)))
-		return
+	if configuration.Settings.SignedScriptsOnly {
+		if script.Signature == "" {
+			responseWriter.WriteHeader(http.StatusBadRequest)
+			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Only signed scripts can be executed", http.StatusBadRequest)))
+			return
+		}
+		if verifySignature(script.StdIn, script.Signature) == false {
+			responseWriter.WriteHeader(http.StatusBadRequest)
+			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Signature not valid", http.StatusBadRequest)))
+			logwrapper.Log.Errorf("Attempt to execute script with invalid signature")
+			return
+		}
 	}
 
 	if script.StdIn == "" {
 		responseWriter.WriteHeader(http.StatusBadRequest)
 		responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - This endpoint requires stdin", http.StatusBadRequest)))
+		logwrapper.Log.Errorf("Attempt to execute stdin without stdin in the request")
 		return
 	}
 

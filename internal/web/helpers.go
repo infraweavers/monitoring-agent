@@ -10,6 +10,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"golang.org/x/crypto/openpgp"
 )
 
 // Script represents an object submitted to the runscript endpoint
@@ -119,4 +121,15 @@ func runScript(responseWriter http.ResponseWriter, scriptToRun Script) []byte {
 	}
 
 	return processResult(responseWriter, exitcode, string(output))
+}
+
+func verifySignature(stdin string, signature string) bool {
+
+	stdInReader := strings.NewReader(stdin)
+	signatureReader := strings.NewReader(signature)
+	signer, error := openpgp.CheckDetachedSignature(configuration.Settings.PublicKeyRing, stdInReader, signatureReader)
+	if signer != nil && error != nil {
+		return true
+	}
+	return false
 }
