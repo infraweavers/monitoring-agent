@@ -20,6 +20,7 @@ type SettingsValues struct {
 	LogLevel               string
 	RequestTimeout         time.Duration
 	LoadPprof              bool
+	SignedScriptsOnly      bool
 }
 
 // Settings is the loaded/updated settings from the configuration file
@@ -57,14 +58,8 @@ func Initialise(configurationDirectory string) {
 
 	Settings.RequestTimeout = durationValue
 
-	loadPprofValue := getIniValueOrPanic(iniFile, "Server", "LoadPprof")
-	boolValue, parseError := strconv.ParseBool(loadPprofValue)
-
-	if parseError != nil {
-		panic(parseError)
-	}
-
-	Settings.LoadPprof = boolValue
+	Settings.LoadPprof = getIniBoolOrPanic(iniFile, "Server", "LoadPprof")
+	Settings.SignedScriptsOnly = getIniBoolOrPanic(iniFile, "Server", "SignedScriptsOnly")
 }
 
 func getIniValueOrPanic(input ini.File, group string, key string) string {
@@ -73,6 +68,17 @@ func getIniValueOrPanic(input ini.File, group string, key string) string {
 		panic("[" + group + "] " + key + " was not configured")
 	}
 	return value
+}
+
+func getIniBoolOrPanic(input ini.File, group string, key string) bool {
+	stringValue := getIniValueOrPanic(input, group, key)
+	boolValue, parseError := strconv.ParseBool(stringValue)
+
+	if parseError != nil {
+		panic(parseError)
+	}
+
+	return boolValue
 }
 
 // TestingInitialise only for use in integration tests
