@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"golang.org/x/crypto/openpgp"
+	"github.com/jedisct1/go-minisign"
 )
 
 // Script represents an object submitted to the runscript endpoint
@@ -125,13 +125,18 @@ func runScript(responseWriter http.ResponseWriter, scriptToRun Script) []byte {
 
 func verifySignature(stdin string, signature string) bool {
 
-	stdInReader := strings.NewReader(stdin)
-	signatureReader := strings.NewReader(signature)
+	stdinAsArray := []byte(stdin)
+	signatureStruct, signatureError := minisign.DecodeSignature(signature)
 
-	signer, error := openpgp.CheckDetachedSignature(configuration.Settings.PublicKeyRing, stdInReader, signatureReader)
-	if signer != nil && error != nil {
-		return true
+	if signatureError != nil {
+		logwrapper.Log.Debugf("Signature Decoding error: %v", signatureError)
 	}
-	logwrapper.Log.Debugf("Signature Verification Error: %v", error)
-	return false
+
+	isValid, error := configuration.Settings.PublicKey.Verify(stdinAsArray, signatureStruct)
+
+	if error != nil {
+		logwrapper.Log.Debugf("Signature Verification: %b parsedSignature: %v Error: %v", isValid, signatureStruct, error)
+	}
+
+	return isValid
 }

@@ -1,13 +1,11 @@
 package configuration
 
 import (
-	"os"
 	"path/filepath"
 	"strconv"
 	"time"
 
-	"golang.org/x/crypto/openpgp"
-
+	"github.com/jedisct1/go-minisign"
 	ini "github.com/vaughan0/go-ini"
 )
 
@@ -24,7 +22,7 @@ type SettingsValues struct {
 	RequestTimeout         time.Duration
 	LoadPprof              bool
 	SignedScriptsOnly      bool
-	PublicKeyRing          openpgp.EntityList
+	PublicKey              minisign.PublicKey
 }
 
 // Settings is the loaded/updated settings from the configuration file
@@ -65,10 +63,14 @@ func Initialise(configurationDirectory string) {
 	Settings.LoadPprof = getIniBoolOrPanic(iniFile, "Server", "LoadPprof")
 	Settings.SignedScriptsOnly = getIniBoolOrPanic(iniFile, "Server", "SignedScriptsOnly")
 
-	keyringFileBuffer, _ := os.Open(getIniValueOrPanic(iniFile, "Server", "PublicKeyRingFile"))
-	defer keyringFileBuffer.Close()
-	entityList, _ := openpgp.ReadArmoredKeyRing(keyringFileBuffer)
-	Settings.PublicKeyRing = entityList
+	keyringFileBuffer := getIniValueOrPanic(iniFile, "Server", "PublicKeyFile")
+
+	publicKey, publicKeyError := minisign.NewPublicKeyFromFile(keyringFileBuffer)
+
+	if publicKeyError != nil {
+		panic(publicKeyError)
+	}
+	Settings.PublicKey = publicKey
 }
 
 func getIniValueOrPanic(input ini.File, group string, key string) string {
