@@ -3,6 +3,8 @@ package web
 import (
 	"net/http"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestIsAuthorised(t *testing.T) {
@@ -25,19 +27,13 @@ func TestIsAuthorised(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run("returns appropriate responses with valid/invalid credentials", func(t *testing.T) {
 			output := TestHTTPRequestWithCredentials(t, BuildTestHTTPRequest(t, http.MethodGet, "/v1"), testCase.credential.Username, testCase.credential.Password)
-
-			if output.ResponseStatus != testCase.expected {
-				t.Errorf("Test Failed: Input: %v, Expected: %d, Got: %d", testCase.credential, testCase.expected, output.ResponseStatus)
-			}
+			assert.Equal(t, output.ResponseStatus, testCase.expected)
 		})
 	}
 
 	t.Run("returns false when no credentials are supplied", func(t *testing.T) {
 		expected := http.StatusUnauthorized
 		output := TestHTTPRequest(t, BuildTestHTTPRequest(t, http.MethodGet, "/v1"))
-
-		if output.ResponseStatus != expected {
-			t.Errorf("Test Failed: Expected %d, Got %d", expected, output.ResponseStatus)
-		}
+		assert.Equal(t, output.ResponseStatus, expected)
 	})
 }

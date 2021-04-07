@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/gorilla/mux"
+	"github.com/stretchr/testify/assert"
 )
 
 var routePathTemplates []string
@@ -26,9 +27,7 @@ func setup(t *testing.T) {
 		return nil
 	})
 
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
 
 	server = httptest.NewServer(router)
 	configuration.TestingInitialise()
@@ -40,27 +39,21 @@ func teardown() {
 
 func testRoute(t *testing.T, path string) {
 	t.Run(fmt.Sprintf("returns HTTP status 200 for path %s", path), func(t *testing.T) {
-
+		assert := assert.New(t)
 		request, err := http.NewRequest(http.MethodGet, path, nil)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(err)
 
 		request.SetBasicAuth("test", "secret")
+
 		response, err := http.DefaultClient.Do(request)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(err)
+
 		defer response.Body.Close()
 
-		if response.StatusCode != http.StatusOK {
-			t.Fatalf("Received non-%d response: %d\n", http.StatusOK, response.StatusCode)
-		}
+		assert.Equal(response.StatusCode, http.StatusOK)
 
 		_, err = ioutil.ReadAll(response.Body)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.Nil(err)
 
 	})
 }
