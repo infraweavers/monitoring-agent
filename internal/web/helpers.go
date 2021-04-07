@@ -135,7 +135,7 @@ func verifySignature(stdin string, signature string) bool {
 	isValid, error := configuration.Settings.PublicKey.Verify(stdinAsArray, signatureStruct)
 
 	if error != nil {
-		logwrapper.Log.Debugf("Signature Verification: %b parsedSignature: %v Error: %v", isValid, signatureStruct, error)
+		logwrapper.Log.Debugf("Signature Verification Error: %v", error)
 	}
 
 	return isValid
