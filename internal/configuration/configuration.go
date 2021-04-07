@@ -63,9 +63,9 @@ func Initialise(configurationDirectory string) {
 	Settings.LoadPprof = getIniBoolOrPanic(iniFile, "Server", "LoadPprof")
 	Settings.SignedScriptsOnly = getIniBoolOrPanic(iniFile, "Server", "SignedScriptsOnly")
 
-	keyringFileBuffer := getIniValueOrPanic(iniFile, "Server", "PublicKeyFile")
+	publicKeyString := getIniValueOrPanic(iniFile, "Server", "PublicKey")
 
-	publicKey, publicKeyError := minisign.NewPublicKeyFromFile(keyringFileBuffer)
+	publicKey, publicKeyError := minisign.NewPublicKey(publicKeyString)
 
 	if publicKeyError != nil {
 		panic(publicKeyError)
