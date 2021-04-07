@@ -102,4 +102,6 @@ func TestingInitialise() {
 	Settings.RequestTimeout = time.Second * 10
 	Settings.Username = "test"
 	Settings.Password = "secret"
+
+	Settings.PublicKey, _ = minisign.NewPublicKey("RWQ3ly9IPenQ6Wgt/VYzMCdGdVJPPoNSyT+rtTddvqBgANTYdboko0zu")
 }
