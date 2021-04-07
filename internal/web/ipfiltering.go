@@ -8,13 +8,11 @@ import (
 // IPFiltering is a HTTP handlefunc wrapper that enforces IP restrictions
 func IPFiltering(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(responseWriter http.ResponseWriter, request *http.Request) {
-
 		if verifyRemoteHost(request.RemoteAddr) {
 			handler.ServeHTTP(responseWriter, request)
 		} else {
-			logwrapper.Log.Errorf("Blocked request from: %v", remoteAddr)
-			responseWriter.WriteHeader(http.StatusForbidden)
-			responseWriter.Write([]byte(`{"message": "Forbidden"}`))
+			logwrapper.Log.Errorf("Blocked request from: %v", request.RemoteAddr)
+			http.Error(responseWriter, `Forbidden`, http.StatusForbidden)
 		}
 	})
 }
