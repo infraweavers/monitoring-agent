@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"runtime"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type RunScriptTestCase struct {
@@ -40,55 +42,31 @@ func TestRunscriptApiHandler(t *testing.T) {
 	defer TestTeardown()
 
 	t.Run("Runs supplied script, returns HTTP status 200 and expected script output", func(t *testing.T) {
-		jsonBody, err := json.Marshal(osSpecificRunScriptTestCases[runtime.GOOS].ScriptToRun)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert := assert.New(t)
 
-		bytesBuffer := bytes.NewBuffer(jsonBody)
-		request, err := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscript", bytesBuffer)
-		if err != nil {
-			t.Fatal(err)
-		}
+		jsonBody, _ := json.Marshal(osSpecificRunScriptTestCases[runtime.GOOS].ScriptToRun)
+		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscript", bytes.NewBuffer(jsonBody))
 
 		output := TestHTTPRequestWithDefaultCredentials(t, request)
 
-		if output.ResponseStatus != http.StatusOK {
-			t.Errorf("Test Failed: Expected: %d, Got: %d", http.StatusOK, output.ResponseStatus)
-		}
-
-		if output.ResponseBody != osSpecificRunScriptTestCases[runtime.GOOS].ExpectedResult.Output {
-			t.Errorf("Test Failed: Expected: %s, Got: %s", osSpecificRunScriptTestCases[runtime.GOOS].ExpectedResult.Output, output.ResponseBody)
-		}
+		assert.Equal(output.ResponseStatus, http.StatusOK, "Response code should be OK")
+		assert.Equal(output.ResponseBody, osSpecificRunScriptTestCases[runtime.GOOS].ExpectedResult.Output, "Response output did not match case")
 	})
 
 	t.Run("Returns HTTP status 400 bad request with erronous post", func(t *testing.T) {
-		jsonBody, err := json.Marshal(`{"foo": "bar", "doh": "car"}`)
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert := assert.New(t)
 
-		bytesBuffer := bytes.NewBuffer(jsonBody)
-		request, err := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscript", bytesBuffer)
-		if err != nil {
-			t.Fatal(err)
-		}
+		jsonBody, _ := json.Marshal(`{"foo": "bar", "doh": "car"}`)
+		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscript", bytes.NewBuffer(jsonBody))
 
-		expectedResponseStatus := http.StatusBadRequest
-		expectedResponseBody := `{"exitcode":3,"output":"400 Bad Request"}`
 		output := TestHTTPRequestWithDefaultCredentials(t, request)
 
-		if output.ResponseStatus != expectedResponseStatus {
-			t.Errorf("Test Failed: Expected: %d, Got: %d", expectedResponseStatus, output.ResponseStatus)
-		}
-
-		if output.ResponseBody != expectedResponseBody {
-			t.Errorf("Test Failed: Expected: %s, Got: %s", expectedResponseBody, output.ResponseBody)
-		}
+		assert.Equal(output.ResponseStatus, http.StatusBadRequest, "Response code should be BadRequest")
+		assert.Equal(output.ResponseBody, `{"exitcode":3,"output":"400 Bad Request"}`)
 	})
 
 	t.Run("Returns HTTP status 400 bad request with stdin supplied", func(t *testing.T) {
-		var test = ScriptAsStdInToRun{
+		var scriptBodyToTest = ScriptAsStdInToRun{
 			ScriptToRun{
 				Path: "sh",
 				Args: []string{"sh", "-s"},
@@ -97,28 +75,14 @@ func TestRunscriptApiHandler(t *testing.T) {
 				StdIn: "uname",
 			},
 		}
+		assert := assert.New(t)
 
-		jsonBody, err := json.Marshal(test)
-		if err != nil {
-			t.Fatal(err)
-		}
+		jsonBody, _ := json.Marshal(scriptBodyToTest)
+		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscript", bytes.NewBuffer(jsonBody))
 
-		bytesBuffer := bytes.NewBuffer(jsonBody)
-		request, err := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscript", bytesBuffer)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		expectedResponseStatus := http.StatusBadRequest
-		expectedResponseBody := `{"exitcode":3,"output":"400 Bad Request - This endpoint does not use stdin"}`
 		output := TestHTTPRequestWithDefaultCredentials(t, request)
 
-		if output.ResponseStatus != expectedResponseStatus {
-			t.Errorf("Test Failed: Expected: %d, Got: %d", expectedResponseStatus, output.ResponseStatus)
-		}
-
-		if output.ResponseBody != expectedResponseBody {
-			t.Errorf("Test Failed: Expected: %s, Got: %s", expectedResponseBody, output.ResponseBody)
-		}
+		assert.Equal(output.ResponseStatus, http.StatusBadRequest, "Response code should be Bad Request")
+		assert.Equal(output.ResponseBody, `{"exitcode":3,"output":"400 Bad Request - This endpoint does not use stdin"}`)
 	})
 }
