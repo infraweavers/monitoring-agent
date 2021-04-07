@@ -27,6 +27,7 @@ func NewRouter() *mux.Router {
 	if configuration.Settings.LoadPprof {
 		router.PathPrefix("/debug/pprof").Handler(http.DefaultServeMux)
 	}
+	router.Use(IPFiltering)
 	router.Use(BasicAuth)
 	return router
 }

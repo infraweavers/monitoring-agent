@@ -1,8 +1,10 @@
 package configuration
 
 import (
+	"net"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/jedisct1/go-minisign"
@@ -23,6 +25,7 @@ type SettingsValues struct {
 	LoadPprof              bool
 	SignedStdinOnly        bool
 	PublicKey              minisign.PublicKey
+	AllowedAddresses       []*net.IPNet
 }
 
 // Settings is the loaded/updated settings from the configuration file
@@ -62,6 +65,17 @@ func Initialise(configurationDirectory string) {
 
 	Settings.LoadPprof = getIniBoolOrPanic(iniFile, "Server", "LoadPprof")
 	Settings.SignedStdinOnly = getIniBoolOrPanic(iniFile, "Server", "SignedStdinOnly")
+
+	hostArrays := strings.Split(getIniValueOrPanic(iniFile, "Server", "AllowedAddresses"), ",")
+	whitelistNetworks := make([]*net.IPNet, len(hostArrays))
+	for x := 0; x < len(hostArrays); x++ {
+		_, network, error := net.ParseCIDR(hostArrays[x])
+		if error != nil {
+			panic(error)
+		}
+		whitelistNetworks[x] = network
+	}
+	Settings.AllowedAddresses = whitelistNetworks
 
 	publicKeyString := getIniValueOrPanic(iniFile, "Server", "PublicKey")
 
@@ -104,4 +118,7 @@ func TestingInitialise() {
 	Settings.Password = "secret"
 
 	Settings.PublicKey, _ = minisign.NewPublicKey("RWQ3ly9IPenQ6Wgt/VYzMCdGdVJPPoNSyT+rtTddvqBgANTYdboko0zu")
+	Settings.AllowedAddresses = []*net.IPNet{
+		{IP: net.IPv4(0, 0, 0, 0), Mask: net.IPv4Mask(0, 0, 0, 0)},
+	}
 }
