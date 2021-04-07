@@ -21,7 +21,7 @@ type SettingsValues struct {
 	LogLevel               string
 	RequestTimeout         time.Duration
 	LoadPprof              bool
-	SignedScriptsOnly      bool
+	SignedStdinOnly        bool
 	PublicKey              minisign.PublicKey
 }
 
@@ -61,7 +61,7 @@ func Initialise(configurationDirectory string) {
 	Settings.RequestTimeout = durationValue
 
 	Settings.LoadPprof = getIniBoolOrPanic(iniFile, "Server", "LoadPprof")
-	Settings.SignedScriptsOnly = getIniBoolOrPanic(iniFile, "Server", "SignedScriptsOnly")
+	Settings.SignedStdinOnly = getIniBoolOrPanic(iniFile, "Server", "SignedStdinOnly")
 
 	publicKeyString := getIniValueOrPanic(iniFile, "Server", "PublicKey")
 
