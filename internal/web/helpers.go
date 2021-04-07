@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"mama/internal/configuration"
 	"mama/internal/logwrapper"
+	"net"
 	"net/http"
 	"os/exec"
 	"strings"
@@ -139,4 +140,18 @@ func verifySignature(stdin string, signature string) bool {
 	}
 
 	return isValid
+}
+
+func verifyRemoteHost(remoteAddr string) bool {
+	remoteAddrComponents := strings.Split(remoteAddr, ":")
+
+	remoteIp := net.ParseIP(remoteAddrComponents[0])
+	allowedAddresses := configuration.Settings.AllowedAddresses
+
+	for x := 0; x < len(allowedAddresses); x++ {
+		if allowedAddresses[x].Contains(remoteIp) {
+			return true
+		}
+	}
+	return false
 }
