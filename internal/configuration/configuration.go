@@ -26,6 +26,7 @@ type SettingsValues struct {
 	SignedStdinOnly        bool
 	PublicKey              minisign.PublicKey
 	AllowedAddresses       []*net.IPNet
+	UseClientCertificates  bool
 }
 
 // Settings is the loaded/updated settings from the configuration file
@@ -85,6 +86,8 @@ func Initialise(configurationDirectory string) {
 		panic(publicKeyError)
 	}
 	Settings.PublicKey = publicKey
+
+	Settings.UseClientCertificates = getIniBoolOrPanic(iniFile, "Server", "UseClientCertificates")
 }
 
 func getIniValueOrPanic(input ini.File, group string, key string) string {

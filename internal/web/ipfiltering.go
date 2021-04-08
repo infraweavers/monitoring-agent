@@ -11,7 +11,7 @@ func IPFiltering(handler http.Handler) http.Handler {
 		if verifyRemoteHost(request.RemoteAddr) {
 			handler.ServeHTTP(responseWriter, request)
 		} else {
-			logwrapper.Log.Errorf("Blocked request from: %v", request.RemoteAddr)
+			logwrapper.Log.Errorf("Blocked request due to IP restrictions from: %v", request.RemoteAddr)
 			http.Error(responseWriter, `Forbidden`, http.StatusForbidden)
 		}
 	})

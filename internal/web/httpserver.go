@@ -21,12 +21,18 @@ func LaunchServer() {
 	router := NewRouter()
 	handlerWithTimeout := http.TimeoutHandler(router, requestTimeout, "Request Timeout\n")
 
+	var clientAuthenticationMethod = tls.NoClientCert
+	if configuration.Settings.UseClientCertificates {
+		clientAuthenticationMethod = tls.RequireAndVerifyClientCert
+	}
+
 	server := &http.Server{
 		Addr:    configuration.Settings.BindAddress,
 		Handler: handlerWithTimeout,
 
 		TLSConfig: &tls.Config{
 			Certificates: []tls.Certificate{tlsCert},
+			ClientAuth:   clientAuthenticationMethod,
 		},
 		WriteTimeout:      requestTimeout,
 		ReadTimeout:       requestTimeout,
