@@ -2,6 +2,8 @@ package web
 
 import (
 	"crypto/tls"
+	"crypto/x509"
+	"io/ioutil"
 	"mama/internal/configuration"
 	"mama/internal/logwrapper"
 	"net/http"
@@ -22,8 +24,17 @@ func LaunchServer() {
 	handlerWithTimeout := http.TimeoutHandler(router, requestTimeout, "Request Timeout\n")
 
 	var clientAuthenticationMethod = tls.NoClientCert
+
+	clientCACertPool := x509.NewCertPool()
 	if configuration.Settings.UseClientCertificates {
 		clientAuthenticationMethod = tls.RequireAndVerifyClientCert
+		certificateContent, clientCALoaderror := ioutil.ReadFile(configuration.Settings.ClientCertificateCAFile)
+
+		if clientCALoaderror != nil {
+			panic(clientCALoaderror)
+		}
+
+		clientCACertPool.AppendCertsFromPEM(certificateContent)
 	}
 
 	server := &http.Server{
@@ -33,6 +44,7 @@ func LaunchServer() {
 		TLSConfig: &tls.Config{
 			Certificates: []tls.Certificate{tlsCert},
 			ClientAuth:   clientAuthenticationMethod,
+			ClientCAs:    clientCACertPool,
 		},
 		WriteTimeout:      requestTimeout,
 		ReadTimeout:       requestTimeout,

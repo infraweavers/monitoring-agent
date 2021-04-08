@@ -13,20 +13,21 @@ import (
 
 // SettingsValues is the struct to contain all values
 type SettingsValues struct {
-	ConfigurationDirectory string
-	CertificatePath        string
-	PrivateKeyPath         string
-	Username               string
-	Password               string
-	BindAddress            string
-	LogFilePath            string
-	LogLevel               string
-	RequestTimeout         time.Duration
-	LoadPprof              bool
-	SignedStdinOnly        bool
-	PublicKey              minisign.PublicKey
-	AllowedAddresses       []*net.IPNet
-	UseClientCertificates  bool
+	ConfigurationDirectory  string
+	CertificatePath         string
+	PrivateKeyPath          string
+	Username                string
+	Password                string
+	BindAddress             string
+	LogFilePath             string
+	LogLevel                string
+	RequestTimeout          time.Duration
+	LoadPprof               bool
+	SignedStdinOnly         bool
+	PublicKey               minisign.PublicKey
+	AllowedAddresses        []*net.IPNet
+	UseClientCertificates   bool
+	ClientCertificateCAFile string
 }
 
 // Settings is the loaded/updated settings from the configuration file
@@ -57,17 +58,16 @@ func Initialise(configurationDirectory string) {
 
 	stringValue := getIniValueOrPanic(iniFile, "Server", "RequestTimeout")
 	durationValue, parseError := time.ParseDuration(stringValue)
-
 	if parseError != nil {
 		panic(parseError)
 	}
-
 	Settings.RequestTimeout = durationValue
 
 	Settings.LoadPprof = getIniBoolOrPanic(iniFile, "Server", "LoadPprof")
-	Settings.SignedStdinOnly = getIniBoolOrPanic(iniFile, "Server", "SignedStdinOnly")
 
-	hostArrays := strings.Split(getIniValueOrPanic(iniFile, "Server", "AllowedAddresses"), ",")
+	Settings.SignedStdinOnly = getIniBoolOrPanic(iniFile, "Security", "SignedStdinOnly")
+
+	hostArrays := strings.Split(getIniValueOrPanic(iniFile, "Security", "AllowedAddresses"), ",")
 	whitelistNetworks := make([]*net.IPNet, len(hostArrays))
 	for x := 0; x < len(hostArrays); x++ {
 		_, network, error := net.ParseCIDR(hostArrays[x])
@@ -78,8 +78,7 @@ func Initialise(configurationDirectory string) {
 	}
 	Settings.AllowedAddresses = whitelistNetworks
 
-	publicKeyString := getIniValueOrPanic(iniFile, "Server", "PublicKey")
-
+	publicKeyString := getIniValueOrPanic(iniFile, "Security", "PublicKey")
 	publicKey, publicKeyError := minisign.NewPublicKey(publicKeyString)
 
 	if publicKeyError != nil {
@@ -87,7 +86,8 @@ func Initialise(configurationDirectory string) {
 	}
 	Settings.PublicKey = publicKey
 
-	Settings.UseClientCertificates = getIniBoolOrPanic(iniFile, "Server", "UseClientCertificates")
+	Settings.UseClientCertificates = getIniBoolOrPanic(iniFile, "Security", "UseClientCertificates")
+	Settings.ClientCertificateCAFile = getIniValueOrPanic(iniFile, "Security", "ClientCertificateCAFile")
 }
 
 func getIniValueOrPanic(input ini.File, group string, key string) string {
