@@ -143,9 +143,14 @@ func verifySignature(stdin string, signature string) bool {
 }
 
 func verifyRemoteHost(remoteAddr string) bool {
-	remoteAddrComponents := strings.Split(remoteAddr, ":")
 
-	remoteIp := net.ParseIP(remoteAddrComponents[0])
+	host, _, parseError := net.SplitHostPort(remoteAddr)
+
+	if parseError != nil {
+		return false
+	}
+
+	remoteIp := net.ParseIP(host)
 	allowedAddresses := configuration.Settings.AllowedAddresses
 
 	for x := 0; x < len(allowedAddresses); x++ {

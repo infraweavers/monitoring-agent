@@ -92,19 +92,19 @@ func TestVerifyRemoteHost(t *testing.T) {
 		assert.False(t, verifyRemoteHost("127.0.0.1:5421"))
 		assert.False(t, verifyRemoteHost("10.1.1.1:5874"))
 		assert.False(t, verifyRemoteHost("[::1]:5421"))
-		//assert.False(t, verifyRemoteHost("[ec9b:434a:0623:2620:9fa3:5432:ee23:ea81]:5421"))
+		assert.False(t, verifyRemoteHost("[ec9b:434a:0623:2620:9fa3:5432:ee23:ea81]:5421"))
 	})
-	/*
-		t.Run("IPv6 should be supported", func(t *testing.T) {
-			configuration.TestingInitialise()
-			configuration.Settings.AllowedAddresses = []*net.IPNet{
-				{IP: net.ParseIP("192.168.54.0"), Mask: net.IPMask(net.ParseIP("255.255.255.0").To4())},
-				{IP: net.ParseIP("ec9b:434a:0623:2620::"), Mask: net.IPMask(net.ParseIP("ffff:ffff:ffff:ffff::").To16())},
-				{IP: net.ParseIP("127.0.0.0"), Mask: net.IPMask(net.ParseIP("255.0.0.0").To4())},
-			}
 
-			assert.False(t, verifyRemoteHost("[::1]:5421"))
-			assert.True(t, verifyRemoteHost("[ec9b:434a:0623:2620:9fa3:5432:ee23:ea81]:5421"))
-		})
-	*/
+	t.Run("IPv6 should be supported", func(t *testing.T) {
+		configuration.TestingInitialise()
+		configuration.Settings.AllowedAddresses = []*net.IPNet{
+			{IP: net.ParseIP("192.168.54.0"), Mask: net.IPMask(net.ParseIP("255.255.255.0").To4())},
+			{IP: net.ParseIP("ec9b:434a:0623:2620::"), Mask: net.IPMask(net.ParseIP("ffff:ffff:ffff:ffff::").To16())},
+			{IP: net.ParseIP("127.0.0.0"), Mask: net.IPMask(net.ParseIP("255.0.0.0").To4())},
+		}
+
+		assert.False(t, verifyRemoteHost("[::1]:5421"))
+		assert.True(t, verifyRemoteHost("[ec9b:434a:0623:2620:9fa3:5432:ee23:ea81]:5421"))
+	})
+
 }
