@@ -4,3 +4,4 @@ output.log
 *.exe~
 __debug_bin
 monitoring-agent
+.wixobj
