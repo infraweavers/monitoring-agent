@@ -15,8 +15,35 @@
 		<Directory Id='INSTALLDIR' Name='MonitoringAgent'>
 
             <Component Id='MainExecutable' Guid='0dbe56a4-660e-4299-9232-0677a3d294a0'>
-              <File Id='MonitoringAgentExe' Name='Monitoring-Agent.exe' DiskId='1' Source='Monitoring-Agent.exe' KeyPath='yes'>
-              </File>
+              <File Id='MonitoringAgentExe' Name='Monitoring-Agent.exe' DiskId='1' Source='Monitoring-Agent.exe' KeyPath='yes' />
+            </Component>
+			
+            <Component Id='SampleCaCertificate' Guid='d1d9e531-1667-4670-9d3e-d846bcc33228'>
+              <File Id='cacertPem' Name='cacert.pem' DiskId='1' Source='cacert.pem' KeyPath='yes' />
+            </Component>
+			
+            <Component Id='SampleConfigurationIni' Guid='05002cfe-4958-495c-9c5b-ecad4e5b6050'>
+              <File Id='configurationIni' Name='configuration.ini' DiskId='1' Source='configuration.ini' KeyPath='yes' />
+            </Component>
+			
+            <Component Id='ServiceInstallationCommandFile' Guid='648767b8-0b14-42d6-88eb-e4347e88904a'>
+              <File Id='installServiceCmd' Name='installService.cmd' DiskId='1' Source='installService.cmd' KeyPath='yes' />
+            </Component>
+			
+            <Component Id='LicenseFile' Guid='a3e21569-89a0-4683-8866-57fa11086f33'>
+              <File Id='license' Name='LICENSE' DiskId='1' Source='LICENSE' KeyPath='yes' />
+            </Component>
+			
+            <Component Id='SampleServerCertificate' Guid='ab00497a-b889-423c-9985-3d433650ffcf'>
+              <File Id='serverCrt' Name='server.crt' DiskId='1' Source='server.crt' KeyPath='yes' />
+            </Component>
+			
+            <Component Id='SampleServerKey' Guid='7cb0dd12-517e-4096-907b-b8ac8ad8a0ee'>
+              <File Id='serverKey' Name='server.key' DiskId='1' Source='server.key' KeyPath='yes' />
+            </Component>
+			
+            <Component Id='ServiceUninstallationCommandFile' Guid='26e3bec7-6fb7-4620-82b3-9ec759e7b588'>
+              <File Id='uninstallServiceCmd' Name='uninstallService.cmd' DiskId='1' Source='uninstallService.cmd' KeyPath='yes' />
             </Component>
 
           </Directory>
@@ -25,6 +52,13 @@
 
     <Feature Id='Complete' Level='1'>
       <ComponentRef Id='MainExecutable' />
+      <ComponentRef Id='SampleCaCertificate' />
+      <ComponentRef Id='SampleConfigurationIni' />
+      <ComponentRef Id='ServiceInstallationCommandFile' />
+      <ComponentRef Id='LicenseFile' />
+      <ComponentRef Id='SampleServerCertificate' />
+      <ComponentRef Id='SampleServerKey' />
+      <ComponentRef Id='ServiceUninstallationCommandFile' />
     </Feature>
   </Product>
 </Wix>
