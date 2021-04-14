@@ -5,3 +5,5 @@ output.log
 __debug_bin
 monitoring-agent
 *.wixobj
+*.msi
+*.wixpdb
