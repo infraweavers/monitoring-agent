@@ -25,6 +25,7 @@
 					Type='ownProcess'
 					Vital='yes'
 				/>
+				<ServiceControl Id='StartMonitoringAgentService' Start='install' Stop='both' Remove='uninstall' Name='Monitoring Agent' Wait='yes' />
 			</Component>
 			
 			<Component Id='SampleCaCertificate' Guid='d1d9e531-1667-4670-9d3e-d846bcc33228'>
