@@ -63,7 +63,7 @@ func configurationDirectory() string {
 
 func main() {
 	configuration.Initialise(configurationDirectory())
-	logwrapper.Initialise(service.Interactive())
+	logwrapper.Initialise(service.Interactive(), configuration.Settings.ConfigurationDirectory)
 
 	serviceConfiguration := &service.Config{
 		Name: "Monitoring Agent",

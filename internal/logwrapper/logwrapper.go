@@ -3,6 +3,7 @@ package logwrapper
 import (
 	"mama/internal/configuration"
 	"os"
+	"path"
 
 	"github.com/op/go-logging"
 )
@@ -11,9 +12,15 @@ import (
 var Log = logging.MustGetLogger("default")
 
 // Initialise Configure the logging
-func Initialise(runningInteractively bool) {
+func Initialise(runningInteractively bool, configurationDirectory string) {
 
-	logFile, logError := os.OpenFile(configuration.Settings.LogFilePath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
+	var logFilePath = configuration.Settings.LogFilePath
+
+	if logFilePath == path.Base(logFilePath) {
+		logFilePath = configurationDirectory + "/" + logFilePath
+	}
+
+	logFile, logError := os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
 
 	logging.LogLevel(configuration.Settings.LogLevel)
 
