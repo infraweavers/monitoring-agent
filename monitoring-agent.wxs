@@ -16,6 +16,15 @@
 
 			<Component Id='MainExecutable' Guid='0dbe56a4-660e-4299-9232-0677a3d294a0'>
 				<File Id='MonitoringAgentExe' Name='Monitoring-Agent.exe' DiskId='1' Source='Monitoring-Agent.exe' KeyPath='yes' />
+				<ServiceInstall Account="\LOCAL_ACCOUNT"
+					Description='Permits execution of commands for host monitoring purposes'
+					ErrorControl='ignore'
+					Name = 'Monitoring Agent'
+					Id='MonitoringAgentService'
+					Start='auto'
+					Type='ownProcess'
+					Vital='yes'
+				/>
 			</Component>
 			
 			<Component Id='SampleCaCertificate' Guid='d1d9e531-1667-4670-9d3e-d846bcc33228'>
