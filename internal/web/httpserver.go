@@ -15,6 +15,7 @@ func LaunchServer() {
 	tlsCert, loadError := tls.LoadX509KeyPair(configuration.Settings.CertificatePath, configuration.Settings.PrivateKeyPath)
 
 	if loadError != nil {
+		logwrapper.Log.Criticalf(loadError.Error())
 		panic(loadError)
 	}
 
@@ -31,6 +32,7 @@ func LaunchServer() {
 		certificateContent, clientCALoaderror := ioutil.ReadFile(configuration.Settings.ClientCertificateCAFile)
 
 		if clientCALoaderror != nil {
+			logwrapper.Log.Criticalf("Unable to read ClientCertificateCAFile %s", configuration.Settings.CertificatePath)
 			panic(clientCALoaderror)
 		}
 
