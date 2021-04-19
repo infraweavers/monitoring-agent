@@ -3,7 +3,8 @@ name: zztest
 on: [workflow_dispatch]
 
 jobs:
-build-release:
+
+  build-release:
     runs-on: windows
     env:
         SRCPATH: ${{ github.workspace }}/go/src/mama
