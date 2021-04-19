@@ -74,7 +74,7 @@ jobs:
           suffix=$([ "$os" == "windows" ] && echo ".exe" || echo "")
 
           mkdir -p ./release/$os-$arch-$goversion
-          cp ${{ env.SRCPATH }}/installService.cmd ${{ env.SRCPATH }}/configuration.ini ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ./release/$os-$arch-$goversion
+          cp ${{ env.SRCPATH }}/installService.cmd ${{ env.SRCPATH }}/uninstallService.cmd ${{ env.SRCPATH }}/configuration.ini ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ${{ env.SRCPATH }}/cacert.pem ./release/$os-$arch-$goversion
           
           pushd ${{ env.SRCPATH }}
           
