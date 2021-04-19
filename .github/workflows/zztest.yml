@@ -35,11 +35,23 @@ jobs:
           
           $suffix=$([ "$os" == "windows" ] && echo ".exe" || echo "")
           New-Item -Type Directory ./release/$os-$arch-$goversion
-          cp ${{ env.SRCPATH }}/installService.cmd ${{ env.SRCPATH }}/configuration.ini ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ./release/$os-$arch-$goversion
+          @( 
+            "${{ env.SRCPATH }}/installService.cmd",
+            "${{ env.SRCPATH }}/uninstallService.cmd",
+            "${{ env.SRCPATH }}/configuration.ini",
+            "${{ env.SRCPATH }}/LICENSE",
+            "${{ env.SRCPATH }}/server.crt",
+            "${{ env.SRCPATH }}/server.key",
+            "${{ env.SRCPATH }}/README.md",
+            "${{ env.SRCPATH }}/cacert.pem"
+          ) | ForEach-Object { Copy-Item -Destination  .\release\$os-$arch-$goversion }
           
           Push-Location -Path ${{ env.SRCPATH }}
           
-          GO111MODULE=on GOOS=$os GOARCH=$arch go get ./...
-          GO111MODULE=on GOOS=$os GOARCH=$arch go build -o ${{ env.SRCPATH }}/monitoring-agent$suffix
+          $env:GO111MODULE="on" 
+          $env:GOOS="$os"
+          $env:GOARCH=$arch
+          go get ./...
+          go build -o ${{ env.SRCPATH }}/monitoring-agent$suffix
           Pop-Location
-          cp ${{ env.SRCPATH }}/monitoring-agent$suffix ./release/$os-$arch-$goversion/monitoring-agent$suffix
+          Copy-Item -Source ${{ env.SRCPATH }}/monitoring-agent$suffix -Destination ./release/$os-$arch-$goversion/monitoring-agent$suffix
