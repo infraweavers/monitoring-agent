@@ -40,16 +40,6 @@ jobs:
           
           $suffix=".exe"
           New-Item -Type Directory ./release/$os-$arch-$goversion
-          @( 
-            "${{ env.SRCPATH }}/installService.cmd",
-            "${{ env.SRCPATH }}/uninstallService.cmd",
-            "${{ env.SRCPATH }}/configuration.ini",
-            "${{ env.SRCPATH }}/LICENSE",
-            "${{ env.SRCPATH }}/server.crt",
-            "${{ env.SRCPATH }}/server.key",
-            "${{ env.SRCPATH }}/README.md",
-            "${{ env.SRCPATH }}/cacert.pem"
-          ) | ForEach-Object { Copy-Item -Path $_ -Destination  .\release\$os-$arch-$goversion }
           
           Push-Location -Path ${{ env.SRCPATH }}
           
@@ -73,3 +63,9 @@ jobs:
           & "c:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" "./monitoring-agent.wixobj"
           Pop-Location
           Copy-Item -Path ${{ env.SRCPATH }}/monitoring-agent.msi -Destination ./release/$os-$arch-$goversion/monitoring-agent.msi
+
+      - name: upload MSI
+        uses: actions/upload-artifact@v2
+        with:
+          name: "windows-amd64-1.16.x-${{ steps.short-sha.outputs.sha }}"
+          path: release/
