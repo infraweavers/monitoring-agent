@@ -24,7 +24,7 @@ jobs:
       - name: Install WIX Tool Set
         run: |
           Invoke-WebRequest -UseBasicParsing -Uri https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311.exe -OutFile wix311.exe
-          & "C:\Users\danielcadden\Downloads\wix311.exe" "/q"
+          & ".\wix311.exe" "/q"
             
       - name: Checkout code
         uses: actions/checkout@v2
