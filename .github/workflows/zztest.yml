@@ -1,0 +1,44 @@
+name: zztest
+
+on: [workflow_dispatch]
+
+jobs:
+build-release:
+    runs-on: windows
+    env:
+        SRCPATH: ${{ github.workspace }}/go/src/mama
+
+    steps:
+        
+      - uses: benjlevesque/short-sha@v1.2
+        id: short-sha
+        with:
+          length: 7
+
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16.x
+            
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: ${{ env.SRCPATH }}
+
+      - name: Dependencies & Build
+        run: |
+          os=windows
+          arch=amd64
+          goversion=1.16.x
+          echo "Building $os-$arch-$goversion"
+          
+          suffix=$([ "$os" == "windows" ] && echo ".exe" || echo "")
+          mkdir -p ./release/$os-$arch-$goversion
+          cp ${{ env.SRCPATH }}/installService.cmd ${{ env.SRCPATH }}/configuration.ini ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ./release/$os-$arch-$goversion
+          
+          pushd ${{ env.SRCPATH }}
+          
+          GO111MODULE=on GOOS=$os GOARCH=$arch go get ./...
+          GO111MODULE=on GOOS=$os GOARCH=$arch go build -o ${{ env.SRCPATH }}/monitoring-agent$suffix
+          popd
+          cp ${{ env.SRCPATH }}/monitoring-agent$suffix ./release/$os-$arch-$goversion/monitoring-agent$suffix
