@@ -60,3 +60,7 @@ jobs:
           go build -o ${{ env.SRCPATH }}/monitoring-agent$suffix
           Pop-Location
           Copy-Item -Path ${{ env.SRCPATH }}/monitoring-agent$suffix -Destination ./release/$os-$arch-$goversion/monitoring-agent$suffix
+          
+      - name: Create MSI Installer
+        run: |
+          "c:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe" "/?"
