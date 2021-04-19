@@ -33,7 +33,7 @@ jobs:
           $goversion=1.16.x
           Write-Host "Building $os-$arch-$goversion"
           
-          $suffix=$([ "$os" == "windows" ] && echo ".exe" || echo "")
+          $suffix=".exe"
           New-Item -Type Directory ./release/$os-$arch-$goversion
           @( 
             "${{ env.SRCPATH }}/installService.cmd",
