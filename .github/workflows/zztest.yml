@@ -5,7 +5,7 @@ on: [workflow_dispatch]
 jobs:
 
   build-release:
-    runs-on: windows
+    runs-on: windows-latest
     env:
         SRCPATH: ${{ github.workspace }}/go/src/mama
 
