@@ -38,18 +38,15 @@ jobs:
           $goversion="1.16.x"
           Write-Host "Building $os-$arch-$goversion"
           
-          $suffix=".exe"
           New-Item -Type Directory ./release/$os-$arch-$goversion
           
-          Push-Location -Path ${{ env.SRCPATH }}
+          Set-Location -Path ${{ env.SRCPATH }}
           
           $env:GO111MODULE="on" 
           $env:GOOS="$os"
           $env:GOARCH=$arch
           go get ./...
-          go build -o ${{ env.SRCPATH }}/monitoring-agent$suffix
-          Pop-Location
-          Copy-Item -Path ${{ env.SRCPATH }}/monitoring-agent$suffix -Destination ./release/$os-$arch-$goversion/monitoring-agent$suffix
+          go build -o ${{ env.SRCPATH }}/monitoring-agent.exe
           
       - name: Create MSI Installer
         run: |
@@ -58,9 +55,11 @@ jobs:
           $goversion="1.16.x"
           Write-Host "Building MSI Installer For $os-$arch-$goversion"
           
-          Set-Location -Path ${{ env.SRCPATH }}
+          Push-Location -Path ${{ env.SRCPATH }}
           & "c:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe" "./monitoring-agent.wxs"
           & "c:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" "./monitoring-agent.wixobj"
+          Pop-Location
+          Copy-Item -Path ${{ env.SRCPATH }}/monitoring-agent.msi -Destination ./release/$os-$arch-$goversion/monitoring-agent.msi
 
       - name: upload MSI
         uses: actions/upload-artifact@v2
