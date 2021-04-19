@@ -20,6 +20,10 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.16.x
+          
+      - name: Install WIX Tool Set
+        run: |
+          Invoke-WebRequest -UseBasicParsing -Uri https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311.exe -OutFile wix311.exe
             
       - name: Checkout code
         uses: actions/checkout@v2
