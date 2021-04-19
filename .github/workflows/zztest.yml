@@ -63,4 +63,4 @@ jobs:
           
       - name: Create MSI Installer
         run: |
-          "c:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe" "/?"
+          & "c:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe" "/?"
