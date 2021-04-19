@@ -44,7 +44,7 @@ jobs:
             "${{ env.SRCPATH }}/server.key",
             "${{ env.SRCPATH }}/README.md",
             "${{ env.SRCPATH }}/cacert.pem"
-          ) | ForEach-Object { Copy-Item -Destination  .\release\$os-$arch-$goversion }
+          ) | ForEach-Object { Copy-Item -Path $_ -Destination  .\release\$os-$arch-$goversion }
           
           Push-Location -Path ${{ env.SRCPATH }}
           
@@ -54,4 +54,4 @@ jobs:
           go get ./...
           go build -o ${{ env.SRCPATH }}/monitoring-agent$suffix
           Pop-Location
-          Copy-Item -Source ${{ env.SRCPATH }}/monitoring-agent$suffix -Destination ./release/$os-$arch-$goversion/monitoring-agent$suffix
+          Copy-Item -Path ${{ env.SRCPATH }}/monitoring-agent$suffix -Destination ./release/$os-$arch-$goversion/monitoring-agent$suffix
