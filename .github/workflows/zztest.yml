@@ -28,9 +28,9 @@ jobs:
 
       - name: Dependencies & Build
         run: |
-          $os=windows
-          $arch=amd64
-          $goversion=1.16.x
+          $os="windows"
+          $arch="amd64"
+          $goversion="1.16.x"
           Write-Host "Building $os-$arch-$goversion"
           
           $suffix=".exe"
