@@ -28,18 +28,18 @@ jobs:
 
       - name: Dependencies & Build
         run: |
-          os=windows
-          arch=amd64
-          goversion=1.16.x
-          echo "Building $os-$arch-$goversion"
+          $os=windows
+          $arch=amd64
+          $goversion=1.16.x
+          Write-Host "Building $os-$arch-$goversion"
           
-          suffix=$([ "$os" == "windows" ] && echo ".exe" || echo "")
-          mkdir -p ./release/$os-$arch-$goversion
+          $suffix=$([ "$os" == "windows" ] && echo ".exe" || echo "")
+          New-Item -Type Directory ./release/$os-$arch-$goversion
           cp ${{ env.SRCPATH }}/installService.cmd ${{ env.SRCPATH }}/configuration.ini ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ./release/$os-$arch-$goversion
           
-          pushd ${{ env.SRCPATH }}
+          Push-Location -Path ${{ env.SRCPATH }}
           
           GO111MODULE=on GOOS=$os GOARCH=$arch go get ./...
           GO111MODULE=on GOOS=$os GOARCH=$arch go build -o ${{ env.SRCPATH }}/monitoring-agent$suffix
-          popd
+          Pop-Location
           cp ${{ env.SRCPATH }}/monitoring-agent$suffix ./release/$os-$arch-$goversion/monitoring-agent$suffix
