@@ -1,20 +1,20 @@
 <?xml version='1.0' encoding='windows-1252'?>
 <?if $(var.Platform) = x64 ?>
-  <?define ProductName = "Monitoring Agent (x64)" ?>
+  <?define ProductName = "Monitoring Agent (x64) - Go($var.GoVersion)" ?>
   <?define UpgradeCode = "ebb55cd6-2ee1-4440-bc00-73d610a5998c" ?>
   <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
   <?define Win64 = "yes" ?>
 <?else ?>
-  <?define ProductName = "Monitoring Agent (x86)" ?>
+  <?define ProductName = "Monitoring Agent (x86) - Go($var.GoVersion)" ?>
   <?define UpgradeCode = "76d2cc17-0aa2-4f47-bf50-07243bf1546f" ?>
   <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
   <?define Win64 = "no" ?>
 <?endif ?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
-  <Product Name="$(var.ProductName) - $(var.GitSha)" Id="$(var.ProductId)" UpgradeCode="$(var.UpgradeCode)"
+  <Product Name="$(var.ProductName)" Id="$(var.ProductId)" UpgradeCode="$(var.UpgradeCode)"
 	Language='1033' Codepage='1252' Version='1.0.0' Manufacturer='Codeweavers Ltd'>
 
-	<Package Id='*' Keywords='Installer' Description="Monitoring Agent Installer"
+	<Package Id='*' Keywords='Installer' Description="$(var.ProductName) Installer - $(var.GitSha)"
 	  Comments='Copyright © 2021 Codeweavers Limited; Available under The MIT License' Manufacturer='Codeweavers Ltd'
 	  InstallerVersion='200' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
 

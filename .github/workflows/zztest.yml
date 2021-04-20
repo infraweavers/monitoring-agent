@@ -66,7 +66,7 @@ jobs:
           Write-Host "Building MSI Installer For $os-$arch-Go${goversion}"
           
           Push-Location -Path ${{ env.SRCPATH }}
-          & 'C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe' .\monitoring-agent.wxs -arch $win_arch -dPlatform="$($win_arch)" -dProductId="$(new-guid)" -dGitSha="${{ steps.short-sha.outputs.sha }}"
+          & 'C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe' .\monitoring-agent.wxs -arch $win_arch -dPlatform="$($win_arch)" -dProductId="$(new-guid)" -dGoVersion="$(goversion)" -dGitSha="${{ steps.short-sha.outputs.sha }}"
           & "C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" "./monitoring-agent.wixobj"
           Pop-Location
           
