@@ -27,7 +27,7 @@ In active development.
 * `systemd` service
 * Packaging for debian/ubuntu
 
-### Simple Usage Examples:
+### Simple Usage Examples
 
 Linux:
 ```
@@ -41,22 +41,7 @@ curl -k -H "Content-Type: application/json" --data "{ ""path"": ""C:\\Windows\\S
 {"exitcode":0,"output":"Hello, World\n"}
 ```
 
-### Compiling and Executing
+### Further Information
 
-#### Windows
+Including how to build and run Monitoring Agent, see the [https://github.com/infraweavers/monitoring-agent/wiki#building](wiki).
 
-1. Install [GO](https://golang.org/doc/install)
-2. `git clone https://github.com/infraweavers/mama %GOPATH%\src\mama`
-3. `cd %GOPATH%\src\mama`
-4. `go get .\...`
-5. `go build -o monitoring-agent.exe` 
-6. `.\monitoring-agent.exe`
-
-#### Linux
-
-1. Install [GO](https://golang.org/doc/install)
-2. `git clone https://github.com/infraweavers/mama $GOPATH/src/mama`
-3. `cd $GOPATH/src/mama`
-4. `go get ./...`
-5. `go build -o monitoring-agent` 
-6. `./monitoring-agent`
