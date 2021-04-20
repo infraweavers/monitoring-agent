@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"mama/internal/configuration"
 	"mama/internal/logwrapper"
 	"mama/internal/web"
@@ -27,7 +28,11 @@ func (program *program) Stop(s service.Service) error {
 	return nil
 }
 
-func configurationDirectory() string {
+func configurationDirectory(commandLineDirectory string) string {
+
+	if commandLineDirectory != "" {
+		return commandLineDirectory
+	}
 
 	executable, error := os.Executable()
 	if error != nil {
@@ -62,7 +67,13 @@ func configurationDirectory() string {
 }
 
 func main() {
-	configuration.Initialise(configurationDirectory())
+
+	var configDirectory string
+
+	flag.StringVar(&configDirectory, "configurationDirectory", "", "Override the directory containing the configuration.")
+	flag.Parse()
+
+	configuration.Initialise(configurationDirectory(configDirectory))
 	logwrapper.Initialise(service.Interactive(), configuration.Settings.ConfigurationDirectory)
 
 	serviceConfiguration := &service.Config{

@@ -2,6 +2,7 @@ package configuration
 
 import (
 	"net"
+	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -53,6 +54,10 @@ func Initialise(configurationDirectory string) {
 
 	Settings.LogFilePath = getIniValueOrPanic(iniFile, "Server", "LogFilePath")
 	Settings.LogLevel = getIniValueOrPanic(iniFile, "Server", "LogLevel")
+
+	if Settings.LogFilePath == path.Base(Settings.LogFilePath) {
+		Settings.LogFilePath = filepath.FromSlash(configurationDirectory + "/" + Settings.LogFilePath)
+	}
 
 	Settings.BindAddress = getIniValueOrPanic(iniFile, "Server", "BindAddress")
 
