@@ -7,9 +7,27 @@
 
 ### About
 
-Aiming to be an easy to maintain monitoring agent that works cross platform, it is currently in active development.
+A simple, modern, maintainable and flexible monitoring agent that works cross platform.
 
-### Example of current usage:
+### Status
+
+In active development.
+
+### Current Features
+
+* Cross platform
+* Executes a passed in script
+* Continuous Integration/Delivery
+* Windows MSI / Service
+* Optional enforcement of script signing
+* Optional enforcement of client TLS
+
+### Future Planned Features
+
+* `systemd` service
+* Packaging for debian/ubuntu
+
+### Simple Usage Examples:
 
 Linux:
 ```
@@ -21,24 +39,6 @@ Windows:
 ```
 curl -k -H "Content-Type: application/json" --data "{ ""path"": ""C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"", ""args"": [""-Command"", ""Write-Host 'Hello, World'""]  }" https://test:secret@127.0.0.1:9000/v1/runscript
 ```
-
-### Status
-
-In active development.
-
-### Current Features
-
-* Execute a passed in script
-* Continuous Integration/Delivery
-* Windows service
-* Script signing enforcement
-* Cross platform
-
-### Future Planned Features
-
-* Windows MSI
-* `systemd` service
-* Packaging for debian/ubuntu
 
 ### Compiling and Executing
 
