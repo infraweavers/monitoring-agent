@@ -71,6 +71,8 @@ jobs:
           & "C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" "./monitoring-agent.wixobj"
           Pop-Location
           Get-ChildItem ${{ env.SRCPATH }}/monitoring-agent.msi
+          Get-ChildItem ./release/$os-$arch-$goversion
+          Write-Host Move-Item -Path ${{ env.SRCPATH }}/monitoring-agent.msi -Destination "./release/$($os)-$($arch)-$($goversion)/monitoring-agent-$($win_arch)-$($goversion)-${{ steps.short-sha.outputs.sha }}.msi"
           Move-Item -Path ${{ env.SRCPATH }}/monitoring-agent.msi -Destination "./release/$($os)-$($arch)-$($goversion)/monitoring-agent-$($win_arch)-$($goversion)-${{ steps.short-sha.outputs.sha }}.msi"
 
       - name: upload MSI
