@@ -4,7 +4,14 @@ on: [workflow_dispatch]
 
 jobs:
 
-  build-release:
+  build-win-MSI-installer:
+  
+    strategy:
+      matrix:
+        go-version: [1.16.x]
+        os: [windows]
+        arch: [386, amd64]
+        
     runs-on: windows-latest
     env:
         SRCPATH: ${{ github.workspace }}/go/src/mama
@@ -19,7 +26,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.16.x
+          go-version: ${{ matrix.go-version }}
           
       - name: Install WIX Tool Set
         run: |
@@ -33,38 +40,40 @@ jobs:
 
       - name: Dependencies & Build
         run: |
-          $os="windows"
-          $arch="amd64"
-          $goversion="1.16.x"
+          $os="${{ matrix.os }}"
+          $arch="${{ matrix.arch }}"
+          $goversion="${{ matrix.go-version }}"
           Write-Host "Building $os-$arch-$goversion"
           
-          $suffix=".exe"
-          New-Item -Type Directory ./release/$os-$arch-$goversion
-          @( 
-            "${{ env.SRCPATH }}/installService.cmd",
-            "${{ env.SRCPATH }}/uninstallService.cmd",
-            "${{ env.SRCPATH }}/configuration.ini",
-            "${{ env.SRCPATH }}/LICENSE",
-            "${{ env.SRCPATH }}/server.crt",
-            "${{ env.SRCPATH }}/server.key",
-            "${{ env.SRCPATH }}/README.md",
-            "${{ env.SRCPATH }}/cacert.pem"
-          ) | ForEach-Object { Copy-Item -Path $_ -Destination  .\release\$os-$arch-$goversion }
+          New-Item -Type Directory ./release/$os-$arch-Go${goversion}
           
-          Push-Location -Path ${{ env.SRCPATH }}
-          
+          Set-Location -Path ${{ env.SRCPATH }}
           $env:GO111MODULE="on" 
           $env:GOOS="$os"
           $env:GOARCH=$arch
           go get ./...
-          go build -o ${{ env.SRCPATH }}/monitoring-agent$suffix
-          Pop-Location
-          Copy-Item -Path ${{ env.SRCPATH }}/monitoring-agent$suffix -Destination ./release/$os-$arch-$goversion/monitoring-agent$suffix
+          go build -o ${{ env.SRCPATH }}/monitoring-agent.exe
           
       - name: Create MSI Installer
         run: |
+          $os="${{ matrix.os }}"
+          $arch="${{ matrix.arch }}"
+          $goversion="${{ matrix.go-version }}"
+          
+          $win_arch = "x64"
+          if ($arch -eq "386") { $win_arch = "x86" }
+
+          Write-Host "Building MSI Installer For $os-$arch-Go${goversion}"
+          
           Push-Location -Path ${{ env.SRCPATH }}
-          & "c:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe" "./monitoring-agent.wxs"
-          & "c:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" "./monitoring-agent.wixobj"
+          & 'C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe' .\monitoring-agent.wxs -arch $win_arch -dPlatform="$($win_arch)" -dGitSha="${{ steps.short-sha.outputs.sha }}"
+          & "C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" "./monitoring-agent.wixobj"
           Pop-Location
-          Copy-Item -Path ${{ env.SRCPATH }}/monitoring-agent.msi -Destination ./release/$os-$arch-$goversion/monitoring-agent.msi
+          
+          Move-Item -Path ${{ env.SRCPATH }}/monitoring-agent.msi -Destination "./release/$os-$arch-Go${goversion}/monitoring-agent-$win_arch-Go${goversion}-${{ steps.short-sha.outputs.sha }}.msi"
+
+      - name: upload MSI
+        uses: actions/upload-artifact@v2
+        with:
+          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}"
+          path: release/

@@ -1,20 +1,31 @@
 <?xml version='1.0' encoding='windows-1252'?>
+<?if $(var.Platform) = x64 ?>
+  <?define ProductName = "Monitoring Agent (x64)" ?>
+  <?define UpgradeCode = "ebb55cd6-2ee1-4440-bc00-73d610a5998c" ?>
+  <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+  <?define Win64 = "yes" ?>
+<?else ?>
+  <?define ProductName = "Monitoring Agent (x86)" ?>
+  <?define UpgradeCode = "76d2cc17-0aa2-4f47-bf50-07243bf1546f" ?>
+  <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
+  <?define Win64 = "no" ?>
+<?endif ?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
-  <Product Name='Monitoring Agent' Id='744691d0-31c8-4f62-8c12-1fc6aa837447' UpgradeCode='ebb55cd6-2ee1-4440-bc00-73d610a5998c'
-	Language='1033' Codepage='1252' Version='1.0.0' Manufacturer='Codeweavers'>
+  <Product Name="$(var.ProductName)" Id="*" UpgradeCode="$(var.UpgradeCode)"
+	Language='1033' Codepage='1252' Version='0.1' Manufacturer='Codeweavers Ltd'>
 
-	<Package Id='*' Keywords='Installer' Description="Monitoring Agent Installer"
-	  Comments='Copyright © 2021 Codeweavers Limited; Available under The MIT License' Manufacturer='Codeweavers Limited'
-	  InstallerVersion='100' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
+	<Package Id='*' Keywords='Installer' Description="$(var.ProductName) Installer - $(var.GitSha)"
+	  Comments='Copyright © 2021 Codeweavers Limited; Available under The MIT License' Manufacturer='Codeweavers Ltd'
+	  InstallerVersion='200' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
 
 	<Media Id='1' Cabinet='Sample.cab' EmbedCab='yes' DiskPrompt="CD-ROM #1" />
 	<Property Id='DiskPrompt' Value="Monitoring Agent Installation [1]" />
 
 	<Directory Id='TARGETDIR' Name='SourceDir'>
-	  <Directory Id='ProgramFilesFolder' Name='PFiles'>
+	  <Directory Id="$(var.PlatformProgramFilesFolder)">
 		<Directory Id='INSTALLDIR' Name='MonitoringAgent'>
 
-			<Component Id='MainExecutable' Guid='0dbe56a4-660e-4299-9232-0677a3d294a0'>
+			<Component Id='MainExecutable' Guid='0dbe56a4-660e-4299-9232-0677a3d294a0' Win64="$(var.Win64)">
 				<File Id='MonitoringAgentExe' Name='Monitoring-Agent.exe' DiskId='1' Source='Monitoring-Agent.exe' KeyPath='yes' />
 				<ServiceInstall
 					Description='Permits execution of commands for host monitoring purposes'
@@ -28,31 +39,31 @@
 				<ServiceControl Id='StartMonitoringAgentService' Start='install' Stop='both' Remove='uninstall' Name='Monitoring Agent' Wait='yes' />
 			</Component>
 			
-			<Component Id='SampleCaCertificate' Guid='d1d9e531-1667-4670-9d3e-d846bcc33228'>
+			<Component Id='SampleCaCertificate' Guid='d1d9e531-1667-4670-9d3e-d846bcc33228' Win64="$(var.Win64)">
 			  <File Id='cacertPem' Name='cacert.pem' DiskId='1' Source='cacert.pem' KeyPath='yes' />
 			</Component>
 			
-			<Component Id='SampleConfigurationIni' Guid='05002cfe-4958-495c-9c5b-ecad4e5b6050'>
+			<Component Id='SampleConfigurationIni' Guid='05002cfe-4958-495c-9c5b-ecad4e5b6050' Win64="$(var.Win64)">
 			  <File Id='configurationIni' Name='configuration.ini' DiskId='1' Source='configuration.ini' KeyPath='yes' />
 			</Component>
 			
-			<Component Id='ServiceInstallationCommandFile' Guid='648767b8-0b14-42d6-88eb-e4347e88904a'>
+			<Component Id='ServiceInstallationCommandFile' Guid='648767b8-0b14-42d6-88eb-e4347e88904a' Win64="$(var.Win64)">
 			  <File Id='installServiceCmd' Name='installService.cmd' DiskId='1' Source='installService.cmd' KeyPath='yes' />
 			</Component>
 			
-			<Component Id='LicenseFile' Guid='a3e21569-89a0-4683-8866-57fa11086f33'>
+			<Component Id='LicenseFile' Guid='a3e21569-89a0-4683-8866-57fa11086f33' Win64="$(var.Win64)">
 			  <File Id='license' Name='LICENSE' DiskId='1' Source='LICENSE' KeyPath='yes' />
 			</Component>
 			
-			<Component Id='SampleServerCertificate' Guid='ab00497a-b889-423c-9985-3d433650ffcf'>
+			<Component Id='SampleServerCertificate' Guid='ab00497a-b889-423c-9985-3d433650ffcf' Win64="$(var.Win64)">
 			  <File Id='serverCrt' Name='server.crt' DiskId='1' Source='server.crt' KeyPath='yes' />
 			</Component>
 			
-			<Component Id='SampleServerKey' Guid='7cb0dd12-517e-4096-907b-b8ac8ad8a0ee'>
+			<Component Id='SampleServerKey' Guid='7cb0dd12-517e-4096-907b-b8ac8ad8a0ee' Win64="$(var.Win64)">
 			  <File Id='serverKey' Name='server.key' DiskId='1' Source='server.key' KeyPath='yes' />
 			</Component>
 			
-			<Component Id='ServiceUninstallationCommandFile' Guid='26e3bec7-6fb7-4620-82b3-9ec759e7b588'>
+			<Component Id='ServiceUninstallationCommandFile' Guid='26e3bec7-6fb7-4620-82b3-9ec759e7b588' Win64="$(var.Win64)">
 			  <File Id='uninstallServiceCmd' Name='uninstallService.cmd' DiskId='1' Source='uninstallService.cmd' KeyPath='yes' />
 			</Component>
 

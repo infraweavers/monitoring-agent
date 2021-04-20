@@ -31,14 +31,14 @@ In active development.
 * Execute a passed in script
 * Continuous Integration/Delivery
 * Windows service
+* Script signing enforcement
+* Cross platform
 
 ### Future Planned Features
 
 * Windows MSI
-* Script signing enforcement
 * `systemd` service
 * Packaging for debian/ubuntu
-* Cross platform
 
 ### Compiling and Executing
 
