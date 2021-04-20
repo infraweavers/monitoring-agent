@@ -16,7 +16,7 @@ In active development.
 ### Current Features
 
 * Cross platform
-* Executes a passed in script
+* Executes a passed in script (no need to deploy scripts to monitored hosts)
 * Continuous Integration/Delivery
 * Windows MSI / Service
 * Optional enforcement of script signing
