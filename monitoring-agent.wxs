@@ -69,11 +69,9 @@
 	  <ComponentRef Id='MainExecutable' />
 	  <ComponentRef Id='SampleCaCertificate' />
 	  <ComponentRef Id='SampleConfigurationIni' />
-	  <ComponentRef Id='ServiceInstallationCommandFile' />
 	  <ComponentRef Id='LicenseFile' />
 	  <ComponentRef Id='SampleServerCertificate' />
 	  <ComponentRef Id='SampleServerKey' />
-	  <ComponentRef Id='ServiceUninstallationCommandFile' />
 	</Feature>
   </Product>
 </Wix>
