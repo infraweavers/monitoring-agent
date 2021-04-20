@@ -56,10 +56,10 @@ jobs:
           Write-Host "Building MSI Installer For $os-$arch-$goversion"
           
           Push-Location -Path ${{ env.SRCPATH }}
-          & "c:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe" "./monitoring-agent.wxs"
-          & "c:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" "./monitoring-agent.wixobj"
+          & 'C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe' .\monitoring-agent.wxs -arch x64 -dPlatform="x64" -dProductId="$(new-guid)" -dGitSha="${{ steps.short-sha.outputs.sha }}"
+          & "C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" "./monitoring-agent.wixobj"
           Pop-Location
-          Copy-Item -Path ${{ env.SRCPATH }}/monitoring-agent.msi -Destination ./release/$os-$arch-$goversion/monitoring-agent-amd64-1.16-${{ steps.short-sha.outputs.sha }}.msi
+          Move-Item -Path ${{ env.SRCPATH }}/monitoring-agent.msi -Destination ./release/$os-$arch-$goversion/monitoring-agent-amd64-1.16-${{ steps.short-sha.outputs.sha }}.msi
 
       - name: upload MSI
         uses: actions/upload-artifact@v2
