@@ -41,7 +41,7 @@ curl -k -H "Content-Type: application/json" --data "{ ""path"": ""C:\\Windows\\S
 {"exitcode":0,"output":"Hello, World\n"}
 ```
 
-### Further Information
+### Wiki
 
-Including how to build and run Monitoring Agent, see the [wiki](https://github.com/infraweavers/monitoring-agent/wiki#building).
+For more information, including how to build and run Monitoring Agent, see the [wiki](https://github.com/infraweavers/monitoring-agent/wiki#building).
 
