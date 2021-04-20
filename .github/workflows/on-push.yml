@@ -73,7 +73,7 @@ jobs:
           
           suffix=$([ "$os" == "windows" ] && echo ".exe" || echo "")
 
-          mkdir -p ./release/$os-$arch-$goversion
+          mkdir -p ./release/$os-$arch-Go${goversion}
           cp ${{ env.SRCPATH }}/configuration.ini ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ${{ env.SRCPATH }}/cacert.pem ./release/$os-$arch-$goversion
           
           pushd ${{ env.SRCPATH }}
@@ -83,12 +83,12 @@ jobs:
 
           popd
 
-          cp ${{ env.SRCPATH }}/monitoring-agent$suffix ./release/$os-$arch-$goversion/monitoring-agent$suffix
+          cp ${{ env.SRCPATH }}/monitoring-agent$suffix ./release/$os-$arch-Go${goversion}/monitoring-agent$suffix
       
       - name: upload builds
         uses: actions/upload-artifact@v2
         with:
-          name: "${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}"
+          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-BIN"
           path: release/
 
   build-win-MSI-installer:
@@ -169,5 +169,5 @@ jobs:
       - name: upload MSI
         uses: actions/upload-artifact@v2
         with:
-          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}"
+          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-MSI"
           path: release/
