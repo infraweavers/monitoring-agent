@@ -40,9 +40,9 @@ jobs:
 
       - name: Dependencies & Build
         run: |
-          $os=${{ matrix.os }}
-          $arch=${{ matrix.arch }}
-          $goversion=${{ matrix.go-version }}
+          $os="${{ matrix.os }}"
+          $arch="${{ matrix.arch }}"
+          $goversion="${{ matrix.go-version }}"
           Write-Host "Building $os-$arch-$goversion"
           
           New-Item -Type Directory ./release/$os-$arch-$goversion
@@ -57,9 +57,9 @@ jobs:
           
       - name: Create MSI Installer
         run: |
-          $os=${{ matrix.os }}
-          $arch=${{ matrix.arch }}
-          $goversion=${{ matrix.go-version }}
+          $os="${{ matrix.os }}"
+          $arch="${{ matrix.arch }}"
+          $goversion="${{ matrix.go-version }}"
           
           $win_arch = "x64"
           if ($arch = "386") { $win_arch = "x86" }
