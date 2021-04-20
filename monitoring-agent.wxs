@@ -12,13 +12,13 @@
 <?endif ?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
   <Product Name="$(var.ProductName)" Id="*" UpgradeCode="$(var.UpgradeCode)"
-	Language='1033' Codepage='1252' Version='0.1' Manufacturer='Codeweavers Ltd'>
+	Language='1033' Codepage='1252' Version='0.1.$(var.RevisionNumber)' Manufacturer='Codeweavers Ltd'>
 
 	<Package Id='*' Keywords='Installer' Description="$(var.ProductName) Installer - $(var.GitSha)"
 	  Comments='Copyright © 2021 Codeweavers Limited; Available under The MIT License' Manufacturer='Codeweavers Ltd'
 	  InstallerVersion='200' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
 
-	<MajorUpgrade AllowSameVersionUpgrades="yes" DowngradeErrorMessage="A newer version of $(var.ProductName) is already installed." />
+	<MajorUpgrade AllowDowngrades="no" DowngradeErrorMessage="A newer version of $(var.ProductName) is already installed." />
 
 	<Media Id='1' Cabinet='Sample.cab' EmbedCab='yes' DiskPrompt="CD-ROM #1" />
 	<Property Id='DiskPrompt' Value="Monitoring Agent Installation [1]" />
