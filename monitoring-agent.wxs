@@ -49,10 +49,6 @@
 			  <File Id='configurationIni' Name='configuration.ini' DiskId='1' Source='configuration.ini' KeyPath='yes' />
 			</Component>
 			
-			<Component Id='ServiceInstallationCommandFile' Guid='648767b8-0b14-42d6-88eb-e4347e88904a' Win64="$(var.Win64)">
-			  <File Id='installServiceCmd' Name='installService.cmd' DiskId='1' Source='installService.cmd' KeyPath='yes' />
-			</Component>
-			
 			<Component Id='LicenseFile' Guid='a3e21569-89a0-4683-8866-57fa11086f33' Win64="$(var.Win64)">
 			  <File Id='license' Name='LICENSE' DiskId='1' Source='LICENSE' KeyPath='yes' />
 			</Component>
@@ -64,11 +60,7 @@
 			<Component Id='SampleServerKey' Guid='7cb0dd12-517e-4096-907b-b8ac8ad8a0ee' Win64="$(var.Win64)">
 			  <File Id='serverKey' Name='server.key' DiskId='1' Source='server.key' KeyPath='yes' />
 			</Component>
-			
-			<Component Id='ServiceUninstallationCommandFile' Guid='26e3bec7-6fb7-4620-82b3-9ec759e7b588' Win64="$(var.Win64)">
-			  <File Id='uninstallServiceCmd' Name='uninstallService.cmd' DiskId='1' Source='uninstallService.cmd' KeyPath='yes' />
-			</Component>
-
+	
 		  </Directory>
 	  </Directory>
 	</Directory>
