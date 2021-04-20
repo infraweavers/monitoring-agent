@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-        SRCPATH: ${{ github.workspace }}/go/src/mama
+        SRCPATH: ${{ github.workspace }}/go/src/monitoring-agent
 
     steps:
       
@@ -44,7 +44,7 @@ jobs:
     needs: test
     
     env:
-        SRCPATH: ${{ github.workspace }}/go/src/mama
+        SRCPATH: ${{ github.workspace }}/go/src/monitoring-agent
 
     steps:
         
@@ -104,7 +104,7 @@ jobs:
     needs: test
     
     env:
-        SRCPATH: ${{ github.workspace }}/go/src/mama
+        SRCPATH: ${{ github.workspace }}/go/src/monitoring-agent
 
     steps:
         
