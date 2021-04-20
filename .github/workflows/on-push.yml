@@ -158,7 +158,7 @@ jobs:
           $lastCommitSha = ((Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/git/refs/heads/master -UseBasicParsing).Content | ConvertFrom-Json).object.sha
           $response = Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/compare/${firstCommitSha}...${lastCommitSha} -UseBasicParsing
           $msiRevisionNumber = ($response.Content | ConvertFrom-Json).total_commits
-          Write-Host "MSI Revision Number is: ${msiRevisionNumber}
+          Write-Host "MSI Revision Number is: ${msiRevisionNumber}"
           
           Push-Location -Path ${{ env.SRCPATH }}
           & 'C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe' .\monitoring-agent.wxs -arch $win_arch -dPlatform="$($win_arch)" -dRevisionNumber="$($msiRevisionNumber)" -dGitSha="${{ steps.short-sha.outputs.sha }}"
