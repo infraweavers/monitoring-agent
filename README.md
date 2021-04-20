@@ -1,5 +1,4 @@
 <h1 align="center">Monitoring Agent</h1>
-<h3 align="center">aka "MAMA" the MAintainable Monitoring Agent</h3>
 
 [![Test, Build and Release](https://github.com/infraweavers/monitoring-agent/actions/workflows/on-push.yml/badge.svg)](https://github.com/infraweavers/monitoring-agent/actions/workflows/on-push.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/infraweavers/mama)](https://goreportcard.com/report/github.com/infraweavers/mama)
