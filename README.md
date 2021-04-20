@@ -4,8 +4,6 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/infraweavers/mama)](https://goreportcard.com/report/github.com/infraweavers/mama)
 [![License: MIT](https://img.shields.io/github/license/infraweavers/mama)](https://mit-license.org/)
 
-### About
-
 A simple, modern, maintainable and flexible monitoring agent that works cross platform.
 
 ### Status
