@@ -43,5 +43,5 @@ curl -k -H "Content-Type: application/json" --data "{ ""path"": ""C:\\Windows\\S
 
 ### Further Information
 
-Including how to build and run Monitoring Agent, see the [https://github.com/infraweavers/monitoring-agent/wiki#building](wiki).
+Including how to build and run Monitoring Agent, see the [wiki](https://github.com/infraweavers/monitoring-agent/wiki#building).
 
