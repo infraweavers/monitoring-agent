@@ -11,11 +11,11 @@
   <?define Win64 = "no" ?>
 <?endif ?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
-  <Product Name="$(var.ProductName) - $(var.GitSha)" Id='744691d0-31c8-4f62-8c12-1fc6aa837447' UpgradeCode="$(var.UpgradeCode)"
-	Language='1033' Codepage='1252' Version='1.0.0' Manufacturer='Codeweavers'>
+  <Product Name="$(var.ProductName) - $(var.GitSha)" Id="$(var.ProductId)" UpgradeCode="$(var.UpgradeCode)"
+	Language='1033' Codepage='1252' Version='1.0.0' Manufacturer='Codeweavers Ltd'>
 
 	<Package Id='*' Keywords='Installer' Description="Monitoring Agent Installer"
-	  Comments='Copyright © 2021 Codeweavers Limited; Available under The MIT License' Manufacturer='Codeweavers Limited'
+	  Comments='Copyright © 2021 Codeweavers Limited; Available under The MIT License' Manufacturer='Codeweavers Ltd'
 	  InstallerVersion='200' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
 
 	<Media Id='1' Cabinet='Sample.cab' EmbedCab='yes' DiskPrompt="CD-ROM #1" />
