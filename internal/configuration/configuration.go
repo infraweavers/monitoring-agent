@@ -94,7 +94,7 @@ func Initialise(configurationDirectory string) {
 
 func getIniValueOrPanic(input ini.File, group string, key string) string {
 	value, wasFound := input.Get(group, key)
-	if wasFound == false {
+	if !wasFound {
 		panic("[" + group + "] " + key + " was not configured")
 	}
 	return value

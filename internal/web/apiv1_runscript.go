@@ -41,7 +41,7 @@ func APIV1RunscriptPostHandler(responseWriter http.ResponseWriter, request *http
 			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Only signed stdin can be executed", http.StatusBadRequest)))
 			return
 		}
-		if verifySignature(strings.Join(script.Args[:], " "), script.Signature) == false {
+		if !verifySignature(strings.Join(script.Args[:], " "), script.Signature) {
 			responseWriter.WriteHeader(http.StatusBadRequest)
 			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Signature not valid", http.StatusBadRequest)))
 			logwrapper.Log.Errorf("Attempt to execute script with invalid signature: '%s' '%s' ", request.RemoteAddr, request.UserAgent())
