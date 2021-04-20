@@ -4,7 +4,7 @@ on: [workflow_dispatch]
 
 jobs:
 
-  build-release:
+  build-win-MSI-installer:
   
     strategy:
       matrix:
@@ -47,13 +47,12 @@ jobs:
           
           New-Item -Type Directory ./release/$os-$arch-$goversion
           
-          Push-Location -Path ${{ env.SRCPATH }}
+          Set-Location -Path ${{ env.SRCPATH }}
           $env:GO111MODULE="on" 
           $env:GOOS="$os"
           $env:GOARCH=$arch
           go get ./...
           go build -o ${{ env.SRCPATH }}/monitoring-agent.exe
-          Pop-Location
           
       - name: Create MSI Installer
         run: |
@@ -62,7 +61,7 @@ jobs:
           $goversion="${{ matrix.go-version }}"
           
           $win_arch = "x64"
-          if ($arch = "386") { $win_arch = "x86" }
+          if ($arch -eq "386") { $win_arch = "x86" }
 
           Write-Host "Building MSI Installer For $os-$arch-$goversion"
           
@@ -70,10 +69,7 @@ jobs:
           & 'C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe' .\monitoring-agent.wxs -arch $win_arch -dPlatform="$($win_arch)" -dProductId="$(new-guid)" -dGitSha="${{ steps.short-sha.outputs.sha }}"
           & "C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" "./monitoring-agent.wixobj"
           Pop-Location
-          Get-ChildItem ${{ env.SRCPATH }}/monitoring-agent.msi
-          Get-ChildItem ./release
-          Get-ChildItem ./release/$os-$arch-$goversion
-          Write-Host Move-Item -Path ${{ env.SRCPATH }}/monitoring-agent.msi -Destination "./release/$($os)-$($arch)-$($goversion)/monitoring-agent-$($win_arch)-$($goversion)-${{ steps.short-sha.outputs.sha }}.msi"
+          
           Move-Item -Path ${{ env.SRCPATH }}/monitoring-agent.msi -Destination "./release/$($os)-$($arch)-$($goversion)/monitoring-agent-$($win_arch)-$($goversion)-${{ steps.short-sha.outputs.sha }}.msi"
 
       - name: upload MSI
