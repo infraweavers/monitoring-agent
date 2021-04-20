@@ -24,7 +24,7 @@ type SettingsValues struct {
 	LogLevel                string
 	RequestTimeout          time.Duration
 	LoadPprof               bool
-	SignedStdinOnly         bool
+	SignedScriptsOnly       bool
 	PublicKey               minisign.PublicKey
 	AllowedAddresses        []*net.IPNet
 	UseClientCertificates   bool
@@ -67,7 +67,7 @@ func Initialise(configurationDirectory string) {
 
 	Settings.LoadPprof = getIniBoolOrPanic(iniFile, "Server", "LoadPprof")
 
-	Settings.SignedStdinOnly = getIniBoolOrPanic(iniFile, "Security", "SignedStdinOnly")
+	Settings.SignedScriptsOnly = getIniBoolOrPanic(iniFile, "Security", "SignedScriptsOnly")
 
 	hostArrays := strings.Split(getIniValueOrPanic(iniFile, "Security", "AllowedAddresses"), ",")
 	whitelistNetworks := make([]*net.IPNet, len(hostArrays))

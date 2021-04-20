@@ -34,13 +34,13 @@ func APIV1RunscriptstdinPostHandler(responseWriter http.ResponseWriter, request 
 		return
 	}
 
-	if configuration.Settings.SignedStdinOnly {
-		if script.StdInSignature == "" {
+	if configuration.Settings.SignedScriptsOnly {
+		if script.Signature == "" {
 			responseWriter.WriteHeader(http.StatusBadRequest)
 			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Only signed stdin can be executed", http.StatusBadRequest)))
 			return
 		}
-		if verifySignature(script.StdIn, script.StdInSignature) == false {
+		if verifySignature(script.StdIn, script.Signature) == false {
 			responseWriter.WriteHeader(http.StatusBadRequest)
 			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Signature not valid", http.StatusBadRequest)))
 			logwrapper.Log.Errorf("Attempt to execute script with invalid signature: '%s' '%s' ", request.RemoteAddr, request.UserAgent())

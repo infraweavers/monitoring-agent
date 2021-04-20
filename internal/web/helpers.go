@@ -17,10 +17,10 @@ import (
 
 // Script represents an object submitted to the runscript endpoint
 type Script struct {
-	Path           string   `json:"path"`
-	Args           []string `json:"args"`
-	StdIn          string   `json:"stdin"`
-	StdInSignature string   `json:"stdinsignature"`
+	Path      string   `json:"path"`
+	Args      []string `json:"args"`
+	StdIn     string   `json:"stdin"`
+	Signature string   `json:"stdinsignature"`
 }
 
 // Result represents the object returned from the runscript endpoint
