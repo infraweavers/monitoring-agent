@@ -31,12 +31,8 @@ func LaunchServer() {
 		clientAuthenticationMethod = tls.RequireAndVerifyClientCert
 		certificateContent, clientCALoaderror := ioutil.ReadFile(configuration.Settings.ClientCertificateCAFile)
 
-		if certificateContent == nil {
-			certificateContent, clientCALoaderror = ioutil.ReadFile(configuration.Settings.ConfigurationDirectory + "/" + configuration.Settings.ClientCertificateCAFile)
-		}
-
 		if clientCALoaderror != nil {
-			logwrapper.Log.Criticalf("Unable to read ClientCertificateCAFile from either %s or %s", configuration.Settings.CertificatePath, configuration.Settings.ConfigurationDirectory+"/"+configuration.Settings.ClientCertificateCAFile)
+			logwrapper.Log.Criticalf("Unable to read ClientCertificateCAFile from %s ", configuration.Settings.ClientCertificateCAFile)
 			panic(clientCALoaderror)
 		}
 

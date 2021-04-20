@@ -2,6 +2,7 @@ package configuration
 
 import (
 	"net"
+	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -37,6 +38,7 @@ var Settings = SettingsValues{}
 func Initialise(configurationDirectory string) {
 
 	Settings.ConfigurationDirectory = configurationDirectory
+
 	Settings.CertificatePath = filepath.FromSlash(configurationDirectory + "/server.crt")
 	Settings.PrivateKeyPath = filepath.FromSlash(configurationDirectory + "/server.key")
 
@@ -51,7 +53,7 @@ func Initialise(configurationDirectory string) {
 	Settings.Username = getIniValueOrPanic(iniFile, "Authentication", "Username")
 	Settings.Password = getIniValueOrPanic(iniFile, "Authentication", "Password")
 
-	Settings.LogFilePath = getIniValueOrPanic(iniFile, "Server", "LogFilePath")
+	Settings.LogFilePath = fixRelativePath(configurationDirectory, getIniValueOrPanic(iniFile, "Server", "LogFilePath"))
 	Settings.LogLevel = getIniValueOrPanic(iniFile, "Server", "LogLevel")
 
 	Settings.BindAddress = getIniValueOrPanic(iniFile, "Server", "BindAddress")
@@ -87,7 +89,7 @@ func Initialise(configurationDirectory string) {
 	Settings.PublicKey = publicKey
 
 	Settings.UseClientCertificates = getIniBoolOrPanic(iniFile, "Security", "UseClientCertificates")
-	Settings.ClientCertificateCAFile = getIniValueOrPanic(iniFile, "Security", "ClientCertificateCAFile")
+	Settings.ClientCertificateCAFile = fixRelativePath(configurationDirectory, getIniValueOrPanic(iniFile, "Security", "ClientCertificateCAFile"))
 }
 
 func getIniValueOrPanic(input ini.File, group string, key string) string {
@@ -96,6 +98,13 @@ func getIniValueOrPanic(input ini.File, group string, key string) string {
 		panic("[" + group + "] " + key + " was not configured")
 	}
 	return value
+}
+
+func fixRelativePath(configurationDirectory string, filePath string) string {
+	if filePath == path.Base(filePath) {
+		return filepath.FromSlash(configurationDirectory + "/" + filePath)
+	}
+	return filePath
 }
 
 func getIniBoolOrPanic(input ini.File, group string, key string) bool {
