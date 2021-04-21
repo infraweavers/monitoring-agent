@@ -22,7 +22,8 @@ type SettingsValues struct {
 	BindAddress             string
 	LogFilePath             string
 	LogLevel                string
-	RequestTimeout          time.Duration
+	HTTPRequestTimeout      time.Duration
+	DefaultScriptTimeout    time.Duration
 	LoadPprof               bool
 	SignedStdInOnly         bool
 	PublicKey               minisign.PublicKey
@@ -58,12 +59,19 @@ func Initialise(configurationDirectory string) {
 
 	Settings.BindAddress = getIniValueOrPanic(iniFile, "Server", "BindAddress")
 
-	stringValue := getIniValueOrPanic(iniFile, "Server", "RequestTimeout")
+	stringValue := getIniValueOrPanic(iniFile, "Server", "HTTPRequestTimeout")
 	durationValue, parseError := time.ParseDuration(stringValue)
 	if parseError != nil {
 		panic(parseError)
 	}
-	Settings.RequestTimeout = durationValue
+	Settings.HTTPRequestTimeout = durationValue
+
+	stringValue = getIniValueOrPanic(iniFile, "Server", "DefaultScriptTimeout")
+	durationValue, parseError = time.ParseDuration(stringValue)
+	if parseError != nil {
+		panic(parseError)
+	}
+	Settings.DefaultScriptTimeout = durationValue
 
 	Settings.LoadPprof = getIniBoolOrPanic(iniFile, "Server", "LoadPprof")
 
@@ -125,7 +133,8 @@ func TestingInitialise() {
 	Settings.CertificatePath = "NOTUSED"
 	Settings.PrivateKeyPath = "NOTUSED"
 
-	Settings.RequestTimeout = time.Second * 10
+	Settings.HTTPRequestTimeout = time.Second * 11
+	Settings.DefaultScriptTimeout = time.Second * 10
 	Settings.Username = "test"
 	Settings.Password = "secret"
 

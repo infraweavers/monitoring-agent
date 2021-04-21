@@ -19,7 +19,7 @@ func LaunchServer() {
 		panic(loadError)
 	}
 
-	var requestTimeout = configuration.Settings.RequestTimeout
+	var requestTimeout = configuration.Settings.HTTPRequestTimeout
 
 	router := NewRouter()
 	handlerWithTimeout := http.TimeoutHandler(router, requestTimeout, "Request Timeout\n")
