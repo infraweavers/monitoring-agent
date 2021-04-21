@@ -20,7 +20,7 @@ type Script struct {
 	Path      string   `json:"path"`
 	Args      []string `json:"args"`
 	StdIn     string   `json:"stdin"`
-	Signature string   `json:"stdinsignature"`
+	Signature string   `json:"signature"`
 }
 
 // Result represents the object returned from the runscript endpoint
