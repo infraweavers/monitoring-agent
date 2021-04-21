@@ -49,8 +49,8 @@ func TestRunscriptApiHandler(t *testing.T) {
 
 		output := TestHTTPRequestWithDefaultCredentials(t, request)
 
-		assert.Equal(output.ResponseStatus, http.StatusOK, "Response code should be OK")
-		assert.Equal(output.ResponseBody, osSpecificRunScriptTestCases[runtime.GOOS].ExpectedResult.Output, "Response output did not match case")
+		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
+		assert.Equal(osSpecificRunScriptTestCases[runtime.GOOS].ExpectedResult.Output, output.ResponseBody, "Response output did not match case")
 	})
 
 	t.Run("Returns HTTP status 400 bad request with erronous post", func(t *testing.T) {
@@ -61,8 +61,8 @@ func TestRunscriptApiHandler(t *testing.T) {
 
 		output := TestHTTPRequestWithDefaultCredentials(t, request)
 
-		assert.Equal(output.ResponseStatus, http.StatusBadRequest, "Response code should be BadRequest")
-		assert.Equal(output.ResponseBody, `{"exitcode":3,"output":"400 Bad Request"}`)
+		assert.Equal(http.StatusBadRequest, output.ResponseStatus, "Response code should be BadRequest")
+		assert.Equal(`{"exitcode":3,"output":"400 Bad Request"}`, output.ResponseBody)
 	})
 
 	t.Run("Returns HTTP status 400 bad request with stdin supplied", func(t *testing.T) {
@@ -82,7 +82,7 @@ func TestRunscriptApiHandler(t *testing.T) {
 
 		output := TestHTTPRequestWithDefaultCredentials(t, request)
 
-		assert.Equal(output.ResponseStatus, http.StatusBadRequest, "Response code should be Bad Request")
-		assert.Equal(output.ResponseBody, `{"exitcode":3,"output":"400 Bad Request - This endpoint does not use stdin"}`)
+		assert.Equal(http.StatusBadRequest, output.ResponseStatus, "Response code should be Bad Request")
+		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - This endpoint does not use stdin"}`, output.ResponseBody)
 	})
 }

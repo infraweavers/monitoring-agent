@@ -63,8 +63,8 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 		output := TestHTTPRequestWithDefaultCredentials(t, request)
 
 		assert := assert.New(t)
-		assert.Equal(output.ResponseStatus, http.StatusOK, "Response code should be OK")
-		assert.Equal(output.ResponseBody, osSpecificRunScriptStdinTestCases[runtime.GOOS].ExpectedResult.Output, "Body did not match expected output")
+		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
+		assert.Equal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ExpectedResult.Output, output.ResponseBody, "Body did not match expected output")
 	})
 
 	t.Run("Returns HTTP status 400 bad request with erronous post", func(t *testing.T) {
@@ -74,8 +74,8 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 		output := TestHTTPRequestWithDefaultCredentials(t, request)
 
 		assert := assert.New(t)
-		assert.Equal(output.ResponseStatus, http.StatusBadRequest)
-		assert.Equal(output.ResponseBody, `{"exitcode":3,"output":"400 Bad Request"}`)
+		assert.Equal(http.StatusBadRequest, output.ResponseStatus)
+		assert.Equal(`{"exitcode":3,"output":"400 Bad Request"}`, output.ResponseBody)
 	})
 
 	t.Run("Returns HTTP status 400 bad request without stdin supplied", func(t *testing.T) {
@@ -90,7 +90,7 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 		output := TestHTTPRequestWithDefaultCredentials(t, request)
 
 		assert := assert.New(t)
-		assert.Equal(output.ResponseStatus, http.StatusBadRequest)
-		assert.Equal(output.ResponseBody, `{"exitcode":3,"output":"400 Bad Request - This endpoint requires stdin"}`)
+		assert.Equal(http.StatusBadRequest, output.ResponseStatus)
+		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - This endpoint requires stdin"}`, output.ResponseBody)
 	})
 }
