@@ -13,7 +13,7 @@ func APIV1RunscriptGetHandler(responseWriter http.ResponseWriter, request *http.
 		Endpoint:        "runscript",
 		Description:     "executes a script as specified in a http request and updates the http response with the result",
 		MandatoryFields: "path,args[]",
-		OptionalFields:  "",
+		OptionalFields:  "timeout",
 		ExampleRequest:  `{ "path": "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe", "args":[ "-command", "write-host 'Hello, World'" ] }`,
 		ExampleResponse: `{"exitcode":0,"output":"Hello, World\n"}`,
 	}

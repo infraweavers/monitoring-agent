@@ -15,7 +15,7 @@ func APIV1RunscriptstdinGetHandler(responseWriter http.ResponseWriter, request *
 		Endpoint:        "runscriptstdin",
 		Description:     "executes a script included with the post request by passed into a specified command via stdin and returns a http response with the result",
 		MandatoryFields: "path,args[],stdin",
-		OptionalFields:  "signature",
+		OptionalFields:  "stdinsignature, timeout",
 		ExampleRequest:  `{ "path": "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe", "args":[ "-command", "-" ], "stdin": "Write-Host 'Hello, World'" }`,
 		ExampleResponse: `{"exitcode":0,"output":"Hello, World\n"}`,
 	}
