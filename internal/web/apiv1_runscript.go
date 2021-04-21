@@ -3,10 +3,7 @@ package web
 import (
 	"encoding/json"
 	"fmt"
-	"monitoringagent/internal/configuration"
-	"monitoringagent/internal/logwrapper"
 	"net/http"
-	"strings"
 )
 
 // APIV1RunscriptGetHandler creates a http response for the API /runscript http get requests
@@ -35,23 +32,9 @@ func APIV1RunscriptPostHandler(responseWriter http.ResponseWriter, request *http
 		return
 	}
 
-	if configuration.Settings.SignedScriptsOnly {
-		if script.Signature == "" {
-			responseWriter.WriteHeader(http.StatusBadRequest)
-			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Only signed stdin can be executed", http.StatusBadRequest)))
-			return
-		}
-		if !verifySignature(strings.Join(script.Args[:], " "), script.Signature) {
-			responseWriter.WriteHeader(http.StatusBadRequest)
-			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Signature not valid", http.StatusBadRequest)))
-			logwrapper.Log.Errorf("Attempt to execute script with invalid signature: '%s' '%s' ", request.RemoteAddr, request.UserAgent())
-			return
-		}
-	}
-
 	if script.StdIn != "" {
 		responseWriter.WriteHeader(http.StatusBadRequest)
-		responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - This endpoint does not use stdin", http.StatusBadRequest)))
+		responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - This endpoint does not use StdIn", http.StatusBadRequest)))
 		return
 	}
 

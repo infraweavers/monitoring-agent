@@ -14,7 +14,7 @@ func APIV1RunscriptstdinGetHandler(responseWriter http.ResponseWriter, request *
 		Endpoint:        "runscriptstdin",
 		Description:     "executes a script included with the post request by passed into a specified command via stdin and returns a http response with the result",
 		MandatoryFields: "path,args[],stdin",
-		OptionalFields:  "",
+		OptionalFields:  "signature",
 		ExampleRequest:  `{ "path": "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe", "args":[ "-command", "-" ], "stdin": "Write-Host 'Hello, World'" }`,
 		ExampleResponse: `{"exitcode":0,"output":"Hello, World\n"}`,
 	}
@@ -35,12 +35,12 @@ func APIV1RunscriptstdinPostHandler(responseWriter http.ResponseWriter, request 
 	}
 
 	if configuration.Settings.SignedScriptsOnly {
-		if script.Signature == "" {
+		if script.StdInSignature == "" {
 			responseWriter.WriteHeader(http.StatusBadRequest)
 			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Only signed stdin can be executed", http.StatusBadRequest)))
 			return
 		}
-		if !verifySignature(script.StdIn, script.Signature) {
+		if !verifySignature(script.StdIn, script.StdInSignature) {
 			responseWriter.WriteHeader(http.StatusBadRequest)
 			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Signature not valid", http.StatusBadRequest)))
 			logwrapper.Log.Errorf("Attempt to execute script with invalid signature: '%s' '%s' ", request.RemoteAddr, request.UserAgent())
@@ -51,7 +51,7 @@ func APIV1RunscriptstdinPostHandler(responseWriter http.ResponseWriter, request 
 	if script.StdIn == "" {
 		responseWriter.WriteHeader(http.StatusBadRequest)
 		responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - This endpoint requires stdin", http.StatusBadRequest)))
-		logwrapper.Log.Errorf("Attempt to execute stdin without stdin in the request")
+		logwrapper.Log.Errorf("Attempt to execute script as stdin without stdin in the request")
 		return
 	}
 
