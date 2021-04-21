@@ -42,3 +42,4 @@ curl -k -H "Content-Type: application/json" --data "{ ""path"": ""C:\\Windows\\S
 
 For more information, including how to build and run Monitoring Agent, see the [wiki](https://github.com/infraweavers/monitoring-agent/wiki#building).
 
+**Read the [security page](https://github.com/infraweavers/monitoring-agent/wiki/Security)** *before* using Monitoring Agent in a production environment. The default configuration has been created for ease of testing and is inherently insecure.
