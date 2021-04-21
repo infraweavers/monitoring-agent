@@ -12,6 +12,7 @@ In active development.
 
 ### Current Features
 
+* Designed to work with Nagios, Naemon and other similar monitoring platforms
 * Cross platform
 * Executes a passed in script (no need to deploy scripts to monitored hosts)
 * Continuous Integration/Delivery
@@ -19,7 +20,7 @@ In active development.
 * Optional enforcement of script signing
 * Optional enforcement of client TLS
 
-### Future Planned Features
+### Features in Development
 
 * `systemd` service
 * Packaging for debian/ubuntu
