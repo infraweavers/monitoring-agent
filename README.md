@@ -1,8 +1,8 @@
 <h1 align="center">Monitoring Agent</h1>
 
 [![Test, Build and Release](https://github.com/infraweavers/monitoring-agent/actions/workflows/on-push.yml/badge.svg)](https://github.com/infraweavers/monitoring-agent/actions/workflows/on-push.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/infraweavers/monitoringagent)](https://goreportcard.com/report/github.com/infraweavers/monitoringagent)
-[![License: MIT](https://img.shields.io/github/license/infraweavers/monitoringagent)](https://mit-license.org/)
+[![Go Report Card](https://goreportcard.com/badge/github.com/infraweavers/monitoring-agent)](https://goreportcard.com/report/github.com/infraweavers/monitoring-agent)
+[![License: MIT](https://img.shields.io/github/license/infraweavers/monitoring-agent)](https://mit-license.org/)
 
 A simple, modern, maintainable and flexible monitoring agent that works cross platform.
 
@@ -34,7 +34,7 @@ $ curl -k -H "Content-Type: application/json" --data '{ "path": "/usr/bin/bash",
 
 Windows:
 ```
-curl -k -H "Content-Type: application/json" --data "{ ""path"": ""C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"", ""args"": [""-Command"", ""Write-Host 'Hello, World'""]  }" https://test:secret@127.0.0.1:9000/v1/runscript
+curl -k -H "Content-Type: application/json" --data '{ "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "args": ["-Command", "Write-Host Hello, World"]  }' https://test:secret@127.0.0.1:9000/v1/runscript
 {"exitcode":0,"output":"Hello, World\n"}
 ```
 
