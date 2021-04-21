@@ -18,9 +18,10 @@ import (
 // Script represents an object submitted to the runscript endpoint
 type Script struct {
 	Path           string   `json:"path"`
-	Args           []string `json:"args"`
-	StdIn          string   `json:"stdin"`
-	StdInSignature string   `json:"stdinsignature"`
+	Args           []string `json:"args,omitempty"`
+	StdIn          string   `json:"stdin,omitempty"`
+	StdInSignature string   `json:"stdinsignature,omitempty"`
+	Timeout        string   `json:"timeout,omitempty"`
 }
 
 // Result represents the object returned from the runscript endpoint
@@ -93,19 +94,32 @@ func processResult(responseWriter http.ResponseWriter, exitCode int, output stri
 func runScript(responseWriter http.ResponseWriter, scriptToRun Script) []byte {
 
 	var exitcode int = 0
+	var timeoutOccured bool = false
 	command := exec.Command(scriptToRun.Path, scriptToRun.Args...)
 
 	if scriptToRun.StdIn != "" {
 		command.Stdin = strings.NewReader(scriptToRun.StdIn)
 	}
 
+	var timeout = configuration.Settings.RequestTimeout
+	if scriptToRun.Timeout != "" {
+		durationValue, parseError := time.ParseDuration(scriptToRun.Timeout)
+		if parseError != nil {
+			logwrapper.Log.Warningf("Invalid timeout supplied: '%s'", scriptToRun.Timeout)
+			return processResult(responseWriter, 3, fmt.Sprintf("Invalid timeout supplied: '%s'", scriptToRun.Timeout))
+		}
+
+		timeout = durationValue
+	}
+
 	runningProcesses.mutex.Lock()
 	runningProcesses.collection[command] = true
 	runningProcesses.mutex.Unlock()
 
-	processKiller := time.AfterFunc(configuration.Settings.RequestTimeout, func() {
+	processKiller := time.AfterFunc(timeout, func() {
 		command.Process.Kill()
-		logwrapper.Log.Warningf("Request Timed Out: '%s' %#v", scriptToRun.Path, scriptToRun.Args)
+		logwrapper.Log.Warningf("Request Timed Out: '%s' %#v; Timeout: '%s'", scriptToRun.Path, scriptToRun.Args, timeout)
+		timeoutOccured = true
 	})
 
 	output, error := command.CombinedOutput()
@@ -121,7 +135,12 @@ func runScript(responseWriter http.ResponseWriter, scriptToRun Script) []byte {
 		}
 	}
 
-	return processResult(responseWriter, exitcode, string(output))
+	var outputString = string(output)
+	if timeoutOccured {
+		exitcode = 3
+		outputString = "The script timed out"
+	}
+	return processResult(responseWriter, exitcode, outputString)
 }
 
 func verifySignature(stdin string, signature string) bool {

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 // APIV1RunscriptGetHandler creates a http response for the API /runscript http get requests
@@ -36,6 +37,15 @@ func APIV1RunscriptPostHandler(responseWriter http.ResponseWriter, request *http
 		responseWriter.WriteHeader(http.StatusBadRequest)
 		responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - This endpoint does not use stdin", http.StatusBadRequest)))
 		return
+	}
+
+	if script.Timeout != "" {
+		_, parseError := time.ParseDuration(script.Timeout)
+		if parseError != nil {
+			responseWriter.WriteHeader(http.StatusBadRequest)
+			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Invalid timeout supplied: '%s'", http.StatusBadRequest, script.Timeout)))
+			return
+		}
 	}
 
 	responseWriter.Write(runScript(responseWriter, script))

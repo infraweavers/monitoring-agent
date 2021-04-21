@@ -15,6 +15,11 @@ type StdIn struct {
 	StdIn string
 }
 
+// Timeout is a struct for use in setting up a test case that passes standard input (StdIn) to an endpoint
+type Timeout struct {
+	Timeout string
+}
+
 // ExpectedResult is a struct for use in setting up a test case that defines the output string that an endpoint should return
 type ExpectedResult struct {
 	Output string
