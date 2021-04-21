@@ -38,6 +38,8 @@ curl -k -H "Content-Type: application/json" --data '{ "path": "C:\\Windows\\Syst
 {"exitcode":0,"output":"Hello, World\n"}
 ```
 
+For example scripts (plugins) that can me used with Nagios, Naemon and other related monitoring platforms, see the [Monitoring Agent Scripts Repository](https://github.com/infraweavers/monitoring-agent-scripts)
+
 ### Wiki
 
 For more information, including how to build and run Monitoring Agent, see the [wiki](https://github.com/infraweavers/monitoring-agent/wiki#building).
