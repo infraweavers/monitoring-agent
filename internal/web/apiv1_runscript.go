@@ -34,7 +34,7 @@ func APIV1RunscriptPostHandler(responseWriter http.ResponseWriter, request *http
 
 	if script.StdIn != "" {
 		responseWriter.WriteHeader(http.StatusBadRequest)
-		responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - This endpoint does not use StdIn", http.StatusBadRequest)))
+		responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - This endpoint does not use stdin", http.StatusBadRequest)))
 		return
 	}
 

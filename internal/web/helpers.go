@@ -19,7 +19,7 @@ import (
 type Script struct {
 	Path           string   `json:"path"`
 	Args           []string `json:"args"`
-	StdIn          string   `json:"script"`
+	StdIn          string   `json:"stdin"`
 	StdInSignature string   `json:"stdinsignature"`
 }
 
