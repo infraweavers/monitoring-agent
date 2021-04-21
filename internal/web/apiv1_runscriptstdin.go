@@ -34,7 +34,7 @@ func APIV1RunscriptstdinPostHandler(responseWriter http.ResponseWriter, request 
 		return
 	}
 
-	if configuration.Settings.SignedScriptsOnly {
+	if configuration.Settings.SignedStdInOnly {
 		if script.StdInSignature == "" {
 			responseWriter.WriteHeader(http.StatusBadRequest)
 			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Only signed stdin can be executed", http.StatusBadRequest)))
