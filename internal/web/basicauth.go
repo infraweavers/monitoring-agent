@@ -2,7 +2,7 @@ package web
 
 import (
 	"crypto/subtle"
-	"mama/internal/configuration"
+	"monitoringagent/internal/configuration"
 	"net/http"
 )
 

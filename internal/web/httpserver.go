@@ -4,8 +4,8 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"io/ioutil"
-	"mama/internal/configuration"
-	"mama/internal/logwrapper"
+	"monitoringagent/internal/configuration"
+	"monitoringagent/internal/logwrapper"
 	"net/http"
 )
 

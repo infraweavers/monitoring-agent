@@ -3,8 +3,8 @@ package web
 import (
 	"encoding/json"
 	"fmt"
-	"mama/internal/configuration"
-	"mama/internal/logwrapper"
+	"monitoringagent/internal/configuration"
+	"monitoringagent/internal/logwrapper"
 	"net"
 	"net/http"
 	"os/exec"

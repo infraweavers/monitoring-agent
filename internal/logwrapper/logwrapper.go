@@ -1,7 +1,7 @@
 package logwrapper
 
 import (
-	"mama/internal/configuration"
+	"monitoringagent/internal/configuration"
 	"os"
 
 	"github.com/op/go-logging"

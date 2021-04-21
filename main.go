@@ -2,9 +2,9 @@ package main
 
 import (
 	"flag"
-	"mama/internal/configuration"
-	"mama/internal/logwrapper"
-	"mama/internal/web"
+	"monitoringagent/internal/configuration"
+	"monitoringagent/internal/logwrapper"
+	"monitoringagent/internal/web"
 	"os"
 	"path/filepath"
 

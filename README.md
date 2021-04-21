@@ -1,8 +1,8 @@
 <h1 align="center">Monitoring Agent</h1>
 
 [![Test, Build and Release](https://github.com/infraweavers/monitoring-agent/actions/workflows/on-push.yml/badge.svg)](https://github.com/infraweavers/monitoring-agent/actions/workflows/on-push.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/infraweavers/mama)](https://goreportcard.com/report/github.com/infraweavers/mama)
-[![License: MIT](https://img.shields.io/github/license/infraweavers/mama)](https://mit-license.org/)
+[![Go Report Card](https://goreportcard.com/badge/github.com/infraweavers/monitoringagent)](https://goreportcard.com/report/github.com/infraweavers/monitoringagent)
+[![License: MIT](https://img.shields.io/github/license/infraweavers/monitoringagent)](https://mit-license.org/)
 
 A simple, modern, maintainable and flexible monitoring agent that works cross platform.
 

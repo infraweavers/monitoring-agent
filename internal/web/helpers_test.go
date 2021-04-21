@@ -1,7 +1,7 @@
 package web
 
 import (
-	"mama/internal/configuration"
+	"monitoringagent/internal/configuration"
 	"net"
 	"testing"
 

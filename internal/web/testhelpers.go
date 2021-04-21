@@ -2,7 +2,7 @@ package web
 
 import (
 	"io/ioutil"
-	"mama/internal/configuration"
+	"monitoringagent/internal/configuration"
 	"net/http"
 	"net/http/httptest"
 	"testing"

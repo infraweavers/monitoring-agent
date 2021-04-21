@@ -1,7 +1,7 @@
 package web
 
 import (
-	"mama/internal/logwrapper"
+	"monitoringagent/internal/logwrapper"
 	"net/http"
 )
 

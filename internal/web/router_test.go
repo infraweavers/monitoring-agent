@@ -3,7 +3,7 @@ package web
 import (
 	"fmt"
 	"io/ioutil"
-	"mama/internal/configuration"
+	"monitoringagent/internal/configuration"
 	"net/http"
 	"net/http/httptest"
 	"testing"

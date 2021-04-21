@@ -1,4 +1,4 @@
-module mama
+module monitoringagent
 
 go 1.16
 

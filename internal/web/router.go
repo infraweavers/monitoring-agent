@@ -1,7 +1,7 @@
 package web
 
 import (
-	"mama/internal/configuration"
+	"monitoringagent/internal/configuration"
 	"net/http"
 
 	// Blank import of pprof for side effect of loading its handlers
