@@ -11,7 +11,7 @@ import (
 func APIV1RunscriptGetHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	var desc = endpointDescription{
 		Endpoint:        "runscript",
-		Description:     "executes a script as specified in a http request and updates the http response with the result",
+		Description:     "executes a script as specified in a http request and returns an http response with the result",
 		MandatoryFields: "path,args[]",
 		OptionalFields:  "timeout",
 		ExampleRequest:  `{ "path": "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe", "args":[ "-command", "write-host 'Hello, World'" ] }`,
@@ -24,7 +24,7 @@ func APIV1RunscriptGetHandler(responseWriter http.ResponseWriter, request *http.
 	responseWriter.Write([]byte(descJSON))
 }
 
-// APIV1RunscriptPostHandler executes a script as specified in a http request and updates the http response with the result
+// APIV1RunscriptPostHandler executes a script as specified in a http request and returns an http response with the result
 func APIV1RunscriptPostHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	responseWriter.Header().Set("Content-Type", "application/json; charset=UTF-8")
 

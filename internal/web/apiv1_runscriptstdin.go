@@ -13,7 +13,7 @@ import (
 func APIV1RunscriptstdinGetHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	var desc = endpointDescription{
 		Endpoint:        "runscriptstdin",
-		Description:     "executes a script included with the post request by passed into a specified command via stdin and returns a http response with the result",
+		Description:     "executes a script included with the post request, passing into the specified command via stdin and returns a http response with the result",
 		MandatoryFields: "path,args[],stdin",
 		OptionalFields:  "stdinsignature, timeout",
 		ExampleRequest:  `{ "path": "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe", "args":[ "-command", "-" ], "stdin": "Write-Host 'Hello, World'" }`,
@@ -26,7 +26,7 @@ func APIV1RunscriptstdinGetHandler(responseWriter http.ResponseWriter, request *
 	responseWriter.Write([]byte(descJSON))
 }
 
-// APIV1RunscriptstdinPostHandler creates executes a script by piping it to the standard input (stdin) of the specified command
+// APIV1RunscriptstdinPostHandler executes a script by piping it to the standard input (stdin) of the specified command
 func APIV1RunscriptstdinPostHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	responseWriter.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
