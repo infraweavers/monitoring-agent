@@ -1,35 +1,153 @@
 package logwrapper
 
 import (
+	"errors"
+	"fmt"
 	"monitoringagent/internal/configuration"
 	"os"
+	"strings"
 
-	"github.com/op/go-logging"
+	"log"
+
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 // Log wrapped instance
-var Log = logging.MustGetLogger("default")
+//var Log = logging.MustGetLogger("default")
 
-// Initialise Configure the logging
-func Initialise(runningInteractively bool, configurationDirectory string) {
+type logLevel int
 
-	logFile, logError := os.OpenFile(configuration.Settings.LogFilePath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
+const (
+	CRITICAL logLevel = iota
+	ERROR
+	WARNING
+	NOTICE
+	INFO
+	DEBUG
+)
 
-	logging.LogLevel(configuration.Settings.LogLevel)
+var levelNames = []string{
+	"CRITICAL",
+	"ERROR",
+	"WARNING",
+	"NOTICE",
+	"INFO",
+	"DEBUG",
+}
 
-	if logError != nil {
-		Log.Fatal(logError)
+func (p logLevel) String() string {
+	return levelNames[p]
+}
+
+func parseLogLevel(level string) (logLevel, error) {
+	for i, name := range levelNames {
+		if strings.EqualFold(name, level) {
+			return logLevel(i), nil
+		}
+	}
+	return ERROR, errors.New("invalid log level")
+}
+
+var level logLevel
+var Log *log.Logger
+var RunningInteractively = false
+
+// Initialise and configure the logging
+func Initialise(runningInteractively bool) {
+
+	logFile, err := os.OpenFile(configuration.Settings.LogFilePath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
+	if err != nil {
+		panic(err)
 	}
 
-	logFileBackend := logging.NewLogBackend(logFile, "", 0)
-	backendFormatter := logging.NewBackendFormatter(logFileBackend, logging.MustStringFormatter(`%{time}: %{message}`))
-	if runningInteractively {
-		logging.SetBackend(logging.MultiLogger(backendFormatter, logging.NewLogBackend(os.Stderr, "", 0)))
-	} else {
-		logging.SetBackend(backendFormatter)
+	level, err = parseLogLevel(configuration.Settings.LogLevel)
+	if err != nil {
+		panic(err)
 	}
 
-	Log.Info("Logging Initialised")
-	Log.Infof("Logging with LogFilePath: '%s'", configuration.Settings.LogFilePath)
-	Log.Infof("Running Interactively: %t", runningInteractively)
+	Log = log.New(logFile, "ma", 0)
+
+	Log.SetOutput(&lumberjack.Logger{
+		Filename:   logFile.Name(),
+		MaxBackups: 10,
+		MaxAge:     1,
+	})
+
+	RunningInteractively = runningInteractively
+
+	LogInfo("Logging Initialised")
+	LogInfof("Logging with LogFilePath: '%s'", configuration.Settings.LogFilePath)
+	LogInfof("Running Interactively: %t", runningInteractively)
+}
+
+func writef(lvl logLevel, message string, v ...interface{}) {
+	if lvl > level {
+		return
+	}
+	message = logLevel.String(level) + ": " + message
+	Log.Printf(fmt.Sprintf(message, v))
+
+	if RunningInteractively {
+		fmt.Printf(message+"\n", v)
+	}
+}
+
+func write(lvl logLevel, message string) {
+	if lvl > level {
+		return
+	}
+	message = logLevel.String(level) + ": " + message
+	Log.Print(message)
+
+	if RunningInteractively {
+		fmt.Println(message)
+	}
+}
+
+func LogCriticalf(message string, v ...interface{}) {
+	writef(CRITICAL, message, v)
+}
+
+func LogCritical(message string) {
+	write(CRITICAL, message)
+}
+
+func LogErrorf(message string, v ...interface{}) {
+	writef(ERROR, message, v)
+}
+
+func LogError(message string) {
+	write(ERROR, message)
+}
+
+func LogWarningf(message string, v ...interface{}) {
+	writef(WARNING, message, v)
+}
+
+func LogWarning(message string) {
+	write(WARNING, message)
+}
+
+func LogNoticef(message string, v ...interface{}) {
+	writef(NOTICE, message, v)
+}
+
+func LogNotice(message string) {
+	write(NOTICE, message)
+}
+
+func LogInfof(message string, v ...interface{}) {
+	writef(INFO, message, v)
+}
+
+func LogInfo(message string) {
+	write(INFO, message)
+}
+
+func LogDebugf(message string, v ...interface{}) {
+	writef(DEBUG, message, v)
+}
+
+func LogDebug(message string) {
+	write(DEBUG, message)
 }

@@ -44,7 +44,7 @@ func APIV1RunscriptstdinPostHandler(responseWriter http.ResponseWriter, request 
 		if !verifySignature(script.StdIn, script.StdInSignature) {
 			responseWriter.WriteHeader(http.StatusBadRequest)
 			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Signature not valid", http.StatusBadRequest)))
-			logwrapper.Log.Errorf("Attempt to execute script with invalid signature: '%s' '%s' ", request.RemoteAddr, request.UserAgent())
+			logwrapper.LogWarningf("Attempt to execute script with invalid signature: '%s' '%s' ", request.RemoteAddr, request.UserAgent())
 			return
 		}
 	}
@@ -52,7 +52,7 @@ func APIV1RunscriptstdinPostHandler(responseWriter http.ResponseWriter, request 
 	if script.StdIn == "" {
 		responseWriter.WriteHeader(http.StatusBadRequest)
 		responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - This endpoint requires stdin", http.StatusBadRequest)))
-		logwrapper.Log.Errorf("Attempt to execute script as stdin without stdin in the request")
+		logwrapper.LogWarningf("Attempt to execute script as stdin without stdin in the request: '%s' '%s' ", request.RemoteAddr, request.UserAgent())
 		return
 	}
 

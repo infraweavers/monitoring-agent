@@ -52,10 +52,10 @@ func init() {
 
 // KillAllRunningProcs self explanatory
 func KillAllRunningProcs() {
-	logwrapper.Log.Info("Killing all procs")
+	logwrapper.LogInfo("Killing all procs")
 	runningProcesses.mutex.Lock()
 	for item := range runningProcesses.collection {
-		logwrapper.Log.Debugf("Killing: %#v", item)
+		logwrapper.LogDebugf("Killing: %#v", item)
 		item.Process.Kill()
 	}
 	runningProcesses.mutex.Unlock()
@@ -105,7 +105,7 @@ func runScript(responseWriter http.ResponseWriter, scriptToRun Script) []byte {
 	if scriptToRun.Timeout != "" {
 		durationValue, parseError := time.ParseDuration(scriptToRun.Timeout)
 		if parseError != nil {
-			logwrapper.Log.Warningf("Invalid timeout supplied: '%s'", scriptToRun.Timeout)
+			logwrapper.LogWarningf("Invalid timeout supplied: '%s'", scriptToRun.Timeout)
 			return processResult(responseWriter, 3, fmt.Sprintf("Invalid timeout supplied: '%s'", scriptToRun.Timeout))
 		}
 
@@ -118,7 +118,7 @@ func runScript(responseWriter http.ResponseWriter, scriptToRun Script) []byte {
 
 	processKiller := time.AfterFunc(timeout, func() {
 		command.Process.Kill()
-		logwrapper.Log.Warningf("Request Timed Out: '%s' %#v; Timeout: '%s'", scriptToRun.Path, scriptToRun.Args, timeout)
+		logwrapper.LogWarningf("Request Timed Out: '%s' %#v; Timeout: '%s'", scriptToRun.Path, scriptToRun.Args, timeout)
 		timeoutOccured = true
 	})
 
@@ -149,13 +149,13 @@ func verifySignature(stdin string, signature string) bool {
 	signatureStruct, signatureError := minisign.DecodeSignature(signature)
 
 	if signatureError != nil {
-		logwrapper.Log.Debugf("Signature Decoding error: %v", signatureError)
+		logwrapper.LogDebugf("Signature Decoding error: %v", signatureError)
 	}
 
 	isValid, error := configuration.Settings.PublicKey.Verify(stdinAsArray, signatureStruct)
 
 	if error != nil {
-		logwrapper.Log.Debugf("Signature Verification Error: %v", error)
+		logwrapper.LogDebugf("Signature Verification Error: %v", error)
 	}
 
 	return isValid
