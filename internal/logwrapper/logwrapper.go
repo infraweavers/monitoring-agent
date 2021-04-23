@@ -21,10 +21,12 @@ func Initialise(runningInteractively bool, configurationDirectory string) {
 		Log.Fatal(logError)
 	}
 
+	logFileBackend := logging.NewLogBackend(logFile, "", 0)
+	backendFormatter := logging.NewBackendFormatter(logFileBackend, logging.MustStringFormatter(`%{time}: %{message}`))
 	if runningInteractively {
-		logging.SetBackend(logging.MultiLogger(logging.NewLogBackend(logFile, "", 0), logging.NewLogBackend(os.Stderr, "", 0)))
+		logging.SetBackend(logging.MultiLogger(backendFormatter, logging.NewLogBackend(os.Stderr, "", 0)))
 	} else {
-		logging.SetBackend(logging.NewLogBackend(logFile, "", 0))
+		logging.SetBackend(backendFormatter)
 	}
 
 	Log.Info("Logging Initialised")
