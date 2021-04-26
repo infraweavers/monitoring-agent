@@ -2,7 +2,6 @@ package logwrapper
 
 import (
 	"errors"
-	"fmt"
 	"monitoringagent/internal/configuration"
 	"os"
 	"strings"
@@ -88,7 +87,7 @@ func writef(lvl logLevel, message string, v ...interface{}) {
 	Log.Printf(message, v...)
 
 	if RunningInteractively {
-		fmt.Println(fmt.Sprintf(message, v...))
+		log.Printf(message, v...)
 	}
 }
 
@@ -100,7 +99,7 @@ func write(lvl logLevel, message string) {
 	Log.Print(message)
 
 	if RunningInteractively {
-		fmt.Println(message)
+		log.Println(message)
 	}
 }
 
