@@ -88,7 +88,7 @@ func writef(lvl logLevel, message string, v ...interface{}) {
 	Log.Printf(message, v...)
 
 	if RunningInteractively {
-		fmt.Printf(message+"\n", v...)
+		fmt.Println(fmt.Sprintf(message, v...))
 	}
 }
 
