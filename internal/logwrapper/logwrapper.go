@@ -12,9 +12,6 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-// Log wrapped instance
-//var Log = logging.MustGetLogger("default")
-
 type logLevel int
 
 const (
@@ -104,50 +101,62 @@ func write(lvl logLevel, message string) {
 	}
 }
 
+// LogCriticalf records a CRITICAL log message formatted according to a format specifier if log configuration.Settings.LogLevel >= CRITICAL
 func LogCriticalf(message string, v ...interface{}) {
 	writef(CRITICAL, message, v...)
 }
 
+// LogCritical records a CRITCAL log message if log configuration.Settings.LogLevel >= CRITICAL
 func LogCritical(message string) {
 	write(CRITICAL, message)
 }
 
+// LogErrorf records an ERROR log message formatted according to a format specifier if log configuration.Settings.LogLevel >= ERROR
 func LogErrorf(message string, v ...interface{}) {
 	writef(ERROR, message, v...)
 }
 
+// LogError records a ERROR log message if log configuration.Settings.LogLevel >= ERROR
 func LogError(message string) {
 	write(ERROR, message)
 }
 
+// LogWarningf records a WARNING log message formatted according to a format specifier if log configuration.Settings.LogLevel >= WARNING
 func LogWarningf(message string, v ...interface{}) {
 	writef(WARNING, message, v...)
 }
 
+// LogWarning records a WARNING log message if log configuration.Settings.LogLevel >= WARNING
 func LogWarning(message string) {
 	write(WARNING, message)
 }
 
+// LogNoticef records a NOTICE log message formatted according to a format specifier if log configuration.Settings.LogLevel >= NOTICE
 func LogNoticef(message string, v ...interface{}) {
 	writef(NOTICE, message, v...)
 }
 
+// LogNotice records a NOTICE log message if log configuration.Settings.LogLevel >= NOTICE
 func LogNotice(message string) {
 	write(NOTICE, message)
 }
 
+// LogInfof records a INFO log message formatted according to a format specifier if log configuration.Settings.LogLevel >= INFO
 func LogInfof(message string, v ...interface{}) {
 	writef(INFO, message, v...)
 }
 
+// LogInfo records a INFO log message if log configuration.Settings.LogLevel >= INFO
 func LogInfo(message string) {
 	write(INFO, message)
 }
 
+// LogDebugf records a DEBUG log message formatted according to a format specifier if log configuration.Settings.LogLevel >= DEBUG
 func LogDebugf(message string, v ...interface{}) {
 	writef(DEBUG, message, v...)
 }
 
+// LogDebug records a DEBUG log message if log configuration.Settings.LogLevel >= DEBUG
 func LogDebug(message string) {
 	write(DEBUG, message)
 }
