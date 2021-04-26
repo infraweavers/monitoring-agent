@@ -1,0 +1,11 @@
+[Unit]
+Description=Monitoring Agent
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/monitoring-agent -configurationDirectory /etc/monitoring-agent
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target
