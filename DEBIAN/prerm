@@ -1,0 +1,3 @@
+#!/bin/sh
+set -e
+systemctl stop monitoring-agent || exit 1
