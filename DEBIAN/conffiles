@@ -1,0 +1,4 @@
+/etc/monitoring-agent/configuration.ini
+/etc/monitoring-agent/server.crt
+/etc/monitoring-agent/server.key
+/etc/monitoring-agent/cacert.pem

@@ -171,3 +171,67 @@ jobs:
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-MSI"
           path: release/
+
+  create-deb:
+    runs-on: ubuntu-latest
+    needs: test
+    env:
+        SRCPATH: ${{ github.workspace }}/go/src/mama
+
+    steps:
+
+      - uses: benjlevesque/short-sha@v1.2
+        id: short-sha
+        with:
+          length: 7
+
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16.x
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: ${{ env.SRCPATH }}
+
+      - name: Dependencies & Build
+        run: |
+          os=linux
+          arch=amd64
+          goversion=1.16
+          echo "Building $os-$arch-$goversion"
+          
+          suffix=$([ "$os" == "windows" ] && echo ".exe" || echo "")
+          mkdir -p ./release/$os-$arch-$goversion
+          cp ${{ env.SRCPATH }}/configuration.ini ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ${{ env.SRCPATH }}/cacert.pem ./release/$os-$arch-$goversion
+          pushd ${{ env.SRCPATH }}
+          
+          GO111MODULE=on GOOS=$os GOARCH=$arch go get ./...
+          GO111MODULE=on GOOS=$os GOARCH=$arch go build -o ${{ env.SRCPATH }}/monitoring-agent$suffix
+          popd
+          cp ${{ env.SRCPATH }}/monitoring-agent$suffix ./release/$os-$arch-$goversion/monitoring-agent$suffix
+
+      - name: Create .deb
+        run: |
+          os=linux
+          arch=amd64
+          goversion=1.16
+          
+          mkdir -p deb-package/etc/monitoring-agent deb-package/usr/bin deb-package/lib/systemd/system
+          cp -r ${{ env.SRCPATH }}/DEBIAN ./deb-package
+          cp ${{ env.SRCPATH }}/configuration.ini ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/cacert.pem ./deb-package/etc/monitoring-agent
+          cp ./release/$os-$arch-$goversion/monitoring-agent deb-package/usr/bin
+          cp ${{ env.SRCPATH }}/monitoring-agent.service deb-package/lib/systemd/system
+
+          sed -i 's|LogFilePath=.*|LogFilePath=/var/log/monitoring-agent.log|' deb-package/etc/monitoring-agent/configuration.ini
+          
+          chmod 600 deb-package/etc/monitoring-agent/*
+          sudo chown -R root:root deb-package/
+          sudo dpkg-deb --build ./deb-package ~/linux-amd64-go1.16-monitoring-agent.deb
+
+      - name: Upload .deb
+        uses: actions/upload-artifact@v2
+        with:
+          name: "linux-amd64-go1.16-monitoring-agent-${{ steps.short-sha.outputs.sha }}.deb"
+          path: ~/linux-amd64-go1.16-monitoring-agent.deb
