@@ -85,10 +85,10 @@ func writef(lvl logLevel, message string, v ...interface{}) {
 		return
 	}
 	message = logLevel.String(level) + ": " + message
-	Log.Printf(fmt.Sprintf(message, v))
+	Log.Printf(message, v...)
 
 	if RunningInteractively {
-		fmt.Printf(message+"\n", v)
+		fmt.Printf(message+"\n", v...)
 	}
 }
 
@@ -105,7 +105,7 @@ func write(lvl logLevel, message string) {
 }
 
 func LogCriticalf(message string, v ...interface{}) {
-	writef(CRITICAL, message, v)
+	writef(CRITICAL, message, v...)
 }
 
 func LogCritical(message string) {
@@ -113,7 +113,7 @@ func LogCritical(message string) {
 }
 
 func LogErrorf(message string, v ...interface{}) {
-	writef(ERROR, message, v)
+	writef(ERROR, message, v...)
 }
 
 func LogError(message string) {
@@ -121,7 +121,7 @@ func LogError(message string) {
 }
 
 func LogWarningf(message string, v ...interface{}) {
-	writef(WARNING, message, v)
+	writef(WARNING, message, v...)
 }
 
 func LogWarning(message string) {
@@ -129,7 +129,7 @@ func LogWarning(message string) {
 }
 
 func LogNoticef(message string, v ...interface{}) {
-	writef(NOTICE, message, v)
+	writef(NOTICE, message, v...)
 }
 
 func LogNotice(message string) {
@@ -137,7 +137,7 @@ func LogNotice(message string) {
 }
 
 func LogInfof(message string, v ...interface{}) {
-	writef(INFO, message, v)
+	writef(INFO, message, v...)
 }
 
 func LogInfo(message string) {
@@ -145,7 +145,7 @@ func LogInfo(message string) {
 }
 
 func LogDebugf(message string, v ...interface{}) {
-	writef(DEBUG, message, v)
+	writef(DEBUG, message, v...)
 }
 
 func LogDebug(message string) {
