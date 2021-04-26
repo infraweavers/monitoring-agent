@@ -65,7 +65,7 @@ func Initialise(runningInteractively bool) {
 		panic(err)
 	}
 
-	Log = log.New(logFile, "ma ", 0)
+	Log = log.New(logFile, "ma ", log.LstdFlags)
 
 	Log.SetOutput(&lumberjack.Logger{
 		Filename:   logFile.Name(),
