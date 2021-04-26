@@ -29,5 +29,6 @@ func NewRouter() *mux.Router {
 	}
 	router.Use(IPFiltering)
 	router.Use(BasicAuth)
+	router.Use(httpLogger)
 	return router
 }

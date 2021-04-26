@@ -85,7 +85,7 @@ func writef(lvl logLevel, message string, v ...interface{}) {
 	Log.Printf(format, v...)
 
 	if RunningInteractively {
-		log.Printf(message, v...)
+		log.Println(fmt.Sprintf(format, v...))
 	}
 }
 
@@ -93,11 +93,19 @@ func write(lvl logLevel, message string) {
 	if lvl > level {
 		return
 	}
-	message = logLevel.String(level) + ": " + message
+	message = fmt.Sprintf("%s : %s", logLevel.String(level), message)
 	Log.Print(message)
 
 	if RunningInteractively {
 		log.Println(message)
+	}
+}
+
+func LogHttpRequest(remoteAddr string, host string, method string, url string, header map[string][]string, proto string, ContentLength int64) {
+	Log.Printf("HTTP Request: %s [%s] %s %#v %s %d", remoteAddr, method, url, header, proto, ContentLength)
+
+	if RunningInteractively {
+		log.Printf("HTTP Request: %s [%s] %s %#v %s %d", remoteAddr, method, url, header, proto, ContentLength)
 	}
 }
 
