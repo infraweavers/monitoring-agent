@@ -70,7 +70,7 @@ func Initialise(runningInteractively bool) {
 	Log.SetOutput(&lumberjack.Logger{
 		Filename:   logFile.Name(),
 		MaxBackups: 10,
-		MaxAge:     1,
+		MaxSize:    100,
 	})
 
 	RunningInteractively = runningInteractively
