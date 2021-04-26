@@ -118,7 +118,7 @@ func runScript(responseWriter http.ResponseWriter, scriptToRun Script) []byte {
 
 	processKiller := time.AfterFunc(timeout, func() {
 		command.Process.Kill()
-		logwrapper.LogWarningf("Request Timed Out: '%s' %#v; Timeout: '%s'", scriptToRun.Path, scriptToRun.Args, timeout)
+		logwrapper.LogWarningf("Request Timed Out. Timeout: '%s'; Command: '%s'; Arguments: %#v", timeout, scriptToRun.Path, scriptToRun.Args)
 		timeoutOccured = true
 	})
 

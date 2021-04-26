@@ -2,6 +2,7 @@ package logwrapper
 
 import (
 	"errors"
+	"fmt"
 	"monitoringagent/internal/configuration"
 	"os"
 	"strings"
@@ -83,8 +84,8 @@ func writef(lvl logLevel, message string, v ...interface{}) {
 	if lvl > level {
 		return
 	}
-	message = logLevel.String(level) + ": " + message
-	Log.Printf(message, v...)
+	format := fmt.Sprintf("%s : %s", logLevel.String(level), message)
+	Log.Printf(format, v...)
 
 	if RunningInteractively {
 		log.Printf(message, v...)
