@@ -3,7 +3,6 @@ package web
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"monitoringagent/internal/logwrapper"
 	"net/http"
@@ -13,7 +12,7 @@ import (
 func httpRequestLogger(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(responseWriter http.ResponseWriter, request *http.Request) {
 
-		bodyBytes, err := io.ReadAll(request.Body)
+		bodyBytes, err := ioutil.ReadAll(request.Body)
 		request.Body.Close()
 		if err != nil {
 			responseWriter.WriteHeader(http.StatusInternalServerError)
@@ -49,7 +48,7 @@ func httpResponseLogger(handler http.Handler) http.Handler {
 		handler.ServeHTTP(responseRecorder, request)
 
 		response := responseRecorder.Result()
-		bodyBytes, err := io.ReadAll(response.Body)
+		bodyBytes, err := ioutil.ReadAll(response.Body)
 		response.Body.Close()
 		if err != nil {
 			responseWriter.WriteHeader(http.StatusInternalServerError)
