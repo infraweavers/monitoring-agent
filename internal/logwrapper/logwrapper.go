@@ -81,7 +81,7 @@ func writef(lvl logLevel, message string, v ...interface{}) {
 	if lvl > level {
 		return
 	}
-	format := fmt.Sprintf("%s : %s", logLevel.String(level), message)
+	format := fmt.Sprintf("%s : %s", logLevel.String(lvl), message)
 	Log.Printf(format, v...)
 
 	if RunningInteractively {
@@ -93,7 +93,7 @@ func write(lvl logLevel, message string) {
 	if lvl > level {
 		return
 	}
-	message = fmt.Sprintf("%s : %s", logLevel.String(level), message)
+	message = fmt.Sprintf("%s : %s", logLevel.String(lvl), message)
 	Log.Print(message)
 
 	if RunningInteractively {
