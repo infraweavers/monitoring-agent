@@ -14,6 +14,7 @@ import (
 
 type logLevel int
 
+// LogLevel constant, CRITICAL = 0, DEBUG = 5
 const (
 	CRITICAL logLevel = iota
 	ERROR
@@ -46,11 +47,14 @@ func parseLogLevel(level string) (logLevel, error) {
 }
 
 var level logLevel
+
+// Log exposes the log packages logger for functions such as FatalF and PanicF
 var Log *log.Logger
-var RunningInteractively = false
+
+var runningInteractively = false
 
 // Initialise and configure the logging
-func Initialise(runningInteractively bool) {
+func Initialise(isRunInteractively bool) {
 
 	logFile, err := os.OpenFile(configuration.Settings.LogFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
@@ -70,7 +74,7 @@ func Initialise(runningInteractively bool) {
 		MaxSize:    configuration.Settings.LogRotationThresholdInMegaBytes,
 	})
 
-	RunningInteractively = runningInteractively
+	runningInteractively = isRunInteractively
 
 	LogInfo("Logging Initialised")
 	LogInfof("Logging with LogFilePath: '%s'", configuration.Settings.LogFilePath)
@@ -84,7 +88,7 @@ func writef(lvl logLevel, message string, v ...interface{}) {
 	format := fmt.Sprintf("%s : %s", logLevel.String(lvl), message)
 	Log.Printf(format, v...)
 
-	if RunningInteractively {
+	if runningInteractively {
 		log.Println(fmt.Sprintf(format, v...))
 	}
 }
@@ -96,7 +100,7 @@ func write(lvl logLevel, message string) {
 	message = fmt.Sprintf("%s : %s", logLevel.String(lvl), message)
 	Log.Print(message)
 
-	if RunningInteractively {
+	if runningInteractively {
 		log.Println(message)
 	}
 }
@@ -105,7 +109,7 @@ func write(lvl logLevel, message string) {
 func LogHTTPRequest(remoteAddr string, host string, method string, url string, header map[string][]string, proto string, contentLength int64, body string) {
 	Log.Printf("HTTP Request: %s [%s] %s %#v %s %d %s", remoteAddr, method, url, header, proto, contentLength, body)
 
-	if RunningInteractively {
+	if runningInteractively {
 		log.Printf("HTTP Request: %s [%s] %s %#v %s %d %s", remoteAddr, method, url, header, proto, contentLength, body)
 	}
 }
@@ -114,7 +118,7 @@ func LogHTTPRequest(remoteAddr string, host string, method string, url string, h
 func LogHTTPResponse(status string, header map[string][]string, proto string, body string) {
 	Log.Printf("HTTP Response: %s %#v %s %s", status, header, proto, body)
 
-	if RunningInteractively {
+	if runningInteractively {
 		log.Printf("HTTP Response: %s %#v %s %s", status, header, proto, body)
 	}
 }
