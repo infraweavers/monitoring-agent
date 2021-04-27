@@ -10,9 +10,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// MiddlewareFunc is an interface required for middleware wrapped around HTTP handler functions
-type MiddlewareFunc func(http.Handler) http.Handler
-
 //NewRouter returns an HTTP multiplexor
 func NewRouter() *mux.Router {
 	router := mux.NewRouter()
@@ -29,6 +26,14 @@ func NewRouter() *mux.Router {
 	}
 	router.Use(IPFiltering)
 	router.Use(BasicAuth)
-	router.Use(httpLogger)
+
+	if configuration.Settings.LogHTTPRequests {
+		router.Use(httpRequestLogger)
+	}
+
+	if configuration.Settings.LogHTTPResponses {
+		router.Use(httpResponseLogger)
+	}
+
 	return router
 }

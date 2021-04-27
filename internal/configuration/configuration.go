@@ -25,6 +25,7 @@ type SettingsValues struct {
 	LogArchiveFilesToRetain         int
 	LogRotationThresholdInMegaBytes int
 	LogHTTPRequests                 bool
+	LogHTTPResponses                bool
 	HTTPRequestTimeout              time.Duration
 	DefaultScriptTimeout            time.Duration
 	LoadPprof                       bool
@@ -75,6 +76,7 @@ func Initialise(configurationDirectory string) {
 	Settings.LogRotationThresholdInMegaBytes = intValue
 
 	Settings.LogHTTPRequests = getIniBoolOrPanic(iniFile, "Server", "LogHTTPRequests")
+	Settings.LogHTTPResponses = getIniBoolOrPanic(iniFile, "Server", "LogHTTPRequests")
 
 	Settings.BindAddress = getIniValueOrPanic(iniFile, "Server", "BindAddress")
 
