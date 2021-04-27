@@ -55,6 +55,18 @@ func LaunchServer() {
 	}
 
 	logwrapper.LogInfof("Launching web server: https://%s", configuration.Settings.BindAddress)
+
+	logwrapper.LogInfof("configuration.Settings.DisableHTTPs: %t", configuration.Settings.DisableHTTPs)
+	if configuration.Settings.DisableHTTPs {
+		logwrapper.LogCriticalf("!! The HTTP server is running insecurely due to 'configuration.Settings.DisableHTTPs'='%t'. This is not a recommended setting !!", configuration.Settings.DisableHTTPs)
+		logwrapper.LogCritical("!! Re-enable HTTPs by setting 'DisableHTTPs' to 'true' as soon as possible !!")
+		err := server.ListenAndServe()
+		if err != nil {
+			logwrapper.Log.Panicf(err.Error())
+		}
+		return
+	}
+
 	err := server.ListenAndServeTLS("", "")
 	if err != nil {
 		logwrapper.Log.Panicf(err.Error())

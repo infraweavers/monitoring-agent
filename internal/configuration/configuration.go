@@ -29,6 +29,7 @@ type SettingsValues struct {
 	HTTPRequestTimeout              time.Duration
 	DefaultScriptTimeout            time.Duration
 	LoadPprof                       bool
+	DisableHTTPs                    bool
 	SignedStdInOnly                 bool
 	PublicKey                       minisign.PublicKey
 	AllowedAddresses                []*net.IPNet
@@ -95,6 +96,7 @@ func Initialise(configurationDirectory string) {
 	Settings.DefaultScriptTimeout = durationValue
 
 	Settings.LoadPprof = getIniBoolOrPanic(iniFile, "Server", "LoadPprof")
+	Settings.DisableHTTPs = getIniBoolOrPanic(iniFile, "Server", "DisableHTTPs")
 
 	Settings.SignedStdInOnly = getIniBoolOrPanic(iniFile, "Security", "SignedStdInOnly")
 
