@@ -8,7 +8,7 @@ A simple, modern, maintainable and flexible monitoring agent that works cross pl
 
 ### Status
 
-In active development.
+Testing
 
 ### Current Features
 
@@ -19,11 +19,12 @@ In active development.
 * Windows MSI / Service
 * Optional enforcement of script signing
 * Optional enforcement of client TLS
+* `systemd` service
+* Packaging for debian/ubuntu
 
 ### Features in Development
 
-* `systemd` service
-* Packaging for debian/ubuntu
+* None
 
 ### Simple Usage Examples
 
