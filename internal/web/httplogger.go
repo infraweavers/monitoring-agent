@@ -61,18 +61,17 @@ func httpResponseLogger(handler http.Handler) http.Handler {
 			return
 		}
 
+		logwrapper.LogHttpResponse(
+			response.Status,
+			response.Header,
+			response.Proto,
+			string(bodyBytes),
+		)
+
 		for key, value := range response.Header {
 			responseWriter.Header()[key] = value
 		}
 		responseWriter.WriteHeader(responseRecorder.Code)
 		responseRecorder.Body.WriteTo(responseWriter)
-
-		logwrapper.LogHttpResponse(
-			response.Status,
-			response.Header,
-			response.Proto,
-			response.ContentLength,
-			string(bodyBytes),
-		)
 	})
 }
