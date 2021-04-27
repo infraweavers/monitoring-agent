@@ -24,7 +24,7 @@ func BasicAuth(handler http.Handler) http.Handler {
 		username, password, ok := request.BasicAuth()
 
 		if !ok {
-			logwrapper.LogInfof("Request received without basic auth header from: %v", request.RemoteAddr)
+			logwrapper.LogDebugf("Request received without Authorization header from: %v", request.RemoteAddr)
 			responseWriter.Header().Add("WWW-Authenticate", `Basic realm="Access restricted"`)
 			responseWriter.WriteHeader(http.StatusUnauthorized)
 			responseWriter.Write([]byte(`{"message": "Basic authentication required"}`))
