@@ -109,11 +109,11 @@ func LogHttpRequest(remoteAddr string, host string, method string, url string, h
 	}
 }
 
-func LogHttpResponse(status string, header map[string][]string, proto string, contentLength int64, body string) {
-	Log.Printf("HTTP Response: %s %#v %s %d %s", status, header, proto, contentLength, body)
+func LogHttpResponse(status string, header map[string][]string, proto string, body string) {
+	Log.Printf("HTTP Response: %s %#v %s %s", status, header, proto, body)
 
 	if RunningInteractively {
-		log.Printf("HTTP Response: %s %#v %s %d %s", status, header, proto, contentLength, body)
+		log.Printf("HTTP Response: %s %#v %s %s", status, header, proto, body)
 	}
 }
 
