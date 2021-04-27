@@ -3,6 +3,7 @@ package web
 import (
 	"encoding/json"
 	"fmt"
+	"monitoringagent/internal/logwrapper"
 	"net/http"
 	"time"
 )
@@ -36,6 +37,7 @@ func APIV1RunscriptPostHandler(responseWriter http.ResponseWriter, request *http
 	if script.StdIn != "" {
 		responseWriter.WriteHeader(http.StatusBadRequest)
 		responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - This endpoint does not use stdin", http.StatusBadRequest)))
+		logwrapper.LogWarningf("Request received to /runscript with stdin supplied: '%s' '%s'", request.RemoteAddr, request.UserAgent())
 		return
 	}
 
@@ -44,6 +46,7 @@ func APIV1RunscriptPostHandler(responseWriter http.ResponseWriter, request *http
 		if parseError != nil {
 			responseWriter.WriteHeader(http.StatusBadRequest)
 			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Invalid timeout supplied: '%s'", http.StatusBadRequest, script.Timeout)))
+			logwrapper.LogWarningf("Request received to /runscript with invalid timeout supplied: '%s' '%s' '%s'", script.Timeout, request.RemoteAddr, request.UserAgent())
 			return
 		}
 	}

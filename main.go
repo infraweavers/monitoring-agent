@@ -14,17 +14,19 @@ import (
 type program struct{}
 
 func (program *program) Start(s service.Service) error {
-	logwrapper.Log.Info("Service Starting")
+	logwrapper.LogInfo("Service Starting")
 	go program.run()
 	return nil
 }
+
 func (program *program) run() {
-	logwrapper.Log.Info("Launching Webserver")
+	logwrapper.LogInfo("calling web.LaunchingServer")
 	web.LaunchServer()
 }
+
 func (program *program) Stop(s service.Service) error {
 	web.KillAllRunningProcs()
-	logwrapper.Log.Info("Service Stopping")
+	logwrapper.LogInfo("Service Stopping")
 	return nil
 }
 
@@ -74,7 +76,7 @@ func main() {
 	flag.Parse()
 
 	configuration.Initialise(configurationDirectory(configDirectory))
-	logwrapper.Initialise(service.Interactive(), configuration.Settings.ConfigurationDirectory)
+	logwrapper.Initialise(service.Interactive())
 
 	serviceConfiguration := &service.Config{
 		Name: "Monitoring Agent",

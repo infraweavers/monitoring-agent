@@ -14,22 +14,27 @@ import (
 
 // SettingsValues is the struct to contain all values
 type SettingsValues struct {
-	ConfigurationDirectory  string
-	CertificatePath         string
-	PrivateKeyPath          string
-	Username                string
-	Password                string
-	BindAddress             string
-	LogFilePath             string
-	LogLevel                string
-	HTTPRequestTimeout      time.Duration
-	DefaultScriptTimeout    time.Duration
-	LoadPprof               bool
-	SignedStdInOnly         bool
-	PublicKey               minisign.PublicKey
-	AllowedAddresses        []*net.IPNet
-	UseClientCertificates   bool
-	ClientCertificateCAFile string
+	ConfigurationDirectory          string
+	CertificatePath                 string
+	PrivateKeyPath                  string
+	Username                        string
+	Password                        string
+	BindAddress                     string
+	LogFilePath                     string
+	LogLevel                        string
+	LogArchiveFilesToRetain         int
+	LogRotationThresholdInMegaBytes int
+	LogHTTPRequests                 bool
+	LogHTTPResponses                bool
+	HTTPRequestTimeout              time.Duration
+	DefaultScriptTimeout            time.Duration
+	LoadPprof                       bool
+	DisableHTTPs                    bool
+	SignedStdInOnly                 bool
+	PublicKey                       minisign.PublicKey
+	AllowedAddresses                []*net.IPNet
+	UseClientCertificates           bool
+	ClientCertificateCAFile         string
 }
 
 // Settings is the loaded/updated settings from the configuration file
@@ -57,9 +62,26 @@ func Initialise(configurationDirectory string) {
 	Settings.LogFilePath = fixRelativePath(configurationDirectory, getIniValueOrPanic(iniFile, "Server", "LogFilePath"))
 	Settings.LogLevel = getIniValueOrPanic(iniFile, "Server", "LogLevel")
 
+	stringValue := getIniValueOrPanic(iniFile, "Server", "LogArchiveFilesToRetain")
+	intValue, parseError := strconv.Atoi(stringValue)
+	if parseError != nil {
+		panic(parseError)
+	}
+	Settings.LogArchiveFilesToRetain = intValue
+
+	stringValue = getIniValueOrPanic(iniFile, "Server", "LogRotationThresholdInMegaBytes")
+	intValue, parseError = strconv.Atoi(stringValue)
+	if parseError != nil {
+		panic(parseError)
+	}
+	Settings.LogRotationThresholdInMegaBytes = intValue
+
+	Settings.LogHTTPRequests = getIniBoolOrPanic(iniFile, "Server", "LogHTTPRequests")
+	Settings.LogHTTPResponses = getIniBoolOrPanic(iniFile, "Server", "LogHTTPResponses")
+
 	Settings.BindAddress = getIniValueOrPanic(iniFile, "Server", "BindAddress")
 
-	stringValue := getIniValueOrPanic(iniFile, "Server", "HTTPRequestTimeout")
+	stringValue = getIniValueOrPanic(iniFile, "Server", "HTTPRequestTimeout")
 	durationValue, parseError := time.ParseDuration(stringValue)
 	if parseError != nil {
 		panic(parseError)
@@ -74,6 +96,7 @@ func Initialise(configurationDirectory string) {
 	Settings.DefaultScriptTimeout = durationValue
 
 	Settings.LoadPprof = getIniBoolOrPanic(iniFile, "Server", "LoadPprof")
+	Settings.DisableHTTPs = getIniBoolOrPanic(iniFile, "Server", "DisableHTTPs")
 
 	Settings.SignedStdInOnly = getIniBoolOrPanic(iniFile, "Security", "SignedStdInOnly")
 
