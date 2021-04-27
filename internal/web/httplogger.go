@@ -36,8 +36,6 @@ func httpRequestLogger(handler http.Handler) http.Handler {
 			request.URL.String(),
 			request.Header,
 			request.Proto,
-			request.TLS.Version,
-			request.TLS.CipherSuite,
 			request.ContentLength,
 			string(bodyBytes),
 		)
@@ -67,8 +65,6 @@ func httpResponseLogger(handler http.Handler) http.Handler {
 			response.Status,
 			response.Header,
 			response.Proto,
-			response.TLS.Version,
-			response.TLS.CipherSuite,
 			response.ContentLength,
 			string(bodyBytes),
 		)

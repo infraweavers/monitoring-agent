@@ -101,19 +101,19 @@ func write(lvl logLevel, message string) {
 	}
 }
 
-func LogHttpRequest(remoteAddr string, host string, method string, url string, header map[string][]string, proto string, tlsVersion uint16, tlsCipherSuite uint16, contentLength int64, body string) {
-	Log.Printf("HTTP Request: %s [%s] %s %#v %s %d %d %d %s", remoteAddr, method, url, header, proto, tlsVersion, tlsCipherSuite, contentLength, body)
+func LogHttpRequest(remoteAddr string, host string, method string, url string, header map[string][]string, proto string, contentLength int64, body string) {
+	Log.Printf("HTTP Request: %s [%s] %s %#v %s %d %s", remoteAddr, method, url, header, proto, contentLength, body)
 
 	if RunningInteractively {
-		log.Printf("HTTP Request: %s [%s] %s %#v %s %d %d %d %s", remoteAddr, method, url, header, proto, tlsVersion, tlsCipherSuite, contentLength, body)
+		log.Printf("HTTP Request: %s [%s] %s %#v %s %d %s", remoteAddr, method, url, header, proto, contentLength, body)
 	}
 }
 
-func LogHttpResponse(status string, header map[string][]string, proto string, tlsVersion uint16, tlsCipherSuite uint16, contentLength int64, body string) {
-	Log.Printf("HTTP Request: %s %#v %s %d %d %d %s", status, header, proto, tlsVersion, tlsCipherSuite, contentLength, body)
+func LogHttpResponse(status string, header map[string][]string, proto string, contentLength int64, body string) {
+	Log.Printf("HTTP Response: %s %#v %s %d %s", status, header, proto, contentLength, body)
 
 	if RunningInteractively {
-		log.Printf("HTTP Request: %s %#v %s %d %d %d %s", status, header, proto, tlsVersion, tlsCipherSuite, contentLength, body)
+		log.Printf("HTTP Response: %s %#v %s %d %s", status, header, proto, contentLength, body)
 	}
 }
 
