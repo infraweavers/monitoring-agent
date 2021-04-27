@@ -15,10 +15,10 @@ func LaunchServer() {
 	tlsCert, loadError := tls.LoadX509KeyPair(configuration.Settings.CertificatePath, configuration.Settings.PrivateKeyPath)
 
 	if loadError != nil {
-		logwrapper.Log.Criticalf(loadError.Error())
-		panic(loadError)
+		logwrapper.Log.Panicf(loadError.Error())
 	}
 
+	logwrapper.LogInfof("configuration.Settings.HTTPRequestTimeout: %v", configuration.Settings.HTTPRequestTimeout)
 	var requestTimeout = configuration.Settings.HTTPRequestTimeout
 
 	router := NewRouter()
@@ -32,7 +32,7 @@ func LaunchServer() {
 		certificateContent, clientCALoaderror := ioutil.ReadFile(configuration.Settings.ClientCertificateCAFile)
 
 		if clientCALoaderror != nil {
-			logwrapper.Log.Criticalf("Unable to read ClientCertificateCAFile from %s ", configuration.Settings.ClientCertificateCAFile)
+			logwrapper.LogCriticalf("Unable to read ClientCertificateCAFile from %s ", configuration.Settings.ClientCertificateCAFile)
 			panic(clientCALoaderror)
 		}
 
@@ -54,6 +54,9 @@ func LaunchServer() {
 		IdleTimeout:       requestTimeout,
 	}
 
-	logwrapper.Log.Info("Launching web server: https://" + configuration.Settings.BindAddress)
-	logwrapper.Log.Info(server.ListenAndServeTLS("", ""))
+	logwrapper.LogInfof("Launching web server: https://%s", configuration.Settings.BindAddress)
+	err := server.ListenAndServeTLS("", "")
+	if err != nil {
+		logwrapper.Log.Panicf(err.Error())
+	}
 }
