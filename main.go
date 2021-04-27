@@ -20,7 +20,7 @@ func (program *program) Start(s service.Service) error {
 }
 
 func (program *program) run() {
-	logwrapper.LogInfo("calling web.LaunchingServer")
+	logwrapper.LogInfo("calling web.LaunchServer")
 	web.LaunchServer()
 }
 
