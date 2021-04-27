@@ -101,7 +101,8 @@ func write(lvl logLevel, message string) {
 	}
 }
 
-func LogHttpRequest(remoteAddr string, host string, method string, url string, header map[string][]string, proto string, contentLength int64, body string) {
+// LogHTTPRequest records HTTP Request information in the log
+func LogHTTPRequest(remoteAddr string, host string, method string, url string, header map[string][]string, proto string, contentLength int64, body string) {
 	Log.Printf("HTTP Request: %s [%s] %s %#v %s %d %s", remoteAddr, method, url, header, proto, contentLength, body)
 
 	if RunningInteractively {
@@ -109,7 +110,8 @@ func LogHttpRequest(remoteAddr string, host string, method string, url string, h
 	}
 }
 
-func LogHttpResponse(status string, header map[string][]string, proto string, body string) {
+// LogHTTPResponse records HTTP response information in the log
+func LogHTTPResponse(status string, header map[string][]string, proto string, body string) {
 	Log.Printf("HTTP Response: %s %#v %s %s", status, header, proto, body)
 
 	if RunningInteractively {

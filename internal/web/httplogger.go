@@ -29,7 +29,7 @@ func httpRequestLogger(handler http.Handler) http.Handler {
 
 		handler.ServeHTTP(responseWriter, request)
 
-		logwrapper.LogHttpRequest(
+		logwrapper.LogHTTPRequest(
 			request.RemoteAddr,
 			request.Host,
 			request.Method,
@@ -61,7 +61,7 @@ func httpResponseLogger(handler http.Handler) http.Handler {
 			return
 		}
 
-		logwrapper.LogHttpResponse(
+		logwrapper.LogHTTPResponse(
 			response.Status,
 			response.Header,
 			response.Proto,
