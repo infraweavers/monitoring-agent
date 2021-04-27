@@ -3,7 +3,7 @@ Version: 1.0
 Section: net
 Priority: optional
 Architecture: UPDATEME
-Installed-Size: 1024
+Installed-Size: 11264
 Depends: 
 Recommends: monitoring-plugins
 Maintainer: Infrastructure Team <monitoring-agent@codeweavers.net>
