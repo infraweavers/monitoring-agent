@@ -69,6 +69,7 @@ func jsonDecodeScript(responseWriter http.ResponseWriter, request *http.Request)
 	if error != nil {
 		responseWriter.WriteHeader(http.StatusBadRequest)
 		responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request", http.StatusBadRequest)))
+		logwrapper.LogWarningf("Failed JSON decode: '%s' '%s' '%s'", request.URL.RawPath, request.RemoteAddr, request.UserAgent())
 		return script, error
 	}
 
@@ -149,13 +150,13 @@ func verifySignature(stdin string, signature string) bool {
 	signatureStruct, signatureError := minisign.DecodeSignature(signature)
 
 	if signatureError != nil {
-		logwrapper.LogDebugf("Signature Decoding error: %v", signatureError)
+		logwrapper.LogInfof("Signature Decoding error: %v", signatureError)
 	}
 
 	isValid, error := configuration.Settings.PublicKey.Verify(stdinAsArray, signatureStruct)
 
 	if error != nil {
-		logwrapper.LogDebugf("Signature Verification Error: %v", error)
+		logwrapper.LogInfof("Signature Verification Error: %v", error)
 	}
 
 	return isValid

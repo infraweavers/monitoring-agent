@@ -18,10 +18,12 @@ func (program *program) Start(s service.Service) error {
 	go program.run()
 	return nil
 }
+
 func (program *program) run() {
-	logwrapper.LogInfo("Launching Webserver")
+	logwrapper.LogInfo("calling web.LaunchingServer")
 	web.LaunchServer()
 }
+
 func (program *program) Stop(s service.Service) error {
 	web.KillAllRunningProcs()
 	logwrapper.LogInfo("Service Stopping")

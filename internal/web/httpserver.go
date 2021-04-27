@@ -18,6 +18,7 @@ func LaunchServer() {
 		logwrapper.Log.Panicf(loadError.Error())
 	}
 
+	logwrapper.LogInfof("configuration.Settings.HTTPRequestTimeout: %v", configuration.Settings.HTTPRequestTimeout)
 	var requestTimeout = configuration.Settings.HTTPRequestTimeout
 
 	router := NewRouter()

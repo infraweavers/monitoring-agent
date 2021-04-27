@@ -39,6 +39,7 @@ func APIV1RunscriptstdinPostHandler(responseWriter http.ResponseWriter, request 
 		if script.StdInSignature == "" {
 			responseWriter.WriteHeader(http.StatusBadRequest)
 			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Only signed stdin can be executed", http.StatusBadRequest)))
+			logwrapper.LogWarningf("Attempt to execute script with no signature when configuration.Seetings.SignedStdInOnly is %t: '%s' '%s' ", configuration.Settings.SignedStdInOnly, request.RemoteAddr, request.UserAgent())
 			return
 		}
 		if !verifySignature(script.StdIn, script.StdInSignature) {
@@ -61,6 +62,7 @@ func APIV1RunscriptstdinPostHandler(responseWriter http.ResponseWriter, request 
 		if parseError != nil {
 			responseWriter.WriteHeader(http.StatusBadRequest)
 			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Invalid timeout supplied: '%s'", http.StatusBadRequest, script.Timeout)))
+			logwrapper.LogWarningf("Request received to /runscriptstdin with invalid timeout supplied: '%s' '%s' '%s'", script.Timeout, request.RemoteAddr, request.UserAgent())
 			return
 		}
 	}

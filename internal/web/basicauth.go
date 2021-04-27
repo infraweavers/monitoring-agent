@@ -3,6 +3,7 @@ package web
 import (
 	"crypto/subtle"
 	"monitoringagent/internal/configuration"
+	"monitoringagent/internal/logwrapper"
 	"net/http"
 )
 
@@ -23,6 +24,7 @@ func BasicAuth(handler http.Handler) http.Handler {
 		username, password, ok := request.BasicAuth()
 
 		if !ok {
+			logwrapper.LogInfof("Request received without basic auth header from: %v", request.RemoteAddr)
 			responseWriter.Header().Add("WWW-Authenticate", `Basic realm="Access restricted"`)
 			responseWriter.WriteHeader(http.StatusUnauthorized)
 			responseWriter.Write([]byte(`{"message": "Basic authentication required"}`))
@@ -30,6 +32,7 @@ func BasicAuth(handler http.Handler) http.Handler {
 		}
 
 		if !isKnownValidCredential(username, password) {
+			logwrapper.LogInfof("Request received invalid basic auth from: %v", request.RemoteAddr)
 			responseWriter.Header().Add("WWW-Authenticate", `Basic realm="Access restricted"`)
 			responseWriter.WriteHeader(http.StatusForbidden)
 			responseWriter.Write([]byte(`{"message": "Invalid username and/or password"}`))
