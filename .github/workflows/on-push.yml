@@ -231,6 +231,7 @@ jobs:
           cp ${{ env.SRCPATH }}/monitoring-agent.service deb-package/lib/systemd/system
 
           sed -i 's|LogFilePath=.*|LogFilePath=/var/log/monitoring-agent.log|' deb-package/etc/monitoring-agent/configuration.ini
+          sed -i 's|Architecture: UPDATEME|Architecture: ${{ matrix.arch }}|' deb-package/DEBIAN/control
           
           chmod 600 deb-package/etc/monitoring-agent/*
           sudo chown -R root:root deb-package/

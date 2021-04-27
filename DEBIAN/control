@@ -2,7 +2,7 @@ Package: monitoring-agent
 Version: 1.0
 Section: net
 Priority: optional
-Architecture: amd64
+Architecture: UPDATEME
 Installed-Size: 1024
 Depends: 
 Recommends: monitoring-plugins
