@@ -28,10 +28,6 @@ func NewRouter() *mux.Router {
 		logwrapper.LogDebugf("registering '/debug/pprof' route due to configuration")
 		router.PathPrefix("/debug/pprof").Handler(http.DefaultServeMux)
 	}
-	logwrapper.LogDebugf("appending IPFiltering middleware")
-	router.Use(IPFiltering)
-	logwrapper.LogDebugf("appending BasicAuth middleware")
-	router.Use(BasicAuth)
 
 	logwrapper.LogInfof("configuration.Settings.LogHTTPRequests: %t", configuration.Settings.LogHTTPRequests)
 	if configuration.Settings.LogHTTPRequests {
@@ -44,6 +40,12 @@ func NewRouter() *mux.Router {
 		logwrapper.LogDebugf("appending httpResponseLogger middleware due to configuration")
 		router.Use(httpResponseLogger)
 	}
+
+	logwrapper.LogDebugf("appending IPFiltering middleware")
+	router.Use(IPFiltering)
+
+	logwrapper.LogDebugf("appending BasicAuth middleware")
+	router.Use(BasicAuth)
 
 	return router
 }
