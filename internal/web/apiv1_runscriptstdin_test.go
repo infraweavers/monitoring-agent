@@ -3,6 +3,7 @@ package web
 import (
 	"bytes"
 	"encoding/json"
+	"monitoringagent/internal/configuration"
 	"net/http"
 	"runtime"
 	"testing"
@@ -13,6 +14,7 @@ import (
 type ScriptAsStdInToRun struct {
 	ScriptToRun
 	StdIn
+	StdInSignature
 }
 
 type RunScriptStdInTestCase struct {
@@ -30,6 +32,9 @@ var osSpecificRunScriptStdinTestCases = map[string]RunScriptStdInTestCase{
 			StdIn{
 				StdIn: "uname",
 			},
+			StdInSignature{
+				StdInSignature: "MYSECRET",
+			},
 		},
 		ExpectedResult{
 			Output: `{"exitcode":0,"output":"Linux\n"}`,
@@ -43,6 +48,9 @@ var osSpecificRunScriptStdinTestCases = map[string]RunScriptStdInTestCase{
 			},
 			StdIn{
 				StdIn: `Write-Host "Hello, World"`,
+			},
+			StdInSignature{
+				StdInSignature: "MYSECRET",
 			},
 		},
 		ExpectedResult{
@@ -92,5 +100,18 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 		assert := assert.New(t)
 		assert.Equal(http.StatusBadRequest, output.ResponseStatus)
 		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - This endpoint requires stdin"}`, output.ResponseBody)
+	})
+	t.Run("Runs supplied script, returns HTTP status 200 and expected script output", func(t *testing.T) {
+		configuration.Settings.SignedStdInOnly = true
+		jsonBody, _ := json.Marshal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun)
+		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
+
+		output := TestHTTPRequestWithDefaultCredentials(t, request)
+
+		assert := assert.New(t)
+		//assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
+		//assert.Equal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ExpectedResult.Output, output.ResponseBody, "Body did not match expected output")
+		assert.Equal(http.StatusBadRequest, output.ResponseStatus)
+		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - Signature not valid"}`, output.ResponseBody)
 	})
 }

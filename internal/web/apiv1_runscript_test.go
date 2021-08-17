@@ -80,6 +80,9 @@ func TestRunscriptApiHandler(t *testing.T) {
 			StdIn{
 				StdIn: "uname",
 			},
+			StdInSignature{
+				StdInSignature: "",
+			},
 		}
 		assert := assert.New(t)
 

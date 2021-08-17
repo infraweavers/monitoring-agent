@@ -25,6 +25,11 @@ type ExpectedResult struct {
 	Output string
 }
 
+// ScriptSignature is a struct
+type StdInSignature struct {
+	StdInSignature string
+}
+
 // ScriptToRun is a struct that defines a script (path and arguments) to be passed to an endpoint under test
 type ScriptToRun struct {
 	Path string
