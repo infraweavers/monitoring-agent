@@ -169,6 +169,8 @@ func TestingInitialise() {
 		{IP: net.IPv4(0, 0, 0, 0), Mask: net.IPv4Mask(0, 0, 0, 0)},
 	}
 	Settings.ApprovedExecutable = false
-	Settings.ApprovedPath = map[string]bool{`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`: true,
-		``: false}
+	Settings.ApprovedPath = map[string]bool{
+		`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`: true,
+		`sh`: true,
+	}
 }
