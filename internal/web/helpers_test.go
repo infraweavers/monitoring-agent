@@ -18,9 +18,9 @@ func TestVerifySignature(t *testing.T) {
 
 		testBody := `Write-Host 'Hello, World'`
 		testSignature := `untrusted comment: signature from minisign secret key
-RWQ3ly9IPenQ6XE4gvV0tpJPSRdw/Si+Q4r97LbpLj0Hb3sV+XFydynJg3iFT2PjIlE3xViNOmFT9XrIoidedDr41+Ly0AYbUQg=
-trusted comment: timestamp:1617721023	file:robtest.ps1
-HkxuqHSvipJo/unNKgDS+JGDB0+Q5d8nOeoJ0NGOnKBNsNdvAj8FWf7fhaPV7mzRJ1ooLvYpI0yUsD7lpaDwBQ==
+RWTVYlcv8rHLCG38iTQrPNN7uM7x9mdFvMTCO+BeslGiGjszn3pkQU8+oV+YUO+5TQ15glGQ+l3r1jswXZ/C9Me0jLRwoV/6dAg=
+trusted comment: timestamp:1629284624	file:script.txt
+YQrAqOWGrrYNJw1tKEd0zOhVjEv7Go369l4W5Y4/wG/g3OLjy7xpK6FQEj2QS3HnhK3nZwYnIAHvjYxqqZoyCA==
 `
 
 		response := verifySignature(testBody, testSignature)

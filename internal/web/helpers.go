@@ -180,3 +180,10 @@ func verifyRemoteHost(remoteAddr string) bool {
 	}
 	return false
 }
+
+func verifyPath(path string) bool {
+
+	isValid := configuration.Settings.ApprovedPath[path]
+
+	return isValid
+}

@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"testing"
 
+	"github.com/jedisct1/go-minisign"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -33,7 +34,7 @@ var osSpecificRunScriptStdinTestCases = map[string]RunScriptStdInTestCase{
 				StdIn: "uname",
 			},
 			StdInSignature{
-				StdInSignature: "MYSECRET",
+				StdInSignature: "ScriptSignature",
 			},
 		},
 		ExpectedResult{
@@ -47,10 +48,10 @@ var osSpecificRunScriptStdinTestCases = map[string]RunScriptStdInTestCase{
 				Args: []string{"-command", "-"},
 			},
 			StdIn{
-				StdIn: `Write-Host "Hello, World"`,
+				StdIn: `Write-Host 'Hello, World'`,
 			},
 			StdInSignature{
-				StdInSignature: "MYSECRET",
+				StdInSignature: "ScriptSignature",
 			},
 		},
 		ExpectedResult{
@@ -101,17 +102,49 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 		assert.Equal(http.StatusBadRequest, output.ResponseStatus)
 		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - This endpoint requires stdin"}`, output.ResponseBody)
 	})
-	t.Run("Runs supplied script, returns HTTP status 200 and expected script output", func(t *testing.T) {
+
+	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
 		configuration.Settings.SignedStdInOnly = true
-		jsonBody, _ := json.Marshal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun)
+		configuration.Settings.PublicKey, _ = minisign.NewPublicKey("RWTVYlcv8rHLCPg9ME+2wyEtwHz1azX54uLnGW5AWzb1R1qaESVNzxGI")
+
+		meh := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
+		meh.StdInSignature.StdInSignature = `untrusted comment: signature from minisign secret key
+RWTVYlcv8rHLCG38iTQrPNN7uM7x9mdFvMTCO+BeslGiGjszn3pkQU8+oV+YUO+5TQ15glGQ+l3r1jswXZ/C9Me0jLRwoV/6dAg=
+trusted comment: timestamp:1629284624	file:script.txt
+YQrAqOWGrrYNJw1tKEd0zOhVjEv7Go369l4W5Y4/wG/g3OLjy7xpK6FQEj2QS3HnhK3nZwYnIAHvjYxqqZoyCA==
+`
+
+		jsonBody, _ := json.Marshal(meh)
 		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
 
 		output := TestHTTPRequestWithDefaultCredentials(t, request)
 
 		assert := assert.New(t)
-		//assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
-		//assert.Equal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ExpectedResult.Output, output.ResponseBody, "Body did not match expected output")
-		assert.Equal(http.StatusBadRequest, output.ResponseStatus)
-		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - Signature not valid"}`, output.ResponseBody)
+
+		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
+		assert.Equal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ExpectedResult.Output, output.ResponseBody, "Body did not match expected output")
+	})
+
+	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
+		configuration.Settings.SignedStdInOnly = true
+		configuration.Settings.ApprovedExecutable = true
+		configuration.Settings.PublicKey, _ = minisign.NewPublicKey("RWTVYlcv8rHLCPg9ME+2wyEtwHz1azX54uLnGW5AWzb1R1qaESVNzxGI")
+
+		meh := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
+		meh.StdInSignature.StdInSignature = `untrusted comment: signature from minisign secret key
+RWTVYlcv8rHLCG38iTQrPNN7uM7x9mdFvMTCO+BeslGiGjszn3pkQU8+oV+YUO+5TQ15glGQ+l3r1jswXZ/C9Me0jLRwoV/6dAg=
+trusted comment: timestamp:1629284624	file:script.txt
+YQrAqOWGrrYNJw1tKEd0zOhVjEv7Go369l4W5Y4/wG/g3OLjy7xpK6FQEj2QS3HnhK3nZwYnIAHvjYxqqZoyCA==
+`
+
+		jsonBody, _ := json.Marshal(meh)
+		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
+
+		output := TestHTTPRequestWithDefaultCredentials(t, request)
+
+		assert := assert.New(t)
+
+		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
+		assert.Equal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ExpectedResult.Output, output.ResponseBody, "Body did not match expected output")
 	})
 }

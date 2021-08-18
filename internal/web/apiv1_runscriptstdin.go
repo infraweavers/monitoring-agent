@@ -50,6 +50,15 @@ func APIV1RunscriptstdinPostHandler(responseWriter http.ResponseWriter, request 
 		}
 	}
 
+	if configuration.Settings.ApprovedExecutable {
+		if !verifyPath(script.Path) {
+			responseWriter.WriteHeader(http.StatusBadRequest)
+			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Unapproved Path", http.StatusBadRequest)))
+			logwrapper.LogWarningf("Attempted to use unapproved path.", request.RemoteAddr, request.UserAgent())
+			return
+		}
+	}
+
 	if script.StdIn == "" {
 		responseWriter.WriteHeader(http.StatusBadRequest)
 		responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - This endpoint requires stdin", http.StatusBadRequest)))

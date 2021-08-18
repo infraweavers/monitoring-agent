@@ -35,6 +35,8 @@ type SettingsValues struct {
 	AllowedAddresses                []*net.IPNet
 	UseClientCertificates           bool
 	ClientCertificateCAFile         string
+	ApprovedExecutable              bool
+	ApprovedPath                    map[string]bool
 }
 
 // Settings is the loaded/updated settings from the configuration file
@@ -162,7 +164,11 @@ func TestingInitialise() {
 	Settings.Password = "secret"
 
 	Settings.PublicKey, _ = minisign.NewPublicKey("RWQ3ly9IPenQ6Wgt/VYzMCdGdVJPPoNSyT+rtTddvqBgANTYdboko0zu")
+	Settings.PublicKey, _ = minisign.NewPublicKey("RWTVYlcv8rHLCPg9ME+2wyEtwHz1azX54uLnGW5AWzb1R1qaESVNzxGI")
 	Settings.AllowedAddresses = []*net.IPNet{
 		{IP: net.IPv4(0, 0, 0, 0), Mask: net.IPv4Mask(0, 0, 0, 0)},
 	}
+	Settings.ApprovedExecutable = false
+	Settings.ApprovedPath = map[string]bool{`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`: true,
+		``: false}
 }
