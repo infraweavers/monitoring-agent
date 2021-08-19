@@ -163,8 +163,8 @@ func TestingInitialise() {
 	Settings.Username = "test"
 	Settings.Password = "secret"
 
-	Settings.PublicKey, _ = minisign.NewPublicKey("RWQ3ly9IPenQ6Wgt/VYzMCdGdVJPPoNSyT+rtTddvqBgANTYdboko0zu")
-	Settings.PublicKey, _ = minisign.NewPublicKey("RWTVYlcv8rHLCPg9ME+2wyEtwHz1azX54uLnGW5AWzb1R1qaESVNzxGI")
+	Settings.PublicKey, _ = minisign.NewPublicKey("RWTV8L06+shYI7Xw1H+NBGmsUYlbEkbrdYxr4c0ImLCAr8NGx75VhxGQ")
+
 	Settings.AllowedAddresses = []*net.IPNet{
 		{IP: net.IPv4(0, 0, 0, 0), Mask: net.IPv4Mask(0, 0, 0, 0)},
 	}

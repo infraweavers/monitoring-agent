@@ -8,7 +8,6 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/jedisct1/go-minisign"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -34,7 +33,11 @@ var osSpecificRunScriptStdinTestCases = map[string]RunScriptStdInTestCase{
 				StdIn: "uname",
 			},
 			StdInSignature{
-				StdInSignature: "ScriptSignature",
+				StdInSignature: `untrusted comment: signature from minisign secret key
+RWTV8L06+shYI8mVzlQxqbNt9+ldPNoPREsedr+sAHAnkrkyg80yQo1UrrYD7+ScU9ZXqYv79ukLN3nEgK8tsQ4uUSH7Sgpw1AY=
+trusted comment: timestamp:1629361789	file:uname.txt
+6ZxQL0d64hC8LCCPpKct+oyPN/JV1zqnD+92Uk9z9dEYnugpYmgVv9ZXabaLePEIP3bfNYe5JeD83YHWYS4/Aw==
+`,
 			},
 		},
 		ExpectedResult{
@@ -51,7 +54,11 @@ var osSpecificRunScriptStdinTestCases = map[string]RunScriptStdInTestCase{
 				StdIn: `Write-Host 'Hello, World'`,
 			},
 			StdInSignature{
-				StdInSignature: "ScriptSignature",
+				StdInSignature: `untrusted comment: signature from minisign secret key
+RWTV8L06+shYIx/hkk/yLgwyrJvVfYNoGDsCsv6/+2Tp1Feq/S6DLwpOENGpsUe15ZedtCZzjmXQrJ+vVeC2oNB3vR88G25o0wo=
+trusted comment: timestamp:1629361915	file:writehost.txt
+OfDNTVG4KeQatDps8OzEXZGNhSQrfHOWTYJ2maNyrWe+TGss7VchEEFMrKMvvTP5q0NL9YoLvbyxoWxCd2H0Cg==
+`,
 			},
 		},
 		ExpectedResult{
@@ -105,16 +112,9 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 
 	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
 		configuration.Settings.SignedStdInOnly = true
-		configuration.Settings.PublicKey, _ = minisign.NewPublicKey("RWTVYlcv8rHLCPg9ME+2wyEtwHz1azX54uLnGW5AWzb1R1qaESVNzxGI")
+		//configuration.Settings.PublicKey, _ = minisign.NewPublicKey("RWTVYlcv8rHLCPg9ME+2wyEtwHz1azX54uLnGW5AWzb1R1qaESVNzxGI")
 
-		meh := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
-		meh.StdInSignature.StdInSignature = `untrusted comment: signature from minisign secret key
-RWTVYlcv8rHLCG38iTQrPNN7uM7x9mdFvMTCO+BeslGiGjszn3pkQU8+oV+YUO+5TQ15glGQ+l3r1jswXZ/C9Me0jLRwoV/6dAg=
-trusted comment: timestamp:1629284624	file:script.txt
-YQrAqOWGrrYNJw1tKEd0zOhVjEv7Go369l4W5Y4/wG/g3OLjy7xpK6FQEj2QS3HnhK3nZwYnIAHvjYxqqZoyCA==
-`
-
-		jsonBody, _ := json.Marshal(meh)
+		jsonBody, _ := json.Marshal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun)
 		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
 
 		output := TestHTTPRequestWithDefaultCredentials(t, request)
@@ -125,19 +125,14 @@ YQrAqOWGrrYNJw1tKEd0zOhVjEv7Go369l4W5Y4/wG/g3OLjy7xpK6FQEj2QS3HnhK3nZwYnIAHvjYxq
 		assert.Equal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ExpectedResult.Output, output.ResponseBody, "Body did not match expected output")
 	})
 
-	t.Run("Runs unsigned script, returns HTTP status 200 and expected script output", func(t *testing.T) {
+	t.Run("Runs unsigned script, returns HTTP status 400 and expected failed signiture verification", func(t *testing.T) {
 		configuration.Settings.SignedStdInOnly = true
-		configuration.Settings.PublicKey, _ = minisign.NewPublicKey("RWTVYlcv8rHLCPg9ME+2wyEtwHz1azX54uLnGW5AWzb1R1qaESVNzxGI")
+		//configuration.Settings.PublicKey, _ = minisign.NewPublicKey("RWTVYlcv8rHLCPg9ME+2wyEtwHz1azX54uLnGW5AWzb1R1qaESVNzxGI")
 
-		meh := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
-		meh.StdIn.StdIn = `Write-Host 'This script is a test.'`
-		meh.StdInSignature.StdInSignature = `untrusted comment: signature from minisign secret key
-RWTVYlcv8rHLCG38iTQrPNN7uM7x9mdFvMTCO+BeslGiGjszn3pkQU8+oV+YUO+5TQ15glGQ+l3r1jswXZ/C9Me0jLRwoV/6dAg=
-trusted comment: timestamp:1629284624	file:script.txt
-YQrAqOWGrrYNJw1tKEd0zOhVjEv7Go369l4W5Y4/wG/g3OLjy7xpK6FQEj2QS3HnhK3nZwYnIAHvjYxqqZoyCA==
-`
+		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
+		osSpecificRunScript.StdIn.StdIn = `Write-Host 'This script is a test.'`
 
-		jsonBody, _ := json.Marshal(meh)
+		jsonBody, _ := json.Marshal(osSpecificRunScript)
 		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
 
 		output := TestHTTPRequestWithDefaultCredentials(t, request)
@@ -150,17 +145,17 @@ YQrAqOWGrrYNJw1tKEd0zOhVjEv7Go369l4W5Y4/wG/g3OLjy7xpK6FQEj2QS3HnhK3nZwYnIAHvjYxq
 
 	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
 		configuration.Settings.SignedStdInOnly = true
-		configuration.Settings.PublicKey, _ = minisign.NewPublicKey("RWTVYlcv8rHLCPg9ME+2wyEtwHz1azX54uLnGW5AWzb1R1qaESVNzxGI")
+		//configuration.Settings.PublicKey, _ = minisign.NewPublicKey("RWTVYlcv8rHLCPg9ME+2wyEtwHz1azX54uLnGW5AWzb1R1qaESVNzxGI")
 
-		meh := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
-		meh.StdIn.StdIn = `Write-Host 'This script is a test.'`
-		meh.StdInSignature.StdInSignature = `untrusted comment: signature from minisign secret key
-RWTVYlcv8rHLCJnBXexSwCwAyl6pGDfupXRoZsLhsUFU9FypH6pc34T5C5w+GeJkB0xkpGOKpyQ3IuXU3fR0g/Akr5Cz8g3hAQg=
-trusted comment: timestamp:1629298764	file:script.txt
-UFjyKeJNRnptn9KcfaFqdVlt1BcIomT6cH/2K/4x+jggVj9gMc4vZ5FiMN/pKytwBLcg/9++/SZJYFxFn1XFAw==
+		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
+		osSpecificRunScript.StdIn.StdIn = `Write-Host 'This script is a test.'`
+		osSpecificRunScript.StdInSignature.StdInSignature = `untrusted comment: signature from minisign secret key
+RWTV8L06+shYI0gq2Ph8MRbdPBrxVEXwzw12yn6b6qG4uyBcnCZ6jTBVULVTZPlMwx6mBnLL2ayCwL/NC83wHJMBtcg3oY/uDQk=
+trusted comment: timestamp:1629362484	file:whtest.txt
+tbOXpkm9GyEQlUflmVX4cDy2k5fJWU3wtxscvAqSu19C227SFQU6SHlUZbpXB85pBoFJTJK+tQVBN1u1RmaOCw==
 `
 
-		jsonBody, _ := json.Marshal(meh)
+		jsonBody, _ := json.Marshal(osSpecificRunScript)
 		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
 
 		output := TestHTTPRequestWithDefaultCredentials(t, request)
@@ -176,14 +171,7 @@ UFjyKeJNRnptn9KcfaFqdVlt1BcIomT6cH/2K/4x+jggVj9gMc4vZ5FiMN/pKytwBLcg/9++/SZJYFxF
 		configuration.Settings.ApprovedExecutable = true
 		configuration.Settings.ApprovedPath = map[string]bool{}
 
-		meh := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
-		meh.StdInSignature.StdInSignature = `untrusted comment: signature from minisign secret key
-RWTVYlcv8rHLCG38iTQrPNN7uM7x9mdFvMTCO+BeslGiGjszn3pkQU8+oV+YUO+5TQ15glGQ+l3r1jswXZ/C9Me0jLRwoV/6dAg=
-trusted comment: timestamp:1629284624	file:script.txt
-YQrAqOWGrrYNJw1tKEd0zOhVjEv7Go369l4W5Y4/wG/g3OLjy7xpK6FQEj2QS3HnhK3nZwYnIAHvjYxqqZoyCA==
-`
-
-		jsonBody, _ := json.Marshal(meh)
+		jsonBody, _ := json.Marshal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun)
 		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
 
 		output := TestHTTPRequestWithDefaultCredentials(t, request)
@@ -202,14 +190,7 @@ YQrAqOWGrrYNJw1tKEd0zOhVjEv7Go369l4W5Y4/wG/g3OLjy7xpK6FQEj2QS3HnhK3nZwYnIAHvjYxq
 			`sh`: true,
 		}
 
-		meh := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
-		meh.StdInSignature.StdInSignature = `untrusted comment: signature from minisign secret key
-RWTVYlcv8rHLCG38iTQrPNN7uM7x9mdFvMTCO+BeslGiGjszn3pkQU8+oV+YUO+5TQ15glGQ+l3r1jswXZ/C9Me0jLRwoV/6dAg=
-trusted comment: timestamp:1629284624	file:script.txt
-YQrAqOWGrrYNJw1tKEd0zOhVjEv7Go369l4W5Y4/wG/g3OLjy7xpK6FQEj2QS3HnhK3nZwYnIAHvjYxqqZoyCA==
-`
-
-		jsonBody, _ := json.Marshal(meh)
+		jsonBody, _ := json.Marshal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun)
 		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
 
 		output := TestHTTPRequestWithDefaultCredentials(t, request)
