@@ -130,7 +130,12 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 		//configuration.Settings.PublicKey, _ = minisign.NewPublicKey("RWTVYlcv8rHLCPg9ME+2wyEtwHz1azX54uLnGW5AWzb1R1qaESVNzxGI")
 
 		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
-		osSpecificRunScript.StdIn.StdIn = `Write-Host 'This script is a test.'`
+		if runtime.GOOS == "windows" {
+			osSpecificRunScript.StdIn.StdIn = `Write-Host 'This script is a test.'`
+		}
+		if runtime.GOOS == "linux" {
+			osSpecificRunScript.StdIn.StdIn = `echo "Hello, World."`
+		}
 
 		jsonBody, _ := json.Marshal(osSpecificRunScript)
 		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
@@ -148,12 +153,22 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 		//configuration.Settings.PublicKey, _ = minisign.NewPublicKey("RWTVYlcv8rHLCPg9ME+2wyEtwHz1azX54uLnGW5AWzb1R1qaESVNzxGI")
 
 		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
-		osSpecificRunScript.StdIn.StdIn = `Write-Host 'This script is a test.'`
-		osSpecificRunScript.StdInSignature.StdInSignature = `untrusted comment: signature from minisign secret key
+		if runtime.GOOS == "windows" {
+			osSpecificRunScript.StdIn.StdIn = `Write-Host 'This script is a test.'`
+			osSpecificRunScript.StdInSignature.StdInSignature = `untrusted comment: signature from minisign secret key
 RWTV8L06+shYI0gq2Ph8MRbdPBrxVEXwzw12yn6b6qG4uyBcnCZ6jTBVULVTZPlMwx6mBnLL2ayCwL/NC83wHJMBtcg3oY/uDQk=
 trusted comment: timestamp:1629362484	file:whtest.txt
 tbOXpkm9GyEQlUflmVX4cDy2k5fJWU3wtxscvAqSu19C227SFQU6SHlUZbpXB85pBoFJTJK+tQVBN1u1RmaOCw==
 `
+		}
+		if runtime.GOOS == "linux" {
+			osSpecificRunScript.StdIn.StdIn = `echo "Hello, World."`
+			osSpecificRunScript.StdInSignature.StdInSignature = `untrusted comment: signature from minisign secret key
+RWTV8L06+shYI7va0sHDtf0mKTV71PNAIgnLu54u5UzOtZCRjzqV5lEUipSsIVwFUke3z6V+jEMWlYY3h8QCrJmWzP/FJEIZkgw=
+trusted comment: timestamp:1629366630	file:helloworld.txt
+x/HdDHzG1x3gIxP1YI/ruMwXiFqTrEY3pBS2e8IY0KXXTq20xFxbqE9iBnRu2zKw3IZyI9yO92x3lVwyqvTmDw==
+`
+		}
 
 		jsonBody, _ := json.Marshal(osSpecificRunScript)
 		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
