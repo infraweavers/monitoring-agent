@@ -153,7 +153,12 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 		//configuration.Settings.PublicKey, _ = minisign.NewPublicKey("RWTVYlcv8rHLCPg9ME+2wyEtwHz1azX54uLnGW5AWzb1R1qaESVNzxGI")
 
 		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
-		osSpecificRunScript.StdIn.StdIn = `Write-Host 'This script is a test.'`
+		if runtime.GOOS == "windows" {
+			osSpecificRunScript.StdIn.StdIn = `Write-Host 'This script is a test.'`
+		}
+		if runtime.GOOS == "linux" {
+			osSpecificRunScript.StdIn.StdIn = `echo This script is a test."`
+		}
 		osSpecificRunScript.StdInSignature.StdInSignature = `untrusted comment: signature from minisign secret key
 RWTV8L06+shYI0gq2Ph8MRbdPBrxVEXwzw12yn6b6qG4uyBcnCZ6jTBVULVTZPlMwx6mBnLL2ayCwL/NC83wHJMBtcg3oY/uDQk=
 trusted comment: timestamp:1629362484	file:whtest.txt
