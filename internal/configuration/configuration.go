@@ -37,6 +37,8 @@ type SettingsValues struct {
 	ClientCertificateCAFile         string
 	ApprovedExecutable              bool
 	ApprovedPath                    map[string]bool
+	ApprovedArgumentsEnforce        bool
+	ApprovedArguments               map[string]bool
 }
 
 // Settings is the loaded/updated settings from the configuration file
@@ -173,4 +175,11 @@ func TestingInitialise() {
 		`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`: true,
 		`sh`: true,
 	}
+	Settings.ApprovedArguments = map[string]bool{
+		`-c`:       true,
+		`-command`: true,
+		`-`:        true,
+		`-s`:       true,
+	}
+	Settings.ApprovedArgumentsEnforce = true
 }

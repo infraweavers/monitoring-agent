@@ -59,6 +59,15 @@ func APIV1RunscriptstdinPostHandler(responseWriter http.ResponseWriter, request 
 		}
 	}
 
+	if configuration.Settings.ApprovedArgumentsEnforce {
+		if !verifyArguments(script.Args) {
+			responseWriter.WriteHeader(http.StatusBadRequest)
+			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Unapproved arguments", http.StatusBadRequest)))
+			logwrapper.LogWarningf("Attempted to use unapproved arguments.", request.RemoteAddr, request.UserAgent())
+			return
+		}
+	}
+
 	if script.StdIn == "" {
 		responseWriter.WriteHeader(http.StatusBadRequest)
 		responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - This endpoint requires stdin", http.StatusBadRequest)))

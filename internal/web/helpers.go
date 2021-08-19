@@ -187,3 +187,11 @@ func verifyPath(path string) bool {
 
 	return isValid
 }
+
+func verifyArguments(args []string) bool {
+	var isValid bool
+	for _, arg := range args {
+		isValid = configuration.Settings.ApprovedArguments[arg]
+	}
+	return isValid
+}
