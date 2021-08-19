@@ -155,15 +155,20 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
 		if runtime.GOOS == "windows" {
 			osSpecificRunScript.StdIn.StdIn = `Write-Host 'This script is a test.'`
-		}
-		if runtime.GOOS == "linux" {
-			osSpecificRunScript.StdIn.StdIn = `echo This script is a test."`
-		}
-		osSpecificRunScript.StdInSignature.StdInSignature = `untrusted comment: signature from minisign secret key
+			osSpecificRunScript.StdInSignature.StdInSignature = `untrusted comment: signature from minisign secret key
 RWTV8L06+shYI0gq2Ph8MRbdPBrxVEXwzw12yn6b6qG4uyBcnCZ6jTBVULVTZPlMwx6mBnLL2ayCwL/NC83wHJMBtcg3oY/uDQk=
 trusted comment: timestamp:1629362484	file:whtest.txt
 tbOXpkm9GyEQlUflmVX4cDy2k5fJWU3wtxscvAqSu19C227SFQU6SHlUZbpXB85pBoFJTJK+tQVBN1u1RmaOCw==
 `
+		}
+		if runtime.GOOS == "linux" {
+			osSpecificRunScript.StdIn.StdIn = `echo "This script is a test."`
+			osSpecificRunScript.StdInSignature.StdInSignature = `untrusted comment: signature from minisign secret key
+RWTV8L06+shYI+aL2MAm12HN97gM83Cd1c2H10PMtGhFAmYlxsEWnJGZEFMyFtB46Ity/6iK36IEw66L+5KjcLJEOhw7TMwjZQs=
+trusted comment: timestamp:1629368840	file:echotest.txt
+U54CjtRd9nA/jp4iEhdbQ35eE4yWQRY0nbJlw4elRwilslde8nrZwfaIK1a2R+7gzfeuiZq8xTlKtIvTOg5aAA==
+`
+		}
 
 		jsonBody, _ := json.Marshal(osSpecificRunScript)
 		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
