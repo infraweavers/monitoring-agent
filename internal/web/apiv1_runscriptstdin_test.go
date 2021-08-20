@@ -181,63 +181,11 @@ U54CjtRd9nA/jp4iEhdbQ35eE4yWQRY0nbJlw4elRwilslde8nrZwfaIK1a2R+7gzfeuiZq8xTlKtIvT
 		assert.Equal(`{"exitcode":0,"output":"This script is a test.\n"}`, output.ResponseBody, "Body did not match expected output")
 	})
 
-	t.Run("Runs signed script on unapproved path, returns HTTP status 400", func(t *testing.T) {
-		configuration.Settings.SignedStdInOnly = true
-		configuration.Settings.ApprovedExecutable = true
-		configuration.Settings.ApprovedPath = map[string]bool{}
-
-		jsonBody, _ := json.Marshal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
-
-		output := TestHTTPRequestWithDefaultCredentials(t, request)
-
-		assert := assert.New(t)
-
-		assert.Equal(http.StatusBadRequest, output.ResponseStatus)
-		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - Unapproved Path"}`, output.ResponseBody)
-	})
-
 	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
+		configuration.Settings.ApprovedPathArgumentsOnly = true
 		configuration.Settings.SignedStdInOnly = true
-		configuration.Settings.ApprovedExecutable = true
-		configuration.Settings.ApprovedPath = map[string]bool{
-			`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`: true,
-			`sh`: true,
-		}
-
-		jsonBody, _ := json.Marshal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
-
-		output := TestHTTPRequestWithDefaultCredentials(t, request)
-
-		assert := assert.New(t)
-
-		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
-		assert.Equal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ExpectedResult.Output, output.ResponseBody, "Body did not match expected output")
-	})
-	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
-		configuration.Settings.SignedStdInOnly = true
-		configuration.Settings.ApprovedArgumentsEnforce = true
-		//configuration.Settings.PublicKey, _ = minisign.NewPublicKey("RWTVYlcv8rHLCPg9ME+2wyEtwHz1azX54uLnGW5AWzb1R1qaESVNzxGI")
 
 		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
-		if runtime.GOOS == "windows" {
-			osSpecificRunScript.StdIn.StdIn = `Write-Host 'This script is a test.'`
-			osSpecificRunScript.StdInSignature.StdInSignature = `untrusted comment: signature from minisign secret key
-RWTV8L06+shYI0gq2Ph8MRbdPBrxVEXwzw12yn6b6qG4uyBcnCZ6jTBVULVTZPlMwx6mBnLL2ayCwL/NC83wHJMBtcg3oY/uDQk=
-trusted comment: timestamp:1629362484	file:whtest.txt
-tbOXpkm9GyEQlUflmVX4cDy2k5fJWU3wtxscvAqSu19C227SFQU6SHlUZbpXB85pBoFJTJK+tQVBN1u1RmaOCw==
-`
-			//osSpecificRunScript.Args = []string{"nonsense"}
-		}
-		if runtime.GOOS == "linux" {
-			osSpecificRunScript.StdIn.StdIn = `echo "This script is a test."`
-			osSpecificRunScript.StdInSignature.StdInSignature = `untrusted comment: signature from minisign secret key
-RWTV8L06+shYI+aL2MAm12HN97gM83Cd1c2H10PMtGhFAmYlxsEWnJGZEFMyFtB46Ity/6iK36IEw66L+5KjcLJEOhw7TMwjZQs=
-trusted comment: timestamp:1629368840	file:echotest.txt
-U54CjtRd9nA/jp4iEhdbQ35eE4yWQRY0nbJlw4elRwilslde8nrZwfaIK1a2R+7gzfeuiZq8xTlKtIvTOg5aAA==
-`
-		}
 
 		jsonBody, _ := json.Marshal(osSpecificRunScript)
 		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
@@ -247,6 +195,29 @@ U54CjtRd9nA/jp4iEhdbQ35eE4yWQRY0nbJlw4elRwilslde8nrZwfaIK1a2R+7gzfeuiZq8xTlKtIvT
 		assert := assert.New(t)
 
 		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
-		assert.Equal(`{"exitcode":0,"output":"This script is a test.\n"}`, output.ResponseBody, "Body did not match expected output")
+		assert.Equal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ExpectedResult.Output, output.ResponseBody, "Body did not match expected output")
+	})
+
+	t.Run("Bad request due to invalid path/arg combo", func(t *testing.T) {
+		configuration.Settings.ApprovedPathArgumentsOnly = true
+		configuration.Settings.SignedStdInOnly = true
+
+		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
+		if runtime.GOOS == "windows" {
+			osSpecificRunScript.ScriptToRun.Args = append(osSpecificRunScript.ScriptToRun.Args, "")
+		}
+		if runtime.GOOS == "linux" {
+			osSpecificRunScript.ScriptToRun.Args = append(osSpecificRunScript.ScriptToRun.Args, "")
+		}
+
+		jsonBody, _ := json.Marshal(osSpecificRunScript)
+		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
+
+		output := TestHTTPRequestWithDefaultCredentials(t, request)
+
+		assert := assert.New(t)
+
+		assert.Equal(http.StatusBadRequest, output.ResponseStatus)
+		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - Unapproved Path/Args"}`, output.ResponseBody)
 	})
 }

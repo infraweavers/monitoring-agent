@@ -35,10 +35,8 @@ type SettingsValues struct {
 	AllowedAddresses                []*net.IPNet
 	UseClientCertificates           bool
 	ClientCertificateCAFile         string
-	ApprovedExecutable              bool
-	ApprovedPath                    map[string]bool
-	ApprovedArgumentsEnforce        bool
-	ApprovedArguments               map[string]bool
+	ApprovedPathArgumentsOnly       bool
+	ApprovedPathArguments           map[string]map[string]bool
 }
 
 // Settings is the loaded/updated settings from the configuration file
@@ -170,16 +168,15 @@ func TestingInitialise() {
 	Settings.AllowedAddresses = []*net.IPNet{
 		{IP: net.IPv4(0, 0, 0, 0), Mask: net.IPv4Mask(0, 0, 0, 0)},
 	}
-	Settings.ApprovedExecutable = false
-	Settings.ApprovedPath = map[string]bool{
-		`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`: true,
-		`sh`: true,
+	Settings.ApprovedPathArgumentsOnly = true
+	Settings.ApprovedPathArguments = map[string]map[string]bool{
+		`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`: {
+			`-command`: true,
+			`-`:        true,
+		},
+		`sh`: {
+			`-c`: true,
+			`-s`: true,
+		},
 	}
-	Settings.ApprovedArguments = map[string]bool{
-		`-c`:       true,
-		`-command`: true,
-		`-`:        true,
-		`-s`:       true,
-	}
-	Settings.ApprovedArgumentsEnforce = true
 }

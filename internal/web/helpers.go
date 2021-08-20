@@ -181,17 +181,10 @@ func verifyRemoteHost(remoteAddr string) bool {
 	return false
 }
 
-func verifyPath(path string) bool {
-
-	isValid := configuration.Settings.ApprovedPath[path]
-
-	return isValid
-}
-
-func verifyArguments(args []string) bool {
+func verifyPathArguments(path string, args []string) bool {
 	var isValid bool
 	for _, arg := range args {
-		isValid = configuration.Settings.ApprovedArguments[arg]
+		isValid = configuration.Settings.ApprovedPathArguments[path][arg]
 	}
 	return isValid
 }

@@ -35,6 +35,15 @@ func APIV1RunscriptstdinPostHandler(responseWriter http.ResponseWriter, request 
 		return
 	}
 
+	if configuration.Settings.ApprovedPathArgumentsOnly {
+		if !verifyPathArguments(script.Path, script.Args) {
+			responseWriter.WriteHeader(http.StatusBadRequest)
+			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Unapproved Path/Args", http.StatusBadRequest)))
+			logwrapper.LogWarningf("Attempted to use unapproved path and argument(s) combo.", request.RemoteAddr, request.UserAgent())
+			return
+		}
+	}
+
 	if configuration.Settings.SignedStdInOnly {
 		if script.StdInSignature == "" {
 			responseWriter.WriteHeader(http.StatusBadRequest)
@@ -46,24 +55,6 @@ func APIV1RunscriptstdinPostHandler(responseWriter http.ResponseWriter, request 
 			responseWriter.WriteHeader(http.StatusBadRequest)
 			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Signature not valid", http.StatusBadRequest)))
 			logwrapper.LogWarningf("Attempt to execute script with invalid signature: '%s' '%s' ", request.RemoteAddr, request.UserAgent())
-			return
-		}
-	}
-
-	if configuration.Settings.ApprovedExecutable {
-		if !verifyPath(script.Path) {
-			responseWriter.WriteHeader(http.StatusBadRequest)
-			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Unapproved Path", http.StatusBadRequest)))
-			logwrapper.LogWarningf("Attempted to use unapproved path.", request.RemoteAddr, request.UserAgent())
-			return
-		}
-	}
-
-	if configuration.Settings.ApprovedArgumentsEnforce {
-		if !verifyArguments(script.Args) {
-			responseWriter.WriteHeader(http.StatusBadRequest)
-			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Unapproved arguments", http.StatusBadRequest)))
-			logwrapper.LogWarningf("Attempted to use unapproved arguments.", request.RemoteAddr, request.UserAgent())
 			return
 		}
 	}
