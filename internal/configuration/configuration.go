@@ -60,7 +60,10 @@ func Initialise(configurationDirectory string) {
 		panic(loadError)
 	}
 
-	jsonFile, loadError := json.Unmarshal(configurationFileJSON)
+	jsonfile := ""
+
+	//jsonFile, loadError := json.Unmarshal(configurationFileJSON)
+	json.Unmarshal([]byte(configurationFileJSON), &jsonfile)
 
 	if loadError != nil {
 		panic(loadError)
