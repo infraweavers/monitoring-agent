@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"encoding/json"
 	"net"
 	"path"
 	"path/filepath"
@@ -51,8 +52,15 @@ func Initialise(configurationDirectory string) {
 	Settings.PrivateKeyPath = filepath.FromSlash(configurationDirectory + "/server.key")
 
 	var configurationFile = filepath.FromSlash(configurationDirectory + "/configuration.ini")
+	var configurationFileJSON = filepath.FromSlash(configurationDirectory + "/configuration.json")
 
 	iniFile, loadError := ini.LoadFile(configurationFile)
+
+	if loadError != nil {
+		panic(loadError)
+	}
+
+	jsonFile, loadError := json.Unmarshal(configurationFileJSON)
 
 	if loadError != nil {
 		panic(loadError)
