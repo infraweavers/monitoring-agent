@@ -2,6 +2,7 @@ package configuration
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net"
 	"path"
 	"path/filepath"
@@ -40,6 +41,40 @@ type SettingsValues struct {
 	ApprovedPathArguments           map[string]map[string]bool
 }
 
+type JSONconfig struct {
+	Authentication JSONconfigAuthentication `json:"Authentication"`
+	Server         JSONconfigServer         `json:"Server"`
+	Security       JSONconfigSecurity       `json:"Security"`
+}
+
+type JSONconfigAuthentication struct {
+	Username string
+	Password string
+}
+
+type JSONconfigServer struct {
+	HTTPRequestTimeout              string
+	DefaultScriptTimetout           string
+	logFilePath                     string
+	LogLevel                        string
+	LogArchiveFilesToRetain         int
+	LogRotationThresholdInMegaBytes int
+	LogHTTPRequests                 bool
+	LogHTTPResponses                bool
+	LoadPprof                       bool
+	DisabledHTTPs                   bool
+}
+
+type JSONconfigSecurity struct {
+	SignedStdInOnly           bool
+	PublicKey                 string
+	AllowedAddresses          string
+	UseClientCertificates     bool
+	ClientCertificateCAFile   string
+	ApprovedPathArgumentsOnly bool
+	ApprovedPathArguments     map[string]map[string]bool
+}
+
 // Settings is the loaded/updated settings from the configuration file
 var Settings = SettingsValues{}
 
@@ -51,22 +86,23 @@ func Initialise(configurationDirectory string) {
 	Settings.CertificatePath = filepath.FromSlash(configurationDirectory + "/server.crt")
 	Settings.PrivateKeyPath = filepath.FromSlash(configurationDirectory + "/server.key")
 
-	var configurationFile = filepath.FromSlash(configurationDirectory + "/configuration.ini")
+	var configurationFileINI = filepath.FromSlash(configurationDirectory + "/configuration.ini")
 	var configurationFileJSON = filepath.FromSlash(configurationDirectory + "/configuration.json")
 
-	iniFile, loadError := ini.LoadFile(configurationFile)
+	iniFile, iniError := ini.LoadFile(configurationFileINI)
 
-	if loadError != nil {
-		panic(loadError)
+	if iniError != nil {
+		panic(iniError)
 	}
 
-	jsonfile := ""
+	var configurationJSON JSONconfig
 
-	//jsonFile, loadError := json.Unmarshal(configurationFileJSON)
-	json.Unmarshal([]byte(configurationFileJSON), &jsonfile)
+	jsonFile, jsonErr := ioutil.ReadFile(configurationFileJSON)
 
-	if loadError != nil {
-		panic(loadError)
+	json.Unmarshal(jsonFile, &configurationJSON)
+
+	if jsonErr != nil {
+		panic(jsonErr)
 	}
 
 	Settings.Username = getIniValueOrPanic(iniFile, "Authentication", "Username")
@@ -164,6 +200,37 @@ func getIniBoolOrPanic(input ini.File, group string, key string) bool {
 
 // TestingInitialise only for use in integration tests
 func TestingInitialise() {
+
+	// TESTING CONFIG FILES SECTION
+	configurationDirectory := `D:\code\monitoring-agent`
+	Settings.ConfigurationDirectory = configurationDirectory
+
+	Settings.CertificatePath = filepath.FromSlash(configurationDirectory + "/server.crt")
+	Settings.PrivateKeyPath = filepath.FromSlash(configurationDirectory + "/server.key")
+
+	var configurationFile = filepath.FromSlash(configurationDirectory + "/configuration.ini")
+	var configurationFileJSON = filepath.FromSlash(configurationDirectory + "/configuration.json")
+
+	// INI
+	iniFile, loadError := ini.LoadFile(configurationFile)
+	iniFile = iniFile
+
+	if loadError != nil {
+		panic(loadError)
+	}
+
+	// JSON
+	var configurationJSON JSONconfig
+
+	jsonFile, jsonErr := ioutil.ReadFile(configurationFileJSON)
+
+	json.Unmarshal(jsonFile, &configurationJSON)
+
+	if jsonErr != nil {
+		panic(jsonErr)
+	}
+	// END TESTING CONFIG FILES SECTION
+
 	Settings.BindAddress = "127.0.0.1:9000"
 
 	Settings.CertificatePath = "NOTUSED"
@@ -190,4 +257,5 @@ func TestingInitialise() {
 			`-s`: true,
 		},
 	}
+	Settings.ApprovedPathArguments = configurationJSON.Security.ApprovedPathArguments
 }
