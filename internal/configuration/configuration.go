@@ -204,8 +204,10 @@ func TestingInitialise() {
 
 	// TESTING CONFIG FILES SECTION
 	//configurationDirectory := `D:\code\monitoring-agent`
-	configurationDirectory, _ := os.Getwd()
-	Settings.ConfigurationDirectory = configurationDirectory
+	configurationDirectoryTemp, _ := os.Getwd()
+	configurationDirectory := filepath.FromSlash(configurationDirectoryTemp + "/../../")
+
+	Settings.ConfigurationDirectory = filepath.FromSlash(configurationDirectory + "/../../")
 
 	Settings.CertificatePath = filepath.FromSlash(configurationDirectory + "/server.crt")
 	Settings.PrivateKeyPath = filepath.FromSlash(configurationDirectory + "/server.key")
