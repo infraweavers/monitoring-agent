@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net"
+	"os"
 	"path"
 	"path/filepath"
 	"strconv"
@@ -202,7 +203,8 @@ func getIniBoolOrPanic(input ini.File, group string, key string) bool {
 func TestingInitialise() {
 
 	// TESTING CONFIG FILES SECTION
-	configurationDirectory := `D:\code\monitoring-agent`
+	//configurationDirectory := `D:\code\monitoring-agent`
+	configurationDirectory, _ := os.Getwd()
 	Settings.ConfigurationDirectory = configurationDirectory
 
 	Settings.CertificatePath = filepath.FromSlash(configurationDirectory + "/server.crt")
