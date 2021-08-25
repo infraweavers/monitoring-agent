@@ -112,7 +112,6 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 
 	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
 		configuration.Settings.SignedStdInOnly = true
-		//configuration.Settings.PublicKey, _ = minisign.NewPublicKey("RWTVYlcv8rHLCPg9ME+2wyEtwHz1azX54uLnGW5AWzb1R1qaESVNzxGI")
 
 		jsonBody, _ := json.Marshal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun)
 		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
@@ -127,7 +126,6 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 
 	t.Run("Runs unsigned script, returns HTTP status 400 and expected failed signiture verification", func(t *testing.T) {
 		configuration.Settings.SignedStdInOnly = true
-		//configuration.Settings.PublicKey, _ = minisign.NewPublicKey("RWTVYlcv8rHLCPg9ME+2wyEtwHz1azX54uLnGW5AWzb1R1qaESVNzxGI")
 
 		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
 		if runtime.GOOS == "windows" {
@@ -150,7 +148,6 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 
 	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
 		configuration.Settings.SignedStdInOnly = true
-		//configuration.Settings.PublicKey, _ = minisign.NewPublicKey("RWTVYlcv8rHLCPg9ME+2wyEtwHz1azX54uLnGW5AWzb1R1qaESVNzxGI")
 
 		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
 		if runtime.GOOS == "windows" {
@@ -203,12 +200,7 @@ U54CjtRd9nA/jp4iEhdbQ35eE4yWQRY0nbJlw4elRwilslde8nrZwfaIK1a2R+7gzfeuiZq8xTlKtIvT
 		configuration.Settings.SignedStdInOnly = true
 
 		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
-		if runtime.GOOS == "windows" {
-			osSpecificRunScript.ScriptToRun.Args = append(osSpecificRunScript.ScriptToRun.Args, "")
-		}
-		if runtime.GOOS == "linux" {
-			osSpecificRunScript.ScriptToRun.Args = append(osSpecificRunScript.ScriptToRun.Args, "")
-		}
+		osSpecificRunScript.ScriptToRun.Args = append(osSpecificRunScript.ScriptToRun.Args, "")
 
 		jsonBody, _ := json.Marshal(osSpecificRunScript)
 		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
