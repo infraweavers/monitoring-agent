@@ -46,7 +46,7 @@
 			</Component>
 			
 			<Component Id='SampleConfigurationIni' Guid='05002cfe-4958-495c-9c5b-ecad4e5b6050' Win64="$(var.Win64)">
-			  <File Id='configurationIni' Name='configuration.ini' DiskId='1' Source='configuration.ini' KeyPath='yes' />
+			  <File Id='configurationIni' Name='configuration.json' DiskId='1' Source='configuration.json' KeyPath='yes' />
 			</Component>
 			
 			<Component Id='LicenseFile' Guid='a3e21569-89a0-4683-8866-57fa11086f33' Win64="$(var.Win64)">

@@ -42,7 +42,7 @@ func configurationDirectory(commandLineDirectory string) string {
 	}
 
 	executableFolder := filepath.Dir(executable)
-	_, error = os.Stat(filepath.FromSlash(executableFolder + "/configuration.ini"))
+	_, error = os.Stat(filepath.FromSlash(executableFolder + "/configuration.json"))
 	if error == nil {
 		return executableFolder
 	}
@@ -50,7 +50,7 @@ func configurationDirectory(commandLineDirectory string) string {
 	if os.IsNotExist(error) {
 
 		workingDirectory, _ := os.Getwd()
-		_, error = os.Stat(filepath.FromSlash(workingDirectory + "/configuration.ini"))
+		_, error = os.Stat(filepath.FromSlash(workingDirectory + "/configuration.json"))
 		if error == nil {
 			return workingDirectory
 		}
@@ -58,7 +58,7 @@ func configurationDirectory(commandLineDirectory string) string {
 		if os.IsNotExist(error) {
 			statError := os.PathError{
 				Op:   "stat",
-				Path: filepath.FromSlash(workingDirectory + "/configuration.ini"),
+				Path: filepath.FromSlash(workingDirectory + "/configuration.json"),
 				Err:  error,
 			}
 			panic(statError)
