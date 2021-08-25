@@ -212,4 +212,37 @@ U54CjtRd9nA/jp4iEhdbQ35eE4yWQRY0nbJlw4elRwilslde8nrZwfaIK1a2R+7gzfeuiZq8xTlKtIvT
 		assert.Equal(http.StatusBadRequest, output.ResponseStatus)
 		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - Unapproved Path/Args"}`, output.ResponseBody)
 	})
+
+	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
+		configuration.Settings.SignedStdInOnly = true
+
+		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
+		if runtime.GOOS == "windows" {
+			osSpecificRunScript.StdIn.StdIn = `(Get-CimInstance Win32_OperatingSystem).version`
+			osSpecificRunScript.StdInSignature.StdInSignature = `untrusted comment: signature from minisign secret key
+RWTV8L06+shYI+dzaUD0xCAbUp0KBF9B+u5wiBaqe1ppiXLsVyyWAyfKXVo0q3pgLWvwkIvjTNk+q5OjrS6G4rclJU2mmP1v6wM=
+trusted comment: timestamp:1629903111	file:winver.txt
+XMMjgNkS+rnnAkC4gARhK1o83VB3pIAtOQAzO/RZ31x5HfgpWvZe0rAjO7hauH4mMBwjYL/71cqul4yPknnrAw==
+`
+		}
+		if runtime.GOOS == "linux" {
+			osSpecificRunScript.StdIn.StdIn = `uname -a`
+			osSpecificRunScript.StdInSignature.StdInSignature = `untrusted comment: signature from minisign secret key
+RWTV8L06+shYI0/LRKnu1ask22XycnLwTEaCVyo3COcMqVJOYgi4VjkEYvNz6VLnWNzSqSqVNwCv6WkJwp6viFKBedcRKBfuGQ4=
+trusted comment: timestamp:1629903102	file:uname.txt
+JkeUlACQaVsrlHmFWg0U0Y5AcnbusFKHNF4bF3kGyixXS3B3/fCZ9T9LMyMbPwZyUJyMGBpfAVXgAQQdM82HCA==
+`
+		}
+
+		jsonBody, _ := json.Marshal(osSpecificRunScript)
+		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
+
+		output := TestHTTPRequestWithDefaultCredentials(t, request)
+
+		assert := assert.New(t)
+
+		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
+		//assert.Equal(`{"exitcode":0,"output":"This script is a test.\n"}`, output.ResponseBody, "Body did not match expected output")
+	})
+
 }
