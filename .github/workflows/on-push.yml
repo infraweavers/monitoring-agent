@@ -74,7 +74,7 @@ jobs:
           suffix=$([ "$os" == "windows" ] && echo ".exe" || echo "")
 
           mkdir -p ./release/$os-$arch-Go${goversion}
-          cp ${{ env.SRCPATH }}/configuration.ini ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ${{ env.SRCPATH }}/cacert.pem ./release/$os-$arch-Go${goversion}
+          cp ${{ env.SRCPATH }}/configuration.json ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ${{ env.SRCPATH }}/cacert.pem ./release/$os-$arch-Go${goversion}
           
           pushd ${{ env.SRCPATH }}
           
@@ -210,7 +210,7 @@ jobs:
           
           suffix=$([ "$os" == "windows" ] && echo ".exe" || echo "")
           mkdir -p ./release/$os-$arch-$goversion
-          cp ${{ env.SRCPATH }}/configuration.ini ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ${{ env.SRCPATH }}/cacert.pem ./release/$os-$arch-$goversion
+          cp ${{ env.SRCPATH }}/configuration.json ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ${{ env.SRCPATH }}/cacert.pem ./release/$os-$arch-$goversion
           pushd ${{ env.SRCPATH }}
           
           GO111MODULE=on GOOS=$os GOARCH=$arch go get ./...
@@ -226,11 +226,11 @@ jobs:
           
           mkdir -p deb-package/etc/monitoring-agent deb-package/usr/bin deb-package/lib/systemd/system
           cp -r ${{ env.SRCPATH }}/DEBIAN ./deb-package
-          cp ${{ env.SRCPATH }}/configuration.ini ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/cacert.pem ./deb-package/etc/monitoring-agent
+          cp ${{ env.SRCPATH }}/configuration.json ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/cacert.pem ./deb-package/etc/monitoring-agent
           cp ./release/$os-$arch-$goversion/monitoring-agent deb-package/usr/bin
           cp ${{ env.SRCPATH }}/monitoring-agent.service deb-package/lib/systemd/system
 
-          sed -i 's|LogFilePath=.*|LogFilePath=/var/log/monitoring-agent.log|' deb-package/etc/monitoring-agent/configuration.ini
+          sed -i 's|LogFilePath=.*|LogFilePath=/var/log/monitoring-agent.log|' deb-package/etc/monitoring-agent/configuration.json
           sed -i 's|Architecture: UPDATEME|Architecture: ${{ matrix.arch }}|' deb-package/DEBIAN/control
           
           chmod 600 deb-package/etc/monitoring-agent/*
