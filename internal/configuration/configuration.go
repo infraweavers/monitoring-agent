@@ -7,12 +7,10 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/jedisct1/go-minisign"
-	ini "github.com/vaughan0/go-ini"
 )
 
 // SettingsValues is the struct to contain all values
@@ -58,6 +56,7 @@ type JSONconfigServer struct {
 	DefaultScriptTimetout           string
 	logFilePath                     string
 	LogLevel                        string
+	BindAddress                     string
 	LogArchiveFilesToRetain         int
 	LogRotationThresholdInMegaBytes int
 	LogHTTPRequests                 bool
@@ -87,14 +86,7 @@ func Initialise(configurationDirectory string) {
 	Settings.CertificatePath = filepath.FromSlash(configurationDirectory + "/server.crt")
 	Settings.PrivateKeyPath = filepath.FromSlash(configurationDirectory + "/server.key")
 
-	var configurationFileINI = filepath.FromSlash(configurationDirectory + "/configuration.ini")
 	var configurationFileJSON = filepath.FromSlash(configurationDirectory + "/configuration.json")
-
-	iniFile, iniError := ini.LoadFile(configurationFileINI)
-
-	if iniError != nil {
-		panic(iniError)
-	}
 
 	var configurationJSON JSONconfig
 
@@ -106,51 +98,36 @@ func Initialise(configurationDirectory string) {
 		panic(jsonErr)
 	}
 
-	Settings.Username = getIniValueOrPanic(iniFile, "Authentication", "Username")
-	Settings.Password = getIniValueOrPanic(iniFile, "Authentication", "Password")
+	Settings.Username = configurationJSON.Authentication.Username
+	Settings.Password = configurationJSON.Authentication.Password
 
-	Settings.LogFilePath = fixRelativePath(configurationDirectory, getIniValueOrPanic(iniFile, "Server", "LogFilePath"))
-	Settings.LogLevel = getIniValueOrPanic(iniFile, "Server", "LogLevel")
+	Settings.LogFilePath = configurationJSON.Server.logFilePath
+	Settings.LogLevel = configurationJSON.Server.LogLevel
+	Settings.LogArchiveFilesToRetain = configurationJSON.Server.LogArchiveFilesToRetain
+	Settings.LogRotationThresholdInMegaBytes = configurationJSON.Server.LogRotationThresholdInMegaBytes
+	Settings.LogHTTPRequests = configurationJSON.Server.LogHTTPRequests
+	Settings.LogHTTPResponses = configurationJSON.Server.LogHTTPResponses
+	Settings.BindAddress = configurationJSON.Server.BindAddress
 
-	stringValue := getIniValueOrPanic(iniFile, "Server", "LogArchiveFilesToRetain")
-	intValue, parseError := strconv.Atoi(stringValue)
+	durationValue, parseError := time.ParseDuration(configurationJSON.Server.HTTPRequestTimeout)
 	if parseError != nil {
 		panic(parseError)
 	}
-	Settings.LogArchiveFilesToRetain = intValue
 
-	stringValue = getIniValueOrPanic(iniFile, "Server", "LogRotationThresholdInMegaBytes")
-	intValue, parseError = strconv.Atoi(stringValue)
-	if parseError != nil {
-		panic(parseError)
-	}
-	Settings.LogRotationThresholdInMegaBytes = intValue
-
-	Settings.LogHTTPRequests = getIniBoolOrPanic(iniFile, "Server", "LogHTTPRequests")
-	Settings.LogHTTPResponses = getIniBoolOrPanic(iniFile, "Server", "LogHTTPResponses")
-
-	Settings.BindAddress = getIniValueOrPanic(iniFile, "Server", "BindAddress")
-
-	stringValue = getIniValueOrPanic(iniFile, "Server", "HTTPRequestTimeout")
-	durationValue, parseError := time.ParseDuration(stringValue)
-	if parseError != nil {
-		panic(parseError)
-	}
 	Settings.HTTPRequestTimeout = durationValue
 
-	stringValue = getIniValueOrPanic(iniFile, "Server", "DefaultScriptTimeout")
-	durationValue, parseError = time.ParseDuration(stringValue)
+	durationValue, parseError = time.ParseDuration(configurationJSON.Server.DefaultScriptTimetout)
 	if parseError != nil {
 		panic(parseError)
 	}
 	Settings.DefaultScriptTimeout = durationValue
 
-	Settings.LoadPprof = getIniBoolOrPanic(iniFile, "Server", "LoadPprof")
-	Settings.DisableHTTPs = getIniBoolOrPanic(iniFile, "Server", "DisableHTTPs")
+	Settings.LoadPprof = configurationJSON.Server.LoadPprof
+	Settings.DisableHTTPs = configurationJSON.Server.DisabledHTTPs
 
-	Settings.SignedStdInOnly = getIniBoolOrPanic(iniFile, "Security", "SignedStdInOnly")
+	Settings.SignedStdInOnly = configurationJSON.Security.SignedStdInOnly
 
-	hostArrays := strings.Split(getIniValueOrPanic(iniFile, "Security", "AllowedAddresses"), ",")
+	hostArrays := strings.Split(configurationJSON.Security.AllowedAddresses, ",")
 	whitelistNetworks := make([]*net.IPNet, len(hostArrays))
 	for x := 0; x < len(hostArrays); x++ {
 		_, network, error := net.ParseCIDR(hostArrays[x])
@@ -161,7 +138,7 @@ func Initialise(configurationDirectory string) {
 	}
 	Settings.AllowedAddresses = whitelistNetworks
 
-	publicKeyString := getIniValueOrPanic(iniFile, "Security", "PublicKey")
+	publicKeyString := configurationJSON.Security.PublicKey
 	publicKey, publicKeyError := minisign.NewPublicKey(publicKeyString)
 
 	if publicKeyError != nil {
@@ -169,16 +146,8 @@ func Initialise(configurationDirectory string) {
 	}
 	Settings.PublicKey = publicKey
 
-	Settings.UseClientCertificates = getIniBoolOrPanic(iniFile, "Security", "UseClientCertificates")
-	Settings.ClientCertificateCAFile = fixRelativePath(configurationDirectory, getIniValueOrPanic(iniFile, "Security", "ClientCertificateCAFile"))
-}
-
-func getIniValueOrPanic(input ini.File, group string, key string) string {
-	value, wasFound := input.Get(group, key)
-	if !wasFound {
-		panic("[" + group + "] " + key + " was not configured")
-	}
-	return value
+	Settings.UseClientCertificates = configurationJSON.Security.UseClientCertificates
+	Settings.ClientCertificateCAFile = fixRelativePath(configurationDirectory, configurationJSON.Security.ClientCertificateCAFile)
 }
 
 func fixRelativePath(configurationDirectory string, filePath string) string {
@@ -186,17 +155,6 @@ func fixRelativePath(configurationDirectory string, filePath string) string {
 		return filepath.FromSlash(configurationDirectory + "/" + filePath)
 	}
 	return filePath
-}
-
-func getIniBoolOrPanic(input ini.File, group string, key string) bool {
-	stringValue := getIniValueOrPanic(input, group, key)
-	boolValue, parseError := strconv.ParseBool(stringValue)
-
-	if parseError != nil {
-		panic(parseError)
-	}
-
-	return boolValue
 }
 
 // TestingInitialise only for use in integration tests
@@ -212,16 +170,7 @@ func TestingInitialise() {
 	Settings.CertificatePath = filepath.FromSlash(configurationDirectory + "/server.crt")
 	Settings.PrivateKeyPath = filepath.FromSlash(configurationDirectory + "/server.key")
 
-	var configurationFile = filepath.FromSlash(configurationDirectory + "/configuration.ini")
 	var configurationFileJSON = filepath.FromSlash(configurationDirectory + "/configuration.json")
-
-	// INI
-	iniFile, loadError := ini.LoadFile(configurationFile)
-	iniFile = iniFile
-
-	if loadError != nil {
-		panic(loadError)
-	}
 
 	// JSON
 	var configurationJSON JSONconfig

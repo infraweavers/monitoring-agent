@@ -86,6 +86,7 @@ func processResult(responseWriter http.ResponseWriter, exitCode int, output stri
 	resultJSON, error := json.Marshal(result)
 	if error != nil {
 		responseWriter.WriteHeader(http.StatusBadRequest)
+		logwrapper.LogInfof("Error parsing json response")
 		return processResult(responseWriter, 3, error.Error())
 	}
 
@@ -167,6 +168,7 @@ func verifyRemoteHost(remoteAddr string) bool {
 	host, _, parseError := net.SplitHostPort(remoteAddr)
 
 	if parseError != nil {
+		logwrapper.LogInfof("Error parsing remote host")
 		return false
 	}
 
