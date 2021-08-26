@@ -12,14 +12,14 @@ import (
 // LaunchServer instantiates a multiplexer and uses it to configure and launch an HTTP server
 func LaunchServer() {
 
-	tlsCert, loadError := tls.LoadX509KeyPair(configuration.Settings.CertificatePath, configuration.Settings.PrivateKeyPath)
+	tlsCert, loadError := tls.LoadX509KeyPair(configuration.Settings.Paths.CertificatePath, configuration.Settings.Paths.PrivateKeyPath)
 
 	if loadError != nil {
 		logwrapper.Log.Panicf(loadError.Error())
 	}
 
-	logwrapper.LogInfof("configuration.Settings.HTTPRequestTimeout: %v", configuration.Settings.HTTPRequestTimeout)
-	var requestTimeout = configuration.Settings.HTTPRequestTimeout
+	logwrapper.LogInfof("configuration.Settings.HTTPRequestTimeout: %v", configuration.Settings.Server.HTTPRequestTimeout)
+	var requestTimeout = configuration.Settings.Server.HTTPRequestTimeoutDuration
 
 	router := NewRouter()
 	handlerWithTimeout := http.TimeoutHandler(router, requestTimeout, "Request Timeout\n")
@@ -27,12 +27,12 @@ func LaunchServer() {
 	var clientAuthenticationMethod = tls.NoClientCert
 
 	clientCACertPool := x509.NewCertPool()
-	if configuration.Settings.UseClientCertificates {
+	if configuration.Settings.Security.UseClientCertificates {
 		clientAuthenticationMethod = tls.RequireAndVerifyClientCert
-		certificateContent, clientCALoaderror := ioutil.ReadFile(configuration.Settings.ClientCertificateCAFile)
+		certificateContent, clientCALoaderror := ioutil.ReadFile(configuration.Settings.Security.ClientCertificateCAFile)
 
 		if clientCALoaderror != nil {
-			logwrapper.LogCriticalf("Unable to read ClientCertificateCAFile from %s ", configuration.Settings.ClientCertificateCAFile)
+			logwrapper.LogCriticalf("Unable to read ClientCertificateCAFile from %s ", configuration.Settings.Security.ClientCertificateCAFile)
 			panic(clientCALoaderror)
 		}
 
@@ -40,7 +40,7 @@ func LaunchServer() {
 	}
 
 	server := &http.Server{
-		Addr:    configuration.Settings.BindAddress,
+		Addr:    configuration.Settings.Server.BindAddress,
 		Handler: handlerWithTimeout,
 
 		TLSConfig: &tls.Config{
@@ -54,11 +54,11 @@ func LaunchServer() {
 		IdleTimeout:       requestTimeout,
 	}
 
-	logwrapper.LogInfof("Launching web server: https://%s", configuration.Settings.BindAddress)
+	logwrapper.LogInfof("Launching web server: https://%s", configuration.Settings.Server.BindAddress)
 
-	logwrapper.LogInfof("configuration.Settings.DisableHTTPs: %t", configuration.Settings.DisableHTTPs)
-	if configuration.Settings.DisableHTTPs {
-		logwrapper.LogCriticalf("!! The HTTP server is running insecurely due to 'configuration.Settings.DisableHTTPs'='%t'. This is not a recommended setting !!", configuration.Settings.DisableHTTPs)
+	logwrapper.LogInfof("configuration.Settings.DisableHTTPs: %t", configuration.Settings.Server.DisableHTTPs)
+	if configuration.Settings.Server.DisableHTTPs {
+		logwrapper.LogCriticalf("!! The HTTP server is running insecurely due to 'configuration.Settings.DisableHTTPs'='%t'. This is not a recommended setting !!", configuration.Settings.Server.DisableHTTPs)
 		logwrapper.LogCritical("!! Re-enable HTTPs by setting 'DisableHTTPs' to 'true' as soon as possible !!")
 		err := server.ListenAndServe()
 		if err != nil {

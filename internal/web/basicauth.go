@@ -8,10 +8,10 @@ import (
 )
 
 func isKnownValidCredential(suppliedUsername string, suppliedPassword string) bool {
-	if subtle.ConstantTimeCompare([]byte(configuration.Settings.Username), []byte(suppliedUsername)) != 1 {
+	if subtle.ConstantTimeCompare([]byte(configuration.Settings.Authentication.Username), []byte(suppliedUsername)) != 1 {
 		return false
 	}
-	if subtle.ConstantTimeCompare([]byte(configuration.Settings.Password), []byte(suppliedPassword)) != 1 {
+	if subtle.ConstantTimeCompare([]byte(configuration.Settings.Authentication.Password), []byte(suppliedPassword)) != 1 {
 		return false
 	}
 	return true

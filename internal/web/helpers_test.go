@@ -49,14 +49,14 @@ func TestVerifyRemoteHost(t *testing.T) {
 
 	t.Run("Empty AllowedAddresses should block all IPs", func(t *testing.T) {
 		configuration.TestingInitialise()
-		configuration.Settings.AllowedAddresses = []*net.IPNet{}
+		configuration.Settings.Security.WhitelistNetworks = []*net.IPNet{}
 
 		assert.False(t, verifyRemoteHost("127.0.0.1:5431"))
 	})
 
 	t.Run("Loopback should be permitted when granted", func(t *testing.T) {
 		configuration.TestingInitialise()
-		configuration.Settings.AllowedAddresses = []*net.IPNet{
+		configuration.Settings.Security.WhitelistNetworks = []*net.IPNet{
 			{IP: net.ParseIP("127.0.0.0"), Mask: net.IPMask(net.ParseIP("255.0.0.0").To4())},
 		}
 		assert.True(t, verifyRemoteHost("127.0.0.1:5431"))
@@ -64,7 +64,7 @@ func TestVerifyRemoteHost(t *testing.T) {
 
 	t.Run("0.0.0.0/0 should grant all", func(t *testing.T) {
 		configuration.TestingInitialise()
-		configuration.Settings.AllowedAddresses = []*net.IPNet{
+		configuration.Settings.Security.WhitelistNetworks = []*net.IPNet{
 			{IP: net.ParseIP("0.0.0.0"), Mask: net.IPMask(net.ParseIP("0.0.0.0").To4())},
 		}
 		assert.True(t, verifyRemoteHost("54.74.60.0:6428"))
@@ -72,7 +72,7 @@ func TestVerifyRemoteHost(t *testing.T) {
 
 	t.Run("An IP outside of the range should be denied", func(t *testing.T) {
 		configuration.TestingInitialise()
-		configuration.Settings.AllowedAddresses = []*net.IPNet{
+		configuration.Settings.Security.WhitelistNetworks = []*net.IPNet{
 			{IP: net.ParseIP("192.168.54.0"), Mask: net.IPMask(net.ParseIP("255.255.255.0").To4())},
 		}
 		assert.False(t, verifyRemoteHost("8.8.8.8:9945"))
@@ -80,7 +80,7 @@ func TestVerifyRemoteHost(t *testing.T) {
 
 	t.Run("Only IPs within any of the masks should be granted ", func(t *testing.T) {
 		configuration.TestingInitialise()
-		configuration.Settings.AllowedAddresses = []*net.IPNet{
+		configuration.Settings.Security.WhitelistNetworks = []*net.IPNet{
 			{IP: net.ParseIP("192.168.54.0"), Mask: net.IPMask(net.ParseIP("255.255.255.0").To4())},
 			{IP: net.ParseIP("192.168.51.0"), Mask: net.IPMask(net.ParseIP("255.255.255.0").To4())},
 			{IP: net.ParseIP("8.8.0.0"), Mask: net.IPMask(net.ParseIP("255.255.0.0").To4())},
@@ -97,7 +97,7 @@ func TestVerifyRemoteHost(t *testing.T) {
 
 	t.Run("IPv6 should be supported", func(t *testing.T) {
 		configuration.TestingInitialise()
-		configuration.Settings.AllowedAddresses = []*net.IPNet{
+		configuration.Settings.Security.WhitelistNetworks = []*net.IPNet{
 			{IP: net.ParseIP("192.168.54.0"), Mask: net.IPMask(net.ParseIP("255.255.255.0").To4())},
 			{IP: net.ParseIP("ec9b:434a:0623:2620::"), Mask: net.IPMask(net.ParseIP("ffff:ffff:ffff:ffff::").To16())},
 			{IP: net.ParseIP("127.0.0.0"), Mask: net.IPMask(net.ParseIP("255.0.0.0").To4())},

@@ -23,20 +23,20 @@ func NewRouter() *mux.Router {
 			Handler(route.HandlerFunc)
 	}
 
-	logwrapper.LogInfof("configuration.Settings.LoadPprof: %t", configuration.Settings.LoadPprof)
-	if configuration.Settings.LoadPprof {
+	logwrapper.LogInfof("configuration.Settings.LoadPprof: %t", configuration.Settings.Server.LoadPprof)
+	if configuration.Settings.Server.LoadPprof {
 		logwrapper.LogDebugf("registering '/debug/pprof' route due to configuration")
 		router.PathPrefix("/debug/pprof").Handler(http.DefaultServeMux)
 	}
 
-	logwrapper.LogInfof("configuration.Settings.LogHTTPRequests: %t", configuration.Settings.LogHTTPRequests)
-	if configuration.Settings.LogHTTPRequests {
+	logwrapper.LogInfof("configuration.Settings.LogHTTPRequests: %t", configuration.Settings.Server.LogHTTPRequests)
+	if configuration.Settings.Server.LogHTTPRequests {
 		logwrapper.LogDebugf("appending httpRequestLogger middleware due to configuration")
 		router.Use(httpRequestLogger)
 	}
 
-	logwrapper.LogInfof("configuration.Settings.LogHTTPResponses: %t", configuration.Settings.LogHTTPResponses)
-	if configuration.Settings.LogHTTPResponses {
+	logwrapper.LogInfof("configuration.Settings.LogHTTPResponses: %t", configuration.Settings.Server.LogHTTPResponses)
+	if configuration.Settings.Server.LogHTTPResponses {
 		logwrapper.LogDebugf("appending httpResponseLogger middleware due to configuration")
 		router.Use(httpResponseLogger)
 	}

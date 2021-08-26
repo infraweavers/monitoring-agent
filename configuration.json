@@ -19,7 +19,7 @@
     "Security": {
         "SignedStdInOnly": false,
         "PublicKey": "RWTV8L06+shYI7Xw1H+NBGmsUYlbEkbrdYxr4c0ImLCAr8NGx75VhxGQ",
-        "AllowedAddresses": "::1/128,127.0.0.0/8,0.0.0.0/0",
+        "AllowedAddresses": ["::1/128","127.0.0.0/8","0.0.0.0/0"],
         "UseClientCertificates": false,
         "ClientCertificateCAFile": "PathToClientCertificateCAFile",
         "ApprovedPathArgumentsOnly": false,

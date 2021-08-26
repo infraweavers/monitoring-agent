@@ -103,7 +103,7 @@ func runScript(responseWriter http.ResponseWriter, scriptToRun Script) []byte {
 		command.Stdin = strings.NewReader(scriptToRun.StdIn)
 	}
 
-	var timeout = configuration.Settings.DefaultScriptTimeout
+	var timeout = configuration.Settings.Server.DefaultScriptTimetoutDuration
 	if scriptToRun.Timeout != "" {
 		durationValue, parseError := time.ParseDuration(scriptToRun.Timeout)
 		if parseError != nil {
@@ -154,7 +154,7 @@ func verifySignature(stdin string, signature string) bool {
 		logwrapper.LogInfof("Signature Decoding error: %v", signatureError)
 	}
 
-	isValid, error := configuration.Settings.PublicKey.Verify(stdinAsArray, signatureStruct)
+	isValid, error := configuration.Settings.Security.PublicKey.Verify(stdinAsArray, signatureStruct)
 
 	if error != nil {
 		logwrapper.LogInfof("Signature Verification Error: %v", error)
@@ -173,7 +173,7 @@ func verifyRemoteHost(remoteAddr string) bool {
 	}
 
 	remoteIp := net.ParseIP(host)
-	allowedAddresses := configuration.Settings.AllowedAddresses
+	allowedAddresses := configuration.Settings.Security.WhitelistNetworks
 
 	for x := 0; x < len(allowedAddresses); x++ {
 		if allowedAddresses[x].Contains(remoteIp) {
@@ -186,7 +186,7 @@ func verifyRemoteHost(remoteAddr string) bool {
 func verifyPathArguments(path string, args []string) bool {
 	var isValid bool
 	for _, arg := range args {
-		isValid = configuration.Settings.ApprovedPathArguments[path][arg]
+		isValid = configuration.Settings.Security.ApprovedPathArguments[path][arg]
 	}
 	return isValid
 }

@@ -111,7 +111,7 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 	})
 
 	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
-		configuration.Settings.SignedStdInOnly = true
+		configuration.Settings.Security.SignedStdInOnly = true
 
 		jsonBody, _ := json.Marshal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun)
 		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
@@ -125,7 +125,7 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 	})
 
 	t.Run("Runs unsigned script, returns HTTP status 400 and expected failed signiture verification", func(t *testing.T) {
-		configuration.Settings.SignedStdInOnly = true
+		configuration.Settings.Security.SignedStdInOnly = true
 
 		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
 		if runtime.GOOS == "windows" {
@@ -147,7 +147,7 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 	})
 
 	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
-		configuration.Settings.SignedStdInOnly = true
+		configuration.Settings.Security.SignedStdInOnly = true
 
 		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
 		if runtime.GOOS == "windows" {
@@ -179,8 +179,8 @@ U54CjtRd9nA/jp4iEhdbQ35eE4yWQRY0nbJlw4elRwilslde8nrZwfaIK1a2R+7gzfeuiZq8xTlKtIvT
 	})
 
 	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
-		configuration.Settings.ApprovedPathArgumentsOnly = true
-		configuration.Settings.SignedStdInOnly = true
+		configuration.Settings.Security.ApprovedPathArgumentsOnly = true
+		configuration.Settings.Security.SignedStdInOnly = true
 
 		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
 
@@ -196,8 +196,8 @@ U54CjtRd9nA/jp4iEhdbQ35eE4yWQRY0nbJlw4elRwilslde8nrZwfaIK1a2R+7gzfeuiZq8xTlKtIvT
 	})
 
 	t.Run("Bad request due to invalid path/arg combo", func(t *testing.T) {
-		configuration.Settings.ApprovedPathArgumentsOnly = true
-		configuration.Settings.SignedStdInOnly = true
+		configuration.Settings.Security.ApprovedPathArgumentsOnly = true
+		configuration.Settings.Security.SignedStdInOnly = true
 
 		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
 		osSpecificRunScript.ScriptToRun.Args = append(osSpecificRunScript.ScriptToRun.Args, "")
@@ -214,7 +214,7 @@ U54CjtRd9nA/jp4iEhdbQ35eE4yWQRY0nbJlw4elRwilslde8nrZwfaIK1a2R+7gzfeuiZq8xTlKtIvT
 	})
 
 	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
-		configuration.Settings.SignedStdInOnly = true
+		configuration.Settings.Security.SignedStdInOnly = true
 
 		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
 		if runtime.GOOS == "windows" {
@@ -242,7 +242,6 @@ JkeUlACQaVsrlHmFWg0U0Y5AcnbusFKHNF4bF3kGyixXS3B3/fCZ9T9LMyMbPwZyUJyMGBpfAVXgAQQd
 		assert := assert.New(t)
 
 		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
-		//assert.Equal(`{"exitcode":0,"output":"This script is a test.\n"}`, output.ResponseBody, "Body did not match expected output")
 	})
 
 }

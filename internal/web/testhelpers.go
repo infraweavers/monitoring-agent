@@ -86,7 +86,7 @@ func TestHTTPRequestWithCredentials(t *testing.T, request *http.Request, usernam
 
 // TestHTTPRequestWithDefaultCredentials executes an HTTP request with the default credentials specified in the configuration file
 func TestHTTPRequestWithDefaultCredentials(t *testing.T, request *http.Request) TestHTTPResponse {
-	request.SetBasicAuth(configuration.Settings.Username, configuration.Settings.Password)
+	request.SetBasicAuth(configuration.Settings.Authentication.Username, configuration.Settings.Authentication.Password)
 	return TestHTTPRequest(t, request)
 }
 
