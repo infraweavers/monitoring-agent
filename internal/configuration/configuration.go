@@ -55,7 +55,7 @@ type JSONconfigSecurity struct {
 	ApprovedPathArguments     map[string]map[string]bool
 }
 
-// JSONconfigAuthentication is a struct for unmarshalling the configuration.json file
+// JSONconfigPaths is a struct for unmarshalling the configuration.json file
 type JSONconfigPaths struct {
 	ConfigurationDirectory string
 	CertificatePath        string
