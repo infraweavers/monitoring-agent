@@ -25,7 +25,7 @@ type ExpectedResult struct {
 	Output string
 }
 
-// ScriptSignature is a struct
+// StdInSignature is a struct for storing the signature of the script being passed to stdin
 type StdInSignature struct {
 	StdInSignature string
 }
