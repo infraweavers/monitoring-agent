@@ -103,7 +103,7 @@ func runScript(responseWriter http.ResponseWriter, scriptToRun Script) []byte {
 		command.Stdin = strings.NewReader(scriptToRun.StdIn)
 	}
 
-	var timeout = configuration.Settings.Server.DefaultScriptTimetoutDuration
+	var timeout = configuration.Settings.Server.DefaultScriptTimeoutDuration
 	if scriptToRun.Timeout != "" {
 		durationValue, parseError := time.ParseDuration(scriptToRun.Timeout)
 		if parseError != nil {

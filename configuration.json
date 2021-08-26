@@ -6,7 +6,9 @@
     "Server": {
         "BindAddress": "0.0.0.0:9000",
         "HTTPRequestTimeout": "300s",
-        "DefaultScriptTimetout": "15s",
+        "HTTPRequestTimeoutDuration": 300,
+        "DefaultScriptTimeout": "15s",
+        "DefaultScriptTimeoutDuration": 15,
         "logFilePath": "output.log",
         "LogLevel": "INFO",
         "LogArchiveFilesToRetain": 10,

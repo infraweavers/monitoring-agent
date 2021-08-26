@@ -30,8 +30,8 @@ type JSONconfigAuthentication struct {
 type JSONconfigServer struct {
 	HTTPRequestTimeout              string
 	HTTPRequestTimeoutDuration      time.Duration
-	DefaultScriptTimetout           string
-	DefaultScriptTimetoutDuration   time.Duration
+	DefaultScriptTimeout            string
+	DefaultScriptTimeoutDuration    time.Duration
 	LogFilePath                     string
 	LogLevel                        string
 	BindAddress                     string
@@ -86,11 +86,11 @@ func Initialise(configurationDirectory string) {
 	}
 	Settings.Server.HTTPRequestTimeoutDuration = durationValue
 
-	durationValue, parseError = time.ParseDuration(configurationJSON.Server.DefaultScriptTimetout)
+	durationValue, parseError = time.ParseDuration(configurationJSON.Server.DefaultScriptTimeout)
 	if parseError != nil {
 		panic(parseError)
 	}
-	Settings.Server.DefaultScriptTimetoutDuration = durationValue
+	Settings.Server.DefaultScriptTimeoutDuration = durationValue
 
 	for x := 0; x < len(Settings.Security.AllowedAddresses); x++ {
 		_, network, error := net.ParseCIDR(Settings.Security.AllowedAddresses[x])
@@ -116,22 +116,24 @@ func TestingInitialise() {
 	configurationDirectoryTemp, _ := os.Getwd()
 	configurationDirectory := filepath.FromSlash(configurationDirectoryTemp + "/../../")
 
-	Settings.Paths.ConfigurationDirectory = configurationDirectory
-	Settings.Paths.CertificatePath = filepath.FromSlash(configurationDirectory + "/server.crt")
-	Settings.Paths.PrivateKeyPath = filepath.FromSlash(configurationDirectory + "/server.key")
+	Initialise(configurationDirectory)
 
-	var configurationFileJSON = filepath.FromSlash(configurationDirectory + "/configuration.json")
-	jsonFile, jsonErr := ioutil.ReadFile(configurationFileJSON)
+	//Settings.Paths.ConfigurationDirectory = configurationDirectory
+	//Settings.Paths.CertificatePath = filepath.FromSlash(configurationDirectory + "/server.crt")
+	//Settings.Paths.PrivateKeyPath = filepath.FromSlash(configurationDirectory + "/server.key")
 
-	json.Unmarshal(jsonFile, &Settings)
+	//var configurationFileJSON = filepath.FromSlash(configurationDirectory + "/configuration.json")
+	//jsonFile, jsonErr := ioutil.ReadFile(configurationFileJSON)
 
-	if jsonErr != nil {
-		panic(jsonErr)
-	}
+	//json.Unmarshal(jsonFile, &Settings)
+
+	//if jsonErr != nil {
+	//	panic(jsonErr)
+	//}
 
 	Settings.Server.BindAddress = "127.0.0.1:9000"
 	Settings.Server.HTTPRequestTimeoutDuration = time.Second * 11
-	Settings.Server.DefaultScriptTimetoutDuration = time.Second * 10
+	Settings.Server.DefaultScriptTimeoutDuration = time.Second * 10
 
 	Settings.Authentication.Username = "test"
 	Settings.Authentication.Password = "secret"
