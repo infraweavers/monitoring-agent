@@ -118,19 +118,6 @@ func TestingInitialise() {
 
 	Initialise(configurationDirectory)
 
-	//Settings.Paths.ConfigurationDirectory = configurationDirectory
-	//Settings.Paths.CertificatePath = filepath.FromSlash(configurationDirectory + "/server.crt")
-	//Settings.Paths.PrivateKeyPath = filepath.FromSlash(configurationDirectory + "/server.key")
-
-	//var configurationFileJSON = filepath.FromSlash(configurationDirectory + "/configuration.json")
-	//jsonFile, jsonErr := ioutil.ReadFile(configurationFileJSON)
-
-	//json.Unmarshal(jsonFile, &Settings)
-
-	//if jsonErr != nil {
-	//	panic(jsonErr)
-	//}
-
 	Settings.Server.BindAddress = "127.0.0.1:9000"
 	Settings.Server.HTTPRequestTimeoutDuration = time.Second * 11
 	Settings.Server.DefaultScriptTimeoutDuration = time.Second * 10
