@@ -40,20 +40,20 @@ type SettingsValues struct {
 	ApprovedPathArguments           map[string]map[string]bool
 }
 
-// struct for unmarshalling the configuration.json file
+// JSONconfig is a struct for unmarshalling the configuration.json file
 type JSONconfig struct {
 	Authentication JSONconfigAuthentication `json:"Authentication"`
 	Server         JSONconfigServer         `json:"Server"`
 	Security       JSONconfigSecurity       `json:"Security"`
 }
 
-// struct for unmarshalling the configuration.json file
+// JSONconfigAuthentication is a struct for unmarshalling the configuration.json file
 type JSONconfigAuthentication struct {
 	Username string
 	Password string
 }
 
-// struct for unmarshalling the configuration.json file
+// JSONconfigServer is a struct for unmarshalling the configuration.json file, server section
 type JSONconfigServer struct {
 	HTTPRequestTimeout              string
 	DefaultScriptTimetout           string
@@ -68,7 +68,7 @@ type JSONconfigServer struct {
 	DisabledHTTPs                   bool
 }
 
-// struct for unmarshalling the configuration.json file
+// JSONconfigSecurity is a struct for unmarshalling the configuration.json file
 type JSONconfigSecurity struct {
 	SignedStdInOnly           bool
 	PublicKey                 string
