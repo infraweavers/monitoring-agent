@@ -45,14 +45,15 @@ type JSONconfigServer struct {
 
 // JSONconfigSecurity is a struct for unmarshalling the configuration.json file
 type JSONconfigSecurity struct {
-	SignedStdInOnly           bool
-	PublicKey                 minisign.PublicKey
-	AllowedAddresses          []string
-	WhitelistNetworks         []*net.IPNet
-	UseClientCertificates     bool
-	ClientCertificateCAFile   string
-	ApprovedPathArgumentsOnly bool
-	ApprovedPathArguments     map[string]map[string]bool
+	SignedStdInOnly             bool
+	PublicKey                   minisign.PublicKey
+	AllowedAddresses            []string
+	WhitelistNetworks           []*net.IPNet
+	UseClientCertificates       bool
+	ClientCertificateCAFile     string
+	ClientCertificateCAFilePath string
+	ApprovedPathArgumentsOnly   bool
+	ApprovedPathArguments       map[string]map[string]bool
 }
 
 // JSONconfigPaths is a struct for unmarshalling the configuration.json file
@@ -73,20 +74,19 @@ func Initialise(configurationDirectory string) {
 	Settings.Paths.PrivateKeyPath = filepath.FromSlash(configurationDirectory + "/server.key")
 
 	var configurationFileJSON = filepath.FromSlash(configurationDirectory + "/configuration.json")
-	var configurationJSON JSONconfig
 	jsonFile, jsonErr := ioutil.ReadFile(configurationFileJSON)
-	json.Unmarshal(jsonFile, &configurationJSON)
+	json.Unmarshal(jsonFile, &Settings)
 	if jsonErr != nil {
 		panic(jsonErr)
 	}
 
-	durationValue, parseError := time.ParseDuration(configurationJSON.Server.HTTPRequestTimeout)
+	durationValue, parseError := time.ParseDuration(Settings.Server.HTTPRequestTimeout)
 	if parseError != nil {
 		panic(parseError)
 	}
 	Settings.Server.HTTPRequestTimeoutDuration = durationValue
 
-	durationValue, parseError = time.ParseDuration(configurationJSON.Server.DefaultScriptTimeout)
+	durationValue, parseError = time.ParseDuration(Settings.Server.DefaultScriptTimeout)
 	if parseError != nil {
 		panic(parseError)
 	}
@@ -97,13 +97,11 @@ func Initialise(configurationDirectory string) {
 		if error != nil {
 			panic(error)
 		}
-		Settings.Security.WhitelistNetworks[x] = network
+		Settings.Security.WhitelistNetworks = append(Settings.Security.WhitelistNetworks, network)
 	}
 
-	configurationJSON.Security.ClientCertificateCAFile = fixRelativePath(configurationDirectory, configurationJSON.Security.ClientCertificateCAFile)
+	Settings.Security.ClientCertificateCAFilePath = fixRelativePath(configurationDirectory, Settings.Security.ClientCertificateCAFile)
 
-	Settings.Server.LogFilePath = configurationJSON.Server.LogFilePath
-	Settings.Server.LogLevel = configurationJSON.Server.LogLevel
 }
 
 func fixRelativePath(configurationDirectory string, filePath string) string {
