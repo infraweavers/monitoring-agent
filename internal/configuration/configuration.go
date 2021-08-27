@@ -101,6 +101,9 @@ func Initialise(configurationDirectory string) {
 	}
 
 	configurationJSON.Security.ClientCertificateCAFile = fixRelativePath(configurationDirectory, configurationJSON.Security.ClientCertificateCAFile)
+
+	Settings.Server.LogFilePath = configurationJSON.Server.LogFilePath
+	Settings.Server.LogLevel = configurationJSON.Server.LogLevel
 }
 
 func fixRelativePath(configurationDirectory string, filePath string) string {
