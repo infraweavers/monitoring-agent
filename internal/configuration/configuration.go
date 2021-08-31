@@ -131,15 +131,4 @@ func TestingInitialise() {
 	Settings.Security.WhitelistNetworks = []*net.IPNet{
 		{IP: net.IPv4(0, 0, 0, 0), Mask: net.IPv4Mask(0, 0, 0, 0)},
 	}
-	Settings.Security.ApprovedPathArgumentsOnly = true
-	Settings.Security.ApprovedPathArguments = map[string]map[string]bool{
-		`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`: {
-			`-command`: true,
-			`-`:        true,
-		},
-		`sh`: {
-			`-c`: true,
-			`-s`: true,
-		},
-	}
 }

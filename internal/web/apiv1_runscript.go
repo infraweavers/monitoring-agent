@@ -3,6 +3,7 @@ package web
 import (
 	"encoding/json"
 	"fmt"
+	"monitoringagent/internal/configuration"
 	"monitoringagent/internal/logwrapper"
 	"net/http"
 	"time"
@@ -47,6 +48,15 @@ func APIV1RunscriptPostHandler(responseWriter http.ResponseWriter, request *http
 			responseWriter.WriteHeader(http.StatusBadRequest)
 			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Invalid timeout supplied: '%s'", http.StatusBadRequest, script.Timeout)))
 			logwrapper.LogWarningf("Request received to /runscript with invalid timeout supplied: '%s' '%s' '%s'", script.Timeout, request.RemoteAddr, request.UserAgent())
+			return
+		}
+	}
+
+	if configuration.Settings.Security.ApprovedPathArgumentsOnly {
+		if !verifyPathArguments(script.Path, script.Args) {
+			responseWriter.WriteHeader(http.StatusBadRequest)
+			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Unapproved Path/Args", http.StatusBadRequest)))
+			logwrapper.LogWarningf("Attempted to use unapproved path and argument(s) combo.", request.RemoteAddr, request.UserAgent())
 			return
 		}
 	}
