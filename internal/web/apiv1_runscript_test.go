@@ -188,9 +188,9 @@ func TestRunscriptApiHandler(t *testing.T) {
 				`-command`:                  true,
 				`write-host "Hello, World"`: true,
 			},
-			`C:\Windows\System32\WindowsPowerShell\v1.0\cmd.exe`: {
-				`test`:    true,
-				`example`: true,
+			`sh`: {
+				`-c`:    true,
+				`uname`: true,
 			},
 		}
 
@@ -204,7 +204,7 @@ func TestRunscriptApiHandler(t *testing.T) {
 		assert := assert.New(t)
 
 		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
-		assert.Equal(`{"exitcode":0,"output":"Hello, World\n"}`, output.ResponseBody)
+		assert.Equal(osSpecifiTestCases[runtime.GOOS].ExpectedResult.Output, output.ResponseBody)
 	})
 
 	t.Run("Bad request due to invalid path/arg combo", func(t *testing.T) {
@@ -213,7 +213,7 @@ func TestRunscriptApiHandler(t *testing.T) {
 			`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`: {
 				``: true,
 			},
-			`C:\Windows\System32\WindowsPowerShell\v1.0\cmd.exe`: {
+			`sh`: {
 				``: true,
 			},
 		}
