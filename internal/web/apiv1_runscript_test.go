@@ -3,6 +3,7 @@ package web
 import (
 	"bytes"
 	"encoding/json"
+	"monitoringagent/internal/configuration"
 	"net/http"
 	"runtime"
 	"testing"
@@ -20,33 +21,33 @@ type RunScriptWithTimeoutTestCase struct {
 	Timeout
 }
 
+var osSpecifiTestCases = map[string]RunScriptTestCase{
+	"linux": {
+		ScriptToRun{
+			Path: "sh",
+			Args: []string{"-c", "uname"},
+		},
+		ExpectedResult{
+			Output: `{"exitcode":0,"output":"Linux\n"}`,
+		},
+	},
+	"windows": {
+		ScriptToRun{
+			Path: `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
+			Args: []string{"-command", `write-host "Hello, World"`},
+		},
+		ExpectedResult{
+			Output: `{"exitcode":0,"output":"Hello, World\n"}`,
+		},
+	},
+}
+
 func TestRunscriptApiHandler(t *testing.T) {
 
 	TestSetup()
 	defer TestTeardown()
 
 	t.Run("Runs supplied script, returns HTTP status 200 and expected script output", func(t *testing.T) {
-
-		var osSpecifiTestCases = map[string]RunScriptTestCase{
-			"linux": {
-				ScriptToRun{
-					Path: "sh",
-					Args: []string{"-c", "uname"},
-				},
-				ExpectedResult{
-					Output: `{"exitcode":0,"output":"Linux\n"}`,
-				},
-			},
-			"windows": {
-				ScriptToRun{
-					Path: `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
-					Args: []string{"-command", `write-host "Hello, World"`},
-				},
-				ExpectedResult{
-					Output: `{"exitcode":0,"output":"Hello, World\n"}`,
-				},
-			},
-		}
 
 		assert := assert.New(t)
 
@@ -178,5 +179,55 @@ func TestRunscriptApiHandler(t *testing.T) {
 
 		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
 		assert.Equal(`{"exitcode":0,"output":""}`, output.ResponseBody)
+	})
+
+	t.Run("200 Response to Approved Path and Arguments", func(t *testing.T) {
+		configuration.Settings.Security.ApprovedPathArgumentsOnly = true
+		configuration.Settings.Security.ApprovedPathArguments = map[string]map[string]bool{
+			`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`: {
+				`-command`:                  true,
+				`write-host "Hello, World"`: true,
+			},
+			`C:\Windows\System32\WindowsPowerShell\v1.0\cmd.exe`: {
+				`test`:    true,
+				`example`: true,
+			},
+		}
+
+		osSpecificRunScript := osSpecifiTestCases[runtime.GOOS].ScriptToRun
+
+		jsonBody, _ := json.Marshal(osSpecificRunScript)
+		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscript", bytes.NewBuffer(jsonBody))
+
+		output := TestHTTPRequestWithDefaultCredentials(t, request)
+
+		assert := assert.New(t)
+
+		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
+		assert.Equal(`{"exitcode":0,"output":"Hello, World\n"}`, output.ResponseBody)
+	})
+
+	t.Run("Bad request due to invalid path/arg combo", func(t *testing.T) {
+		configuration.Settings.Security.ApprovedPathArgumentsOnly = true
+		configuration.Settings.Security.ApprovedPathArguments = map[string]map[string]bool{
+			`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`: {
+				``: true,
+			},
+			`C:\Windows\System32\WindowsPowerShell\v1.0\cmd.exe`: {
+				``: true,
+			},
+		}
+
+		osSpecificRunScript := osSpecifiTestCases[runtime.GOOS].ScriptToRun
+
+		jsonBody, _ := json.Marshal(osSpecificRunScript)
+		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscript", bytes.NewBuffer(jsonBody))
+
+		output := TestHTTPRequestWithDefaultCredentials(t, request)
+
+		assert := assert.New(t)
+
+		assert.Equal(http.StatusBadRequest, output.ResponseStatus)
+		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - Unapproved Path/Args"}`, output.ResponseBody)
 	})
 }
