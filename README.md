@@ -33,14 +33,19 @@ Testing
 $ curl -k -H "Content-Type: application/json" --data '{ "path": "perl", "args": [ "-e", "print \"Hello, World\"" ] }' https://test:secret@127.0.0.1:9000/v1/runscript
 ```
 
-#### Windows (cmd) against Linux (Not currently producing expected output)
+#### Windows (cmd) against Linux
 ```
 curl -k -H "Content-Type: application/json" --data "{""path"":""perl"",""args"":[""-e"",""print 'Hello, World'""]}" https://test:secret@127.0.0.1:9000/v1/runscript
 ```
 
-#### Windows (cmd)
+#### Windows (cmd) against Windows
 ```
 curl -k -H "Content-Type: application/json" --data "{""path"":""C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"",""args"":[""-Command"",""Write-Host Hello, World""]}" https://test:secret@127.0.0.1:9000/v1/runscript
+```
+
+#### Windows (powershell 7) against Windows
+```
+Invoke-RestMethod -SkipCertificateCheck -Method POST -UseBasicParsing -Credential (Get-Credential) -Uri "https://127.0.0.1:9000/v1/runscript" -ContentType "application/json" -Body '{"path":"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe","args":["-Command","Write-Host Hello, World"]}'
 ```
 
 #### Linux against Windows
