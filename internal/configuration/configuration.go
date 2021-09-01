@@ -53,7 +53,7 @@ type JSONconfigSecurity struct {
 	ClientCertificateCAFile     string
 	ClientCertificateCAFilePath string
 	ApprovedPathArgumentsOnly   bool
-	ApprovedPathArguments       map[string]map[string]bool
+	ApprovedPathArguments       map[string][][]string
 }
 
 // JSONconfigPaths is a struct for unmarshalling the configuration.json file

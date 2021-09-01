@@ -24,14 +24,16 @@
         "ClientCertificateCAFile": "PathToClientCertificateCAFile",
         "ApprovedPathArgumentsOnly": false,
         "ApprovedPathArguments": {
-            "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe": {
-                "-command": true,
-                "-": true
-            },
-            "sh": {
-                "-c": true,
-                "-s": true
-            }
+            "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe": [
+                ["-command", "-"],
+                ["-command","start-sleep 1"],
+                ["-command","Write-Host 'Hello, World'"],
+                ["-command","Write-Host \"Hello, World\""],
+                ["-command"]
+            ],
+            "sh": [
+                ["-c", "-s"]                
+            ]
         }
     }
 }

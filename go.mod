@@ -3,6 +3,7 @@ module monitoringagent
 go 1.16
 
 require (
+	github.com/google/go-cmp v0.5.6
 	github.com/gorilla/mux v1.8.0
 	github.com/jedisct1/go-minisign v0.0.0-20210106175330-e54e81d562c7
 	github.com/kardianos/service v1.2.0

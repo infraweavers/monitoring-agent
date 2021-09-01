@@ -183,15 +183,9 @@ func TestRunscriptApiHandler(t *testing.T) {
 
 	t.Run("200 Response to Approved Path and Arguments", func(t *testing.T) {
 		configuration.Settings.Security.ApprovedPathArgumentsOnly = true
-		configuration.Settings.Security.ApprovedPathArguments = map[string]map[string]bool{
-			`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`: {
-				`-command`:                  true,
-				`write-host "Hello, World"`: true,
-			},
-			`sh`: {
-				`-c`:    true,
-				`uname`: true,
-			},
+		configuration.Settings.Security.ApprovedPathArguments = map[string][][]string{
+			`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`: {{"-command", "-"}, {"-command", `write-host "Hello, World"`}, {"-command"}},
+			"sh": {{"-c", "uname"}},
 		}
 
 		osSpecificRunScript := osSpecifiTestCases[runtime.GOOS].ScriptToRun
@@ -209,13 +203,9 @@ func TestRunscriptApiHandler(t *testing.T) {
 
 	t.Run("Bad request due to invalid path/arg combo", func(t *testing.T) {
 		configuration.Settings.Security.ApprovedPathArgumentsOnly = true
-		configuration.Settings.Security.ApprovedPathArguments = map[string]map[string]bool{
-			`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`: {
-				``: true,
-			},
-			`sh`: {
-				``: true,
-			},
+		configuration.Settings.Security.ApprovedPathArguments = map[string][][]string{
+			`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`: {{"-command", "-"}, {"-command", "start-sleep 1"}, {"-command"}},
+			"sh": {{"-c", "-s"}},
 		}
 
 		osSpecificRunScript := osSpecifiTestCases[runtime.GOOS].ScriptToRun

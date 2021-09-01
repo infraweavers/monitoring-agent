@@ -50,7 +50,7 @@ func testRoute(t *testing.T, path string) {
 
 		defer response.Body.Close()
 
-		assert.Equal(response.StatusCode, http.StatusOK)
+		assert.Equal(http.StatusOK, response.StatusCode)
 
 		_, err = ioutil.ReadAll(response.Body)
 		assert.Nil(err)

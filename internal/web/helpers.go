@@ -12,6 +12,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/jedisct1/go-minisign"
 )
 
@@ -184,9 +185,12 @@ func verifyRemoteHost(remoteAddr string) bool {
 }
 
 func verifyPathArguments(path string, args []string) bool {
-	var isValid bool
-	for _, arg := range args {
-		isValid = configuration.Settings.Security.ApprovedPathArguments[path][arg]
+	isValid := false
+	allowedSets := configuration.Settings.Security.ApprovedPathArguments[path]
+	for _, arguments := range allowedSets {
+		if cmp.Equal(arguments, args) {
+			isValid = true
+		}
 	}
 	return isValid
 }
