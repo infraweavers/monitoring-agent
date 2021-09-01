@@ -230,7 +230,7 @@ jobs:
           cp ./release/$os-$arch-$goversion/monitoring-agent deb-package/usr/bin
           cp ${{ env.SRCPATH }}/monitoring-agent.service deb-package/lib/systemd/system
 
-          sed -i 's|LogFilePath=.*|LogFilePath=/var/log/monitoring-agent.log|' deb-package/etc/monitoring-agent/configuration.json
+          sed -i 's|"LogFilePath": "output.log",|"LogFilePath": "/var/log/monitoring-agent.log",|' deb-package/etc/monitoring-agent/configuration.json
           sed -i 's|Architecture: UPDATEME|Architecture: ${{ matrix.arch }}|' deb-package/DEBIAN/control
           
           chmod 600 deb-package/etc/monitoring-agent/*
