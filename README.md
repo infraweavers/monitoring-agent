@@ -28,16 +28,16 @@ Testing
 
 ### Simple Usage Examples
 
-Linux:
+####Linux against Linux####
 ```
 $ curl -k -H "Content-Type: application/json" --data '{ "path": "/usr/bin/bash", "args": [ "-c", "echo \"Hello, World\"" ] }' https://test:secret@127.0.0.1:9000/v1/runscript
 ```
-Output:
+Output
 ```
 {"exitcode":0,"output":"Hello, World\n"}
 ```
 
-Windows against Linux (Not currently producing expected output):
+####Windows (cmd) against Linux (Not currently producing expected output):####
 ```
 curl -k -H "Content-Type: application/json" --data "{""path"":""/usr/bin/bash"",""args"":[""-c"",""echo 'Hello, World'""]}" https://test:secret@omda01:9000/v1/runscript
 ```
@@ -46,7 +46,7 @@ Output:
 {"exitcode":0,"output":"Hello, World\n"}
 ```
 
-Windows CMD:
+####Windows (cmd)####
 ```
 curl -k -H "Content-Type: application/json" --data "{""path"":""C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"",""args"":[""-Command"",""Write-Host Hello, World""]}" https://test:secret@127.0.0.1:9000/v1/runscript
 ```
@@ -55,7 +55,7 @@ Output:
 {"exitcode":0,"output":"Hello, World\n"}
 ```
 
-Linux against Windows:
+####Linux against Windows####
 ```
 curl -k -H "Content-Type: application/json" --data '{ "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "args": [ "-Command", "Write-Host Hello, World" ] }' https://test:secret@127.0.0.1:9000/v1/runscript
 ```
