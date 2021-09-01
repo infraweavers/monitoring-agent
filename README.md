@@ -36,7 +36,7 @@ $ curl -k -H "Content-Type: application/json" --data '{ "path": "/usr/bin/bash",
 
 Windows:
 ```
-curl -k -H "Content-Type: application/json" --data '{ "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "args": ["-Command", "Write-Host Hello, World"]  }' https://test:secret@127.0.0.1:9000/v1/runscript
+curl -k -H "Content-Type: application/json" --data "{""path"":""C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"",""args"":[""-Command"",""Write-Host Hello, World""]}" https://test:secret@127.0.0.1:9000/v1/runscript
 {"exitcode":0,"output":"Hello, World\n"}
 ```
 
