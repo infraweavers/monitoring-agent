@@ -37,9 +37,9 @@ Output:
 {"exitcode":0,"output":"Hello, World\n"}
 ```
 
-Windows against Linux (UNTESTED):
+Windows against Linux (Not currently producing expected output):
 ```
-curl -k -H "Content-Type: application/json" --data "{""path"":""/usr/bin/bash"",""args"":[""-c"",""echo \""Hello, World\"""]}" https://test:secret@127.0.0.1:9000/v1/runscript
+curl -k -H "Content-Type: application/json" --data "{""path"":""/usr/bin/bash"",""args"":[""-c"",""echo 'Hello, World'""]}" https://test:secret@omda01:9000/v1/runscript
 ```
 Output:
 ```
