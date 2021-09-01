@@ -73,6 +73,8 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 	defer TestTeardown()
 
 	t.Run("Runs supplied script, returns HTTP status 200 and expected script output", func(t *testing.T) {
+		configuration.Settings.Security.ApprovedPathArgumentsOnly = false
+		configuration.Settings.Security.SignedStdInOnly = false
 		jsonBody, _ := json.Marshal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun)
 		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
 
@@ -84,6 +86,8 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 	})
 
 	t.Run("Returns HTTP status 400 bad request with erronous post", func(t *testing.T) {
+		configuration.Settings.Security.ApprovedPathArgumentsOnly = false
+		configuration.Settings.Security.SignedStdInOnly = false
 		jsonBody, _ := json.Marshal(`{"foo": "bar", "doh": "car"}`)
 
 		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
@@ -95,6 +99,8 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 	})
 
 	t.Run("Returns HTTP status 400 bad request without stdin supplied", func(t *testing.T) {
+		configuration.Settings.Security.ApprovedPathArgumentsOnly = false
+		configuration.Settings.Security.SignedStdInOnly = false
 		var test = ScriptToRun{
 			Path: "sh",
 			Args: []string{"sh", "-s"},
@@ -111,6 +117,7 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 	})
 
 	t.Run("Returns HTTP status 400 bad request without stdin supplied", func(t *testing.T) {
+		configuration.Settings.Security.ApprovedPathArgumentsOnly = false
 		configuration.Settings.Security.SignedStdInOnly = true
 		var test = ScriptToRun{
 			Path: "sh",
@@ -128,6 +135,7 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 	})
 
 	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
+		configuration.Settings.Security.ApprovedPathArgumentsOnly = false
 		configuration.Settings.Security.SignedStdInOnly = true
 
 		jsonBody, _ := json.Marshal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun)
@@ -142,6 +150,7 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 	})
 
 	t.Run("Runs unsigned script, returns HTTP status 400 and expected failed signiture verification", func(t *testing.T) {
+		configuration.Settings.Security.ApprovedPathArgumentsOnly = false
 		configuration.Settings.Security.SignedStdInOnly = true
 
 		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
@@ -164,6 +173,7 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 	})
 
 	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
+		configuration.Settings.Security.ApprovedPathArgumentsOnly = false
 		configuration.Settings.Security.SignedStdInOnly = true
 
 		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
@@ -182,6 +192,31 @@ RWTV8L06+shYI+aL2MAm12HN97gM83Cd1c2H10PMtGhFAmYlxsEWnJGZEFMyFtB46Ity/6iK36IEw66L
 trusted comment: timestamp:1629368840	file:echotest.txt
 U54CjtRd9nA/jp4iEhdbQ35eE4yWQRY0nbJlw4elRwilslde8nrZwfaIK1a2R+7gzfeuiZq8xTlKtIvTOg5aAA==
 `
+		}
+
+		jsonBody, _ := json.Marshal(osSpecificRunScript)
+		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
+
+		output := TestHTTPRequestWithDefaultCredentials(t, request)
+
+		assert := assert.New(t)
+
+		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
+		assert.Equal(`{"exitcode":0,"output":"This script is a test.\n"}`, output.ResponseBody, "Body did not match expected output")
+	})
+
+	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
+		configuration.Settings.Security.ApprovedPathArgumentsOnly = true
+		configuration.Settings.Security.SignedStdInOnly = false
+
+		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
+		if runtime.GOOS == "windows" {
+			osSpecificRunScript.StdIn.StdIn = `Write-Host 'This script is a test.'`
+			osSpecificRunScript.StdInSignature.StdInSignature = ``
+		}
+		if runtime.GOOS == "linux" {
+			osSpecificRunScript.StdIn.StdIn = `echo "This script is a test."`
+			osSpecificRunScript.StdInSignature.StdInSignature = ``
 		}
 
 		jsonBody, _ := json.Marshal(osSpecificRunScript)
