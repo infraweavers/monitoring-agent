@@ -16,7 +16,6 @@
         "HTTPRequestTimeout": "300s",
         "DefaultScriptTimeout": "15s",        
         "LoadPprof": false
-        
     },
     "Security": {
         "DisabledHTTPs": false,
