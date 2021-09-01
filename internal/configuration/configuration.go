@@ -15,6 +15,7 @@ import (
 // JSONconfig is a struct for unmarshalling the configuration.json file
 type JSONconfig struct {
 	Authentication JSONconfigAuthentication `json:"Authentication"`
+	Logging        JSONconfigLogging        `json:"Logging"`
 	Server         JSONconfigServer         `json:"Server"`
 	Security       JSONconfigSecurity       `json:"Security"`
 	Paths          JSONconfigPaths          `json:"Paths"`
@@ -26,25 +27,29 @@ type JSONconfigAuthentication struct {
 	Password string
 }
 
-// JSONconfigServer is a struct for unmarshalling the configuration.json file, server section
-type JSONconfigServer struct {
-	HTTPRequestTimeout              string
-	HTTPRequestTimeoutDuration      time.Duration
-	DefaultScriptTimeout            string
-	DefaultScriptTimeoutDuration    time.Duration
+// JSONconfigLogging is a struct for unmarshalling the configuration.json file, server section
+type JSONconfigLogging struct {
 	LogFilePath                     string
 	LogLevel                        string
-	BindAddress                     string
 	LogArchiveFilesToRetain         int
 	LogRotationThresholdInMegaBytes int
 	LogHTTPRequests                 bool
 	LogHTTPResponses                bool
-	LoadPprof                       bool
-	DisableHTTPs                    bool
+}
+
+// JSONconfigServer is a struct for unmarshalling the configuration.json file, server section
+type JSONconfigServer struct {
+	HTTPRequestTimeout           string
+	HTTPRequestTimeoutDuration   time.Duration
+	DefaultScriptTimeout         string
+	DefaultScriptTimeoutDuration time.Duration
+	BindAddress                  string
+	LoadPprof                    bool
 }
 
 // JSONconfigSecurity is a struct for unmarshalling the configuration.json file
 type JSONconfigSecurity struct {
+	DisableHTTPs                bool
 	SignedStdInOnly             bool
 	PublicKey                   minisign.PublicKey
 	AllowedAddresses            []string

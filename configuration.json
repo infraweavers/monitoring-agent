@@ -3,20 +3,23 @@
         "Username": "test",
         "Password": "secret"
     },
-    "Server": {
-        "BindAddress": "0.0.0.0:9000",
-        "HTTPRequestTimeout": "300s",
-        "DefaultScriptTimeout": "15s",
-        "logFilePath": "output.log",
+    "Logging": {
+        "LogFilePath": "output.log",
         "LogLevel": "INFO",
         "LogArchiveFilesToRetain": 10,
         "LogRotationThresholdInMegaBytes": 100,
         "LogHTTPRequests": false,
-        "LogHTTPResponses": false,
-        "LoadPprof": false,
-        "DisabledHTTPs": false
+        "LogHTTPResponses": false
+    },
+    "Server": {
+        "BindAddress": "0.0.0.0:9000",
+        "HTTPRequestTimeout": "300s",
+        "DefaultScriptTimeout": "15s",        
+        "LoadPprof": false
+        
     },
     "Security": {
+        "DisabledHTTPs": false,
         "SignedStdInOnly": false,
         "PublicKey": "RWTV8L06+shYI7Xw1H+NBGmsUYlbEkbrdYxr4c0ImLCAr8NGx75VhxGQ",
         "AllowedAddresses": ["::1/128","127.0.0.0/8","0.0.0.0/0"],

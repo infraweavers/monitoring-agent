@@ -56,12 +56,12 @@ var runningInteractively = false
 // Initialise and configure the logging
 func Initialise(isRunInteractively bool) {
 
-	logFile, err := os.OpenFile(configuration.Settings.Server.LogFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	logFile, err := os.OpenFile(configuration.Settings.Logging.LogFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		panic(err)
 	}
 
-	level, err = parseLogLevel(configuration.Settings.Server.LogLevel)
+	level, err = parseLogLevel(configuration.Settings.Logging.LogLevel)
 	if err != nil {
 		panic(err)
 	}
@@ -70,14 +70,14 @@ func Initialise(isRunInteractively bool) {
 
 	Log.SetOutput(&lumberjack.Logger{
 		Filename:   logFile.Name(),
-		MaxBackups: configuration.Settings.Server.LogArchiveFilesToRetain,
-		MaxSize:    configuration.Settings.Server.LogRotationThresholdInMegaBytes,
+		MaxBackups: configuration.Settings.Logging.LogArchiveFilesToRetain,
+		MaxSize:    configuration.Settings.Logging.LogRotationThresholdInMegaBytes,
 	})
 
 	runningInteractively = isRunInteractively
 
 	LogInfo("Logging Initialised")
-	LogInfof("Logging with LogFilePath: '%s'", configuration.Settings.Server.LogFilePath)
+	LogInfof("Logging with LogFilePath: '%s'", configuration.Settings.Logging.LogFilePath)
 	LogInfof("Running Interactively: %t", runningInteractively)
 }
 
