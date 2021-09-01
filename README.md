@@ -39,7 +39,7 @@ Output
 
 #### Windows (cmd) against Linux (Not currently producing expected output)
 ```
-curl -k -H "Content-Type: application/json" --data "{""path"":""perl"",""args"":[""-e"",""print 'Hello, World'""]}" https://test:secret@omda01:9000/v1/runscript
+curl -k -H "Content-Type: application/json" --data "{""path"":""perl"",""args"":[""-e"",""print 'Hello, World'""]}" https://test:secret@123.0.0.1:9000/v1/runscript
 ```
 Output:
 ```
