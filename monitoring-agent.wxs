@@ -3,7 +3,7 @@
   <?define ProductName = "Monitoring Agent (x64)" ?>
   <?define UpgradeCode = "ebb55cd6-2ee1-4440-bc00-73d610a5998c" ?>
   <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
-  <?define Win64 = "yes" ?>
+  <?define Win64 = 'yes' ?>
 <?else ?>
   <?define ProductName = "Monitoring Agent (x86)" ?>
   <?define UpgradeCode = "76d2cc17-0aa2-4f47-bf50-07243bf1546f" ?>
@@ -41,11 +41,11 @@
 				<ServiceControl Id='StartMonitoringAgentService' Start='install' Stop='both' Remove='uninstall' Name='Monitoring Agent' Wait='yes' />
 			</Component>
 			
-			<Component Id='SampleCaCertificate' Guid='d1d9e531-1667-4670-9d3e-d846bcc33228' Win64="$(var.Win64)" NeverOverwrite="yes" Permanent="yes">
+			<Component Id='SampleCaCertificate' Guid='d1d9e531-1667-4670-9d3e-d846bcc33228' Win64="$(var.Win64)" NeverOverwrite='yes' Permanent='yes'>
 			  <File Id='cacertPem' Name='cacert.pem' DiskId='1' Source='cacert.pem' KeyPath='yes' />
 			</Component>
 			
-			<Component Id='SampleConfigurationIni' Guid='05002cfe-4958-495c-9c5b-ecad4e5b6050' Win64="$(var.Win64)" NeverOverwrite="yes" Permanent="yes">
+			<Component Id='SampleConfigurationIni' Guid='05002cfe-4958-495c-9c5b-ecad4e5b6050' Win64="$(var.Win64)" NeverOverwrite='yes' Permanent='yes'>
 			  <File Id='configurationIni' Name='configuration.json' DiskId='1' Source='configuration.json' KeyPath='yes' />
 			</Component>
 			
@@ -53,11 +53,11 @@
 			  <File Id='license' Name='LICENSE' DiskId='1' Source='LICENSE' KeyPath='yes' />
 			</Component>
 			
-			<Component Id='SampleServerCertificate' Guid='ab00497a-b889-423c-9985-3d433650ffcf' Win64="$(var.Win64)" NeverOverwrite="yes" Permanent="yes">
+			<Component Id='SampleServerCertificate' Guid='ab00497a-b889-423c-9985-3d433650ffcf' Win64="$(var.Win64)" NeverOverwrite='yes' Permanent='yes'>
 			  <File Id='serverCrt' Name='server.crt' DiskId='1' Source='server.crt' KeyPath='yes' />
 			</Component>
 			
-			<Component Id='SampleServerKey' Guid='7cb0dd12-517e-4096-907b-b8ac8ad8a0ee' Win64="$(var.Win64)" NeverOverwrite="yes" Permanent="yes">
+			<Component Id='SampleServerKey' Guid='7cb0dd12-517e-4096-907b-b8ac8ad8a0ee' Win64="$(var.Win64)" NeverOverwrite='yes' Permanent='yes'>
 			  <File Id='serverKey' Name='server.key' DiskId='1' Source='server.key' KeyPath='yes' />
 			</Component>
 	
