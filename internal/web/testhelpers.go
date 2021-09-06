@@ -36,7 +36,7 @@ type ScriptToRun struct {
 	Args []string
 }
 
-// TestCredential is a struct for use in setting up test cases
+// TestCredential is a struct for representing a set of credentials (user name and password), used in setting up test cases
 type TestCredential struct {
 	Username string
 	Password string
