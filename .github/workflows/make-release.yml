@@ -38,7 +38,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-wix-wxs"
-          path: ${{ env.SRCPATH }}/monitoring-agent.wxs
+          path: "{{ env.SRCPATH }}/monitoring-agent.wxs"
 
       - name: Dependencies & Build
         run: |
@@ -100,7 +100,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-BIN"
-          path: download/${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-BIN
+          path: "download/${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-BIN"
           
       - name: download wix definition file
         uses: actions/download-artifact@v2
