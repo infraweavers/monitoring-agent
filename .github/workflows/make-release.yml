@@ -64,38 +64,38 @@ jobs:
         with:
           length: 7
 
-      - name: Install Go
+      - id: Install Go
         uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go-version }}
             
-      - name: Checkout code
+      - id: Checkout code
         uses: actions/checkout@v2
         with:
           path: ${{ env.SRCPATH }}
 
-      - name: upload wix definition file
+      - id: upload wix definition file
         if: ${{ matrix.os == 'windows' }}
         uses: actions/upload-artifact@v2
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-wix-wxs"
           path: "${{ env.SRCPATH }}/monitoring-agent.wxs"
           
-      - name: upload deb build files
+      - id: upload deb build files
         if: ${{ matrix.os == 'linux' }}
         uses: actions/upload-artifact@v2
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-DEBIAN"
           path: "${{ env.SRCPATH }}/DEBIAN"
 
-      - name: upload systemd unit file
+      - id: upload systemd unit file
         if: ${{ matrix.os == 'linux' }}
         uses: actions/upload-artifact@v2
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-systemd-unit-file"
           path: "${{ env.SRCPATH }}/monitoring-agent.service"
 
-      - name: Dependencies & Build
+      - id: Dependencies & Build
         run: |
           os=${{ matrix.os }}
           arch=${{ matrix.arch }}
@@ -113,7 +113,7 @@ jobs:
           popd
           cp ${{ env.SRCPATH }}/monitoring-agent$suffix ./release/monitoring-agent$suffix
       
-      - name: upload builds
+      - id: upload builds
         uses: actions/upload-artifact@v2
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-BIN"
@@ -138,26 +138,26 @@ jobs:
         with:
           length: 7
      
-      - name: install wix tool set
+      - id: install wix tool set
         run: |
           Invoke-WebRequest -UseBasicParsing -Uri https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311.exe -OutFile wix311.exe
           & ".\wix311.exe" "/q"
 
-      - name: create release folder
+      - id: create release folder
         run: |
           mkdir ./release
 
-      - name: download windows build
+      - id: download windows build
         uses: actions/download-artifact@v2
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-BIN"
           
-      - name: download wix definition file
+      - id: download wix definition file
         uses: actions/download-artifact@v2
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-wix-wxs"
 
-      - name: build msi
+      - id: build msi
         run: |
           $os="${{ matrix.os }}"
           $arch="${{ matrix.arch }}"
@@ -175,7 +175,7 @@ jobs:
           
           Move-Item -Path ./monitoring-agent.msi -Destination "./release/monitoring-agent-$win_arch-Go${goversion}-${{ steps.short-sha.outputs.sha }}.msi"
           
-      - name: upload MSI
+      - id: upload MSI
         uses: actions/upload-artifact@v2
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-MSI"
@@ -200,23 +200,23 @@ jobs:
         with:
           length: 7
 
-      - name: download linux build
+      - id: download linux build
         uses: actions/download-artifact@v2
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-BIN"
 
-      - name: download deb build files
+      - id: download deb build files
         uses: actions/download-artifact@v2
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-DEBIAN"
           path: "DEBIAN"
 
-      - name: download systemd unit file
+      - id: download systemd unit file
         uses: actions/download-artifact@v2
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-systemd-unit-file"
 
-      - name: build .deb
+      - id: build .deb
         run: |
           os=${{ matrix.os }}
           arch=${{ matrix.arch }}
@@ -243,7 +243,7 @@ jobs:
           sudo chown -R root:root deb-package/
           sudo dpkg-deb --build ./deb-package ~/linux-$arch-go$goversion-monitoring-agent-0.1.${debMinorVersionNumber}.deb
 
-      - name: Upload .deb
+      - id: Upload .deb
         uses: actions/upload-artifact@v2
         with:
           name: "linux-${{ matrix.arch }}-go${{ matrix.go-version }}-monitoring-agent-${{ steps.short-sha.outputs.sha }}.deb"
