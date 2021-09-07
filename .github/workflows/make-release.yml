@@ -10,7 +10,7 @@ jobs:
     runs-on: windows-latest
 
     outputs:
-      version: step.get-version-number.outputs.revision
+      revision: step.get-version-number.outputs.revision
 
     steps:
       - name: get-version-number
