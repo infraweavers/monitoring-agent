@@ -16,32 +16,57 @@ jobs:
 
     steps:
       
-      - name: Install Go
+      - id: install-go
         uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go-version }}
             
-      - name: Checkout code
+      - id: checkout-code
         uses: actions/checkout@v2
         with:
           path: ${{ env.SRCPATH }}
 
-      - name: Run Tests
+      - id: run-tests
         run: |
           pushd ${{ env.SRCPATH }}
           GO111MODULE=on GOOS=$os GOARCH=$arch go get ./...
           GO111MODULE=on go test -cover ./...
 
+  get-version-number:
+
+    runs-on: windows-latest
+
+    needs: test
+
+    outputs:
+      revision: ${{ steps.get-revision.outputs.revision }}
+      minor: ${{ steps.get-minor-version.outputs.minor }}
+      major: ${{ steps.get-major-version.outputs.major }}
+
+    steps:
+      - id: get-revision
+        run: |
+          $firstCommitSha = "49cded61e36172578146ca1a7ae516540056d8b0"
+          $lastCommitSha = ((Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/git/refs/heads/master -UseBasicParsing).Content | ConvertFrom-Json).object.sha
+          $response = Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/compare/${firstCommitSha}...${lastCommitSha} -UseBasicParsing
+          echo "::set-output name=revision::$( ($response.Content | ConvertFrom-Json).total_commits )"
+      - id: get-minor-version
+        run: echo "::set-output name=minor::1"
+
+      - id: get-major-version
+        run: echo "::set-output name=major::0"
+
   build-release:
+  
     strategy:
       matrix:
         go-version: [1.16.x, 1.17.x]
         os: [linux, windows, freebsd]
         arch: [386, amd64]
 
-    runs-on: ubuntu-latest
-
     needs: test
+
+    runs-on: ubuntu-latest
     
     env:
         SRCPATH: ${{ github.workspace }}/go/src/monitoring-agent
@@ -53,46 +78,68 @@ jobs:
         with:
           length: 7
 
-      - name: Install Go
+      - id: install-go
         uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go-version }}
             
-      - name: Checkout code
+      - id: checkout-code
         uses: actions/checkout@v2
         with:
           path: ${{ env.SRCPATH }}
 
-      - name: Dependencies & Build
+      - id: upload-wix-definition-file
+        if: ${{ matrix.os == 'windows' }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-wix-wxs"
+          path: "${{ env.SRCPATH }}/monitoring-agent.wxs"
+          if-no-files-found: error
+          
+      - id: upload-deb-build-files
+        if: ${{ matrix.os == 'linux' }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-DEBIAN"
+          path: "${{ env.SRCPATH }}/DEBIAN"
+          if-no-files-found: error
+
+      - id: upload-systemd-unit-file
+        if: ${{ matrix.os == 'linux' }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-systemd-unit-file"
+          path: "${{ env.SRCPATH }}/monitoring-agent.service"
+          if-no-files-found: error
+
+      - id: dependencies-and-build
         run: |
           os=${{ matrix.os }}
           arch=${{ matrix.arch }}
           goversion=${{ matrix.go-version }}
-
           echo "Building $os-$arch-$goversion"
           
           suffix=$([ "$os" == "windows" ] && echo ".exe" || echo "")
-
-          mkdir -p ./release/$os-$arch-Go${goversion}
-          cp ${{ env.SRCPATH }}/configuration.json ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ${{ env.SRCPATH }}/cacert.pem ./release/$os-$arch-Go${goversion}
+          mkdir ./release
+          cp ${{ env.SRCPATH }}/configuration.json ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ${{ env.SRCPATH }}/cacert.pem ./release/.
           
           pushd ${{ env.SRCPATH }}
           
           GO111MODULE=on GOOS=$os GOARCH=$arch go get ./...
           GO111MODULE=on GOOS=$os GOARCH=$arch go build -o ${{ env.SRCPATH }}/monitoring-agent$suffix
-
           popd
-
-          cp ${{ env.SRCPATH }}/monitoring-agent$suffix ./release/$os-$arch-Go${goversion}/monitoring-agent$suffix
+          cp ${{ env.SRCPATH }}/monitoring-agent$suffix ./release/monitoring-agent$suffix
       
-      - name: upload builds
+      - id: upload-builds
         uses: actions/upload-artifact@v2
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-BIN"
           path: release/
 
-  build-win-MSI-installer:
+  build-msi:
   
+    needs: ["build-release", "get-version-number"]
+
     strategy:
       matrix:
         go-version: [1.17.x]
@@ -100,11 +147,6 @@ jobs:
         arch: [386, amd64]
         
     runs-on: windows-latest
-    
-    needs: test
-    
-    env:
-        SRCPATH: ${{ github.workspace }}/go/src/monitoring-agent
 
     steps:
         
@@ -112,39 +154,25 @@ jobs:
         id: short-sha
         with:
           length: 7
-
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.go-version }}
-          
-      - name: Install WIX Tool Set
+     
+      - id: install-wix-tool-set
         run: |
           Invoke-WebRequest -UseBasicParsing -Uri https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311.exe -OutFile wix311.exe
           & ".\wix311.exe" "/q"
-            
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          path: ${{ env.SRCPATH }}
-
-      - name: Dependencies & Build
+      - id: create-release-folder
         run: |
-          $os="${{ matrix.os }}"
-          $arch="${{ matrix.arch }}"
-          $goversion="${{ matrix.go-version }}"
-          Write-Host "Building $os-$arch-$goversion"
+          mkdir ./release
+      - id: download-windows-build
+        uses: actions/download-artifact@v2
+        with:
+          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-BIN"
           
-          New-Item -Type Directory ./release/$os-$arch-Go${goversion}
-          
-          Set-Location -Path ${{ env.SRCPATH }}
-          $env:GO111MODULE="on" 
-          $env:GOOS="$os"
-          $env:GOARCH=$arch
-          go get ./...
-          go build -o ${{ env.SRCPATH }}/monitoring-agent.exe
-          
-      - name: Create MSI Installer
+      - id: download-wix-definition-file
+        uses: actions/download-artifact@v2
+        with:
+          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-wix-wxs"
+
+      - id: build-msi
         run: |
           $os="${{ matrix.os }}"
           $arch="${{ matrix.arch }}"
@@ -154,25 +182,22 @@ jobs:
           if ($arch -eq "386") { $win_arch = "x86" }
           Write-Host "Building MSI Installer For $os-$arch-Go${goversion}"
           
-          $firstCommitSha = "49cded61e36172578146ca1a7ae516540056d8b0"
-          $lastCommitSha = ((Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/git/refs/heads/master -UseBasicParsing).Content | ConvertFrom-Json).object.sha
-          $response = Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/compare/${firstCommitSha}...${lastCommitSha} -UseBasicParsing
-          $msiRevisionNumber = ($response.Content | ConvertFrom-Json).total_commits
-          Write-Host "MSI Revision Number is: ${msiRevisionNumber}"
+          Write-Host "MSI version is: ${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}"
           
-          Push-Location -Path ${{ env.SRCPATH }}
-          & 'C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe' .\monitoring-agent.wxs -arch $win_arch -dPlatform="$($win_arch)" -dRevisionNumber="$($msiRevisionNumber)" -dGitSha="${{ steps.short-sha.outputs.sha }}"
-          & "C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" "./monitoring-agent.wixobj"
-          Pop-Location
+          & 'C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe' .\monitoring-agent.wxs -arch $win_arch -dPlatform="$($win_arch)" -dMajorVersion="${{needs.get-version-number.outputs.major}}" -dMinorVersion-"${{needs.get-version-number.outputs.minor}}" -dRevisionNumber="${{needs.get-version-number.outputs.revision}}" -dGitSha="${{ steps.short-sha.outputs.sha }}"
+          & "C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" ".\monitoring-agent.wixobj"
           
-          Move-Item -Path ${{ env.SRCPATH }}/monitoring-agent.msi -Destination "./release/$os-$arch-Go${goversion}/monitoring-agent-$win_arch-Go${goversion}-${{ steps.short-sha.outputs.sha }}.msi"
-      - name: upload MSI
+          Move-Item -Path ./monitoring-agent.msi -Destination "./release/monitoring-agent-$win_arch-Go${goversion}-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ steps.short-sha.outputs.sha }}.msi"
+          
+      - id: upload-msi
         uses: actions/upload-artifact@v2
         with:
-          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-MSI"
+          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ steps.short-sha.outputs.sha }}-MSI"
           path: release/
+          if-no-files-found: error
 
-  create-deb:
+  build-deb:
+  
     strategy:
       matrix:
         go-version: [1.17.x]
@@ -180,9 +205,8 @@ jobs:
         arch: [386, amd64]
 
     runs-on: ubuntu-latest
-    needs: test
-    env:
-        SRCPATH: ${{ github.workspace }}/go/src/mama
+  
+    needs: ["build-release", "get-version-number"]
 
     steps:
 
@@ -191,54 +215,48 @@ jobs:
         with:
           length: 7
 
-      - name: Install Go
-        uses: actions/setup-go@v2
+      - id: download-linux-build
+        uses: actions/download-artifact@v2
         with:
-          go-version: 1.16.x
+          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-BIN"
 
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - id: download-deb-build-files
+        uses: actions/download-artifact@v2
         with:
-          path: ${{ env.SRCPATH }}
+          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-DEBIAN"
+          path: "DEBIAN"
 
-      - name: Dependencies & Build
-        run: |
-          os=${{ matrix.os }}
-          arch=${{ matrix.arch }}
-          goversion=${{ matrix.go-version }}
-          echo "Building $os-$arch-$goversion"
-          
-          suffix=$([ "$os" == "windows" ] && echo ".exe" || echo "")
-          mkdir -p ./release/$os-$arch-$goversion
-          cp ${{ env.SRCPATH }}/configuration.json ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ${{ env.SRCPATH }}/cacert.pem ./release/$os-$arch-$goversion
-          pushd ${{ env.SRCPATH }}
-          
-          GO111MODULE=on GOOS=$os GOARCH=$arch go get ./...
-          GO111MODULE=on GOOS=$os GOARCH=$arch go build -o ${{ env.SRCPATH }}/monitoring-agent$suffix
-          popd
-          cp ${{ env.SRCPATH }}/monitoring-agent$suffix ./release/$os-$arch-$goversion/monitoring-agent$suffix
+      - id: download-systemd-unit-file
+        uses: actions/download-artifact@v2
+        with:
+          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-systemd-unit-file"
 
-      - name: Create .deb
+      - id: build-dotdeb
         run: |
           os=${{ matrix.os }}
           arch=${{ matrix.arch }}
           goversion=${{ matrix.go-version }}
           
+          echo "Building .deb Installer For $os-$arch-Go${goversion}"
+          echo ".deb version is: ${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}"
           mkdir -p deb-package/etc/monitoring-agent deb-package/usr/bin deb-package/lib/systemd/system
-          cp -r ${{ env.SRCPATH }}/DEBIAN ./deb-package
-          cp ${{ env.SRCPATH }}/configuration.json ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/cacert.pem ./deb-package/etc/monitoring-agent
-          cp ./release/$os-$arch-$goversion/monitoring-agent deb-package/usr/bin
-          cp ${{ env.SRCPATH }}/monitoring-agent.service deb-package/lib/systemd/system
-
+          cp -r ./DEBIAN ./deb-package
+          cp ./configuration.json ./server.crt ./server.key ./cacert.pem ./deb-package/etc/monitoring-agent
+          cp ./monitoring-agent deb-package/usr/bin
+          cp ./monitoring-agent.service deb-package/lib/systemd/system
           sed -i 's|"LogFilePath": "output.log",|"LogFilePath": "/var/log/monitoring-agent.log",|' deb-package/etc/monitoring-agent/configuration.json
           sed -i 's|Architecture: UPDATEME|Architecture: ${{ matrix.arch }}|' deb-package/DEBIAN/control
           
           chmod 600 deb-package/etc/monitoring-agent/*
+          chmod 755 deb-package/DEBIAN/postinst
+          chmod 755 deb-package/DEBIAN/prerm
+          chmod 755 deb-package/DEBIAN/postrm
+          chmod 755 deb-package/DEBIAN/rules
           sudo chown -R root:root deb-package/
-          sudo dpkg-deb --build ./deb-package ~/linux-$arch-go$goversion-monitoring-agent.deb
-
-      - name: Upload .deb
+          sudo dpkg-deb --build ./deb-package ~/$arch-go$goversion-monitoring-agent-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ steps.short-sha.outputs.sha }}.deb
+      - id: upload-deb
         uses: actions/upload-artifact@v2
         with:
-          name: "linux-${{ matrix.arch }}-go${{ matrix.go-version }}-monitoring-agent-${{ steps.short-sha.outputs.sha }}.deb"
-          path: ~/linux-${{ matrix.arch }}-go${{ matrix.go-version }}-monitoring-agent.deb
+          name: "${{ matrix.arch }}-go${{ matrix.go-version }}-monitoring-agent-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ steps.short-sha.outputs.sha }}.deb"
+          path: ~/${{ matrix.arch }}-go${{ matrix.go-version }}-monitoring-agent-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ steps.short-sha.outputs.sha }}.deb
+          if-no-files-found: error
