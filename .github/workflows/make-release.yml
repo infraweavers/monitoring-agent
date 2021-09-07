@@ -156,7 +156,7 @@ jobs:
           
           Write-Host "MSI version is: ${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}"
           
-          & 'C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe' .\monitoring-agent.wxs -arch $win_arch -dPlatform="$($win_arch)" -dMajorVersion="${{needs.get-version-number.outputs.major}}" -dMinorVersion-"${{needs.get-version-number.outputs.minor}}" -dRevisionNumber="${{needs.get-version-number.outputs.revision}}" -dGitSha="${{ steps.short-sha.outputs.sha }}"
+          & 'C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe' .\monitoring-agent.wxs -arch $win_arch -dPlatform="$($win_arch)" -dMajorVersion="${{needs.get-version-number.outputs.major}}" -dMinorVersion="${{needs.get-version-number.outputs.minor}}" -dRevisionNumber="${{needs.get-version-number.outputs.revision}}" -dGitSha="${{ steps.short-sha.outputs.sha }}"
           & "C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" ".\monitoring-agent.wixobj"
           
           Move-Item -Path ./monitoring-agent.msi -Destination "./release/monitoring-agent-$win_arch-Go${goversion}-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ steps.short-sha.outputs.sha }}.msi"
