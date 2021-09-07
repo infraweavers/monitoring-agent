@@ -32,30 +32,6 @@ jobs:
           GO111MODULE=on GOOS=$os GOARCH=$arch go get ./...
           GO111MODULE=on go test -cover ./...
 
-  get-version-number:
-
-    runs-on: windows-latest
-
-    needs: test
-
-    outputs:
-      revision: ${{ steps.get-revision.outputs.revision }}
-      minor: ${{ steps.get-minor-version.outputs.minor }}
-      major: ${{ steps.get-major-version.outputs.major }}
-
-    steps:
-      - id: get-revision
-        run: |
-          $firstCommitSha = "49cded61e36172578146ca1a7ae516540056d8b0"
-          $lastCommitSha = ((Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/git/refs/heads/master -UseBasicParsing).Content | ConvertFrom-Json).object.sha
-          $response = Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/compare/${firstCommitSha}...${lastCommitSha} -UseBasicParsing
-          echo "::set-output name=revision::$( ($response.Content | ConvertFrom-Json).total_commits )"
-      - id: get-minor-version
-        run: echo "::set-output name=minor::1"
-
-      - id: get-major-version
-        run: echo "::set-output name=major::0"
-
   build-release:
   
     strategy:
@@ -136,9 +112,33 @@ jobs:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-BIN"
           path: release/
 
+  get-version-number:
+
+    runs-on: windows-latest
+
+    needs: build-release
+
+    outputs:
+      revision: ${{ steps.get-revision.outputs.revision }}
+      minor: ${{ steps.get-minor-version.outputs.minor }}
+      major: ${{ steps.get-major-version.outputs.major }}
+
+    steps:
+      - id: get-revision
+        run: |
+          $firstCommitSha = "49cded61e36172578146ca1a7ae516540056d8b0"
+          $lastCommitSha = ((Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/git/refs/heads/master -UseBasicParsing).Content | ConvertFrom-Json).object.sha
+          $response = Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/compare/${firstCommitSha}...${lastCommitSha} -UseBasicParsing
+          echo "::set-output name=revision::$( ($response.Content | ConvertFrom-Json).total_commits )"
+      - id: get-minor-version
+        run: echo "::set-output name=minor::1"
+
+      - id: get-major-version
+        run: echo "::set-output name=major::0"
+
   build-msi:
   
-    needs: ["build-release", "get-version-number"]
+    needs: get-version-number
 
     strategy:
       matrix:
@@ -206,7 +206,7 @@ jobs:
 
     runs-on: ubuntu-latest
   
-    needs: ["build-release", "get-version-number"]
+    needs: get-version-number
 
     steps:
 
