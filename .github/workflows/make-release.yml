@@ -143,7 +143,7 @@ jobs:
           Invoke-WebRequest -UseBasicParsing -Uri https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311.exe -OutFile wix311.exe
           & ".\wix311.exe" "/q"
 
-      - id: create release folder
+      - id: create-release-folder
         run: |
           mkdir ./release
 
