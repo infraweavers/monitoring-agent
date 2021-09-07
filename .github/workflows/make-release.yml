@@ -88,10 +88,6 @@ jobs:
           Invoke-WebRequest -UseBasicParsing -Uri https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311.exe -OutFile wix311.exe
           & ".\wix311.exe" "/q"
 
-      - name: create download folder
-        run: |
-          mkdir ./download
-
       - name: create release folder
         run: |
           mkdir ./release
@@ -100,13 +96,11 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-BIN"
-          path: "download/${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-BIN"
           
       - name: download wix definition file
         uses: actions/download-artifact@v2
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-wix-wxs"
-          path: "download/${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-BIN"
 
       - name: Create MSI Installer
         run: |
@@ -124,14 +118,12 @@ jobs:
           $msiRevisionNumber = ($response.Content | ConvertFrom-Json).total_commits
           Write-Host "MSI Revision Number is: ${msiRevisionNumber}"
           
-          Push-Location -Path download\$os-$arch-Go${goversion}-${{ steps.short-sha.outputs.sha }}-BIN
           Write-Host "PATH: $((pwd).Path)"
           GCI
           & 'C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe' .\monitoring-agent.wxs -arch $win_arch -dPlatform="$($win_arch)" -dRevisionNumber="$($msiRevisionNumber)" -dGitSha="${{ steps.short-sha.outputs.sha }}"
           & "C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" ".\monitoring-agent.wixobj"
-          Pop-Location
           
-          Move-Item -Path ./download/$os-$arch-Go${goversion}-${{ steps.short-sha.outputs.sha }}-BIN/monitoring-agent.msi -Destination "./release/monitoring-agent-$win_arch-Go${goversion}-${{ steps.short-sha.outputs.sha }}.msi"
+          Move-Item -Path ./monitoring-agent.msi -Destination "./release/monitoring-agent-$win_arch-Go${goversion}-${{ steps.short-sha.outputs.sha }}.msi"
           
       - name: upload MSI
         uses: actions/upload-artifact@v2
