@@ -11,7 +11,8 @@ jobs:
 
     outputs:
       revision: ${{ steps.get-revision.outputs.revision }}
-      minor: ${{ steps.get-revision.outputs.minor }}
+      minor: ${{ steps.get-minor-version.outputs.minor }}
+      major: ${{ steps.get-major-version.outputs.major }}
 
     steps:
       - id: get-revision
@@ -25,7 +26,7 @@ jobs:
         run: echo "::set-output name=minor::1"
 
       - id: get-major-version
-        run: echo "::set-output name=minor::0"
+        run: echo "::set-output name=major::0"
 
   build-release:
   
