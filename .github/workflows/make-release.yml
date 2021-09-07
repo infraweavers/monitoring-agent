@@ -129,3 +129,48 @@ jobs:
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-MSI"
           path: release/
+
+  create-deb:
+  
+    strategy:
+      matrix:
+        go-version: [1.17.x]
+        os: [linux]
+        arch: [386, amd64]
+
+    runs-on: ubuntu-latest
+  
+    needs: build-release
+
+    env:
+        SRCPATH: ${{ github.workspace }}/go/src/mama
+
+    steps:
+
+      - uses: benjlevesque/short-sha@v1.2
+        id: short-sha
+        with:
+          length: 7
+
+      - name: Create .deb
+        run: |
+          os=${{ matrix.os }}
+          arch=${{ matrix.arch }}
+          goversion=${{ matrix.go-version }}
+          
+          mkdir -p deb-package/etc/monitoring-agent deb-package/usr/bin deb-package/lib/systemd/system
+          cp -r ${{ env.SRCPATH }}/DEBIAN ./deb-package
+          cp ${{ env.SRCPATH }}/configuration.json ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/cacert.pem ./deb-package/etc/monitoring-agent
+          cp ./release/$os-$arch-$goversion/monitoring-agent deb-package/usr/bin
+          cp ${{ env.SRCPATH }}/monitoring-agent.service deb-package/lib/systemd/system
+          sed -i 's|"LogFilePath": "output.log",|"LogFilePath": "/var/log/monitoring-agent.log",|' deb-package/etc/monitoring-agent/configuration.json
+          sed -i 's|Architecture: UPDATEME|Architecture: ${{ matrix.arch }}|' deb-package/DEBIAN/control
+          
+          chmod 600 deb-package/etc/monitoring-agent/*
+          sudo chown -R root:root deb-package/
+          sudo dpkg-deb --build ./deb-package ~/linux-$arch-go$goversion-monitoring-agent.deb
+      - name: Upload .deb
+        uses: actions/upload-artifact@v2
+        with:
+          name: "linux-${{ matrix.arch }}-go${{ matrix.go-version }}-monitoring-agent-${{ steps.short-sha.outputs.sha }}.deb"
+          path: ~/linux-${{ matrix.arch }}-go${{ matrix.go-version }}-monitoring-agent.deb
