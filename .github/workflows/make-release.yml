@@ -197,6 +197,7 @@ jobs:
           sed -i 's|Architecture: UPDATEME|Architecture: ${{ matrix.arch }}|' deb-package/DEBIAN/control
           
           chmod 600 deb-package/etc/monitoring-agent/*
+          chmod 755 deb-package/DEBIAN/postinst
           sudo chown -R root:root deb-package/
           sudo dpkg-deb --build ./deb-package ~/linux-$arch-go$goversion-monitoring-agent.deb
 
