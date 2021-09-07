@@ -40,6 +40,20 @@ jobs:
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-wix-wxs"
           path: "${{ env.SRCPATH }}/monitoring-agent.wxs"
+          
+      - name: upload deb build files
+        if: ${{ matrix.os == 'linux' }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-DEBIAN"
+          path: "${{ env.SRCPATH }}/DEBIAN"
+
+      - name: upload systemd unit file
+        if: ${{ matrix.os == 'linux' }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-systemd-unit-file"
+          path: "${{ env.SRCPATH }}/monitoring-agent.service"
 
       - name: Dependencies & Build
         run: |
@@ -93,7 +107,7 @@ jobs:
         run: |
           mkdir ./release
 
-      - name: download windows builds
+      - name: download windows build
         uses: actions/download-artifact@v2
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-BIN"
@@ -149,10 +163,20 @@ jobs:
         with:
           length: 7
 
-      - name: download linux builds
+      - name: download linux build
         uses: actions/download-artifact@v2
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-BIN"
+
+      - name: download deb build files
+        uses: actions/download-artifact@v2
+        with:
+          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-DEBIAN"
+
+      - name: download systemd unit file
+        uses: actions/download-artifact@v2
+        with:
+          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-systemd-unit-file"
 
       - name: build .deb
         run: |
