@@ -5,6 +5,23 @@ on:
   
 jobs:
 
+  get-version-number:
+
+    runs-on: windows
+
+    outputs:
+      version: step.get-version-number.outputs.revision
+
+    steps:
+      - name: get-version-number
+        
+        run: |
+          $firstCommitSha = "49cded61e36172578146ca1a7ae516540056d8b0"
+          $lastCommitSha = ((Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/git/refs/heads/master -UseBasicParsing).Content | ConvertFrom-Json).object.sha
+          $response = Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/compare/${firstCommitSha}...${lastCommitSha} -UseBasicParsing
+          $revision = ($response.Content | ConvertFrom-Json).total_commits
+          Write-Host "::set-output name=revision::${revision}"
+
   build-release:
     strategy:
       matrix:
@@ -81,7 +98,7 @@ jobs:
 
   build-msi:
   
-    needs: build-release
+    needs: ["build-release", "get-version-number"]
 
     strategy:
       matrix:
@@ -97,8 +114,8 @@ jobs:
         id: short-sha
         with:
           length: 7
-        
-      - name: Install WIX Tool Set
+     
+      - name: install wix tool set
         run: |
           Invoke-WebRequest -UseBasicParsing -Uri https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311.exe -OutFile wix311.exe
           & ".\wix311.exe" "/q"
@@ -127,10 +144,7 @@ jobs:
           if ($arch -eq "386") { $win_arch = "x86" }
           Write-Host "Building MSI Installer For $os-$arch-Go${goversion}"
           
-          $firstCommitSha = "49cded61e36172578146ca1a7ae516540056d8b0"
-          $lastCommitSha = ((Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/git/refs/heads/master -UseBasicParsing).Content | ConvertFrom-Json).object.sha
-          $response = Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/compare/${firstCommitSha}...${lastCommitSha} -UseBasicParsing
-          $msiRevisionNumber = ($response.Content | ConvertFrom-Json).total_commits
+          $msiRevisionNumber = ${{ needs.get-version-number.outputs.revision }}
           Write-Host "MSI Revision Number is: ${msiRevisionNumber}"
           
           & 'C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe' .\monitoring-agent.wxs -arch $win_arch -dPlatform="$($win_arch)" -dRevisionNumber="$($msiRevisionNumber)" -dGitSha="${{ steps.short-sha.outputs.sha }}"
@@ -184,6 +198,7 @@ jobs:
           os=${{ matrix.os }}
           arch=${{ matrix.arch }}
           goversion=${{ matrix.go-version }}
+          debVersionNumber=${{ needs.get-version-number.outputs.revision }}
 
           mkdir -p deb-package/etc/monitoring-agent deb-package/usr/bin deb-package/lib/systemd/system
           cp -r ./DEBIAN ./deb-package
@@ -199,7 +214,7 @@ jobs:
           chmod 755 deb-package/DEBIAN/postrm
           chmod 755 deb-package/DEBIAN/rules
           sudo chown -R root:root deb-package/
-          sudo dpkg-deb --build ./deb-package ~/linux-$arch-go$goversion-monitoring-agent.deb
+          sudo dpkg-deb --build ./deb-package ~/linux-$arch-go$goversion-monitoring-agent-0.1.${debVersionNumber}.deb
 
       - name: Upload .deb
         uses: actions/upload-artifact@v2
