@@ -31,7 +31,7 @@ jobs:
       minor-version: ${{ steps.get-version-number.outputs.revision }}
 
     steps:
-      - name: get-version-number
+      - id: get-version-number
         
         run: |
           $firstCommitSha = "49cded61e36172578146ca1a7ae516540056d8b0"
