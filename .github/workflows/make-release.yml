@@ -28,7 +28,7 @@ jobs:
     runs-on: windows-latest
 
     outputs:
-      minor-version: ${{ steps.get-version-number.outputs.revision }}
+      minor-version: ${{ steps.get-minor-version-number.outputs.revision }}
 
     steps:
       - id: get-minor-version-number
