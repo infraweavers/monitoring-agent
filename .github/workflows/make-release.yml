@@ -167,10 +167,9 @@ jobs:
           if ($arch -eq "386") { $win_arch = "x86" }
           Write-Host "Building MSI Installer For $os-$arch-Go${goversion}"
           
-          $msiMinvorVersion = ${{ needs.get-version-number.outputs.minor-version }}
-          Write-Host "MSI minor revision Number is: ${msiMinorVersion}"
+          Write-Host "MSI minor revision Number is: ${{needs.get-version-number.outputs.minor-version}}"
           
-          & 'C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe' .\monitoring-agent.wxs -arch $win_arch -dPlatform="$($win_arch)" -dRevisionNumber="$($msiMinorVersion)" -dGitSha="${{ steps.short-sha.outputs.sha }}"
+          & 'C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe' .\monitoring-agent.wxs -arch $win_arch -dPlatform="$($win_arch)" -dRevisionNumber="${{needs.get-version-number.outputs.minor-version}}" -dGitSha="${{ steps.short-sha.outputs.sha }}"
           & "C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" ".\monitoring-agent.wixobj"
           
           Move-Item -Path ./monitoring-agent.msi -Destination "./release/monitoring-agent-$win_arch-Go${goversion}-${{ steps.short-sha.outputs.sha }}.msi"
@@ -224,8 +223,7 @@ jobs:
           
           Write-Host "Building .deb Installer For $os-$arch-Go${goversion}"
           
-          debMinorVersionNumber=${{ needs.get-version-number.outputs.minor-version }}
-          Write-Host ".deb minor revision Number is: ${debVersionNumber}"
+          Write-Host ".deb minor revision Number is: ${{needs.get-version-number.outputs.minor-version}}"
 
           mkdir -p deb-package/etc/monitoring-agent deb-package/usr/bin deb-package/lib/systemd/system
           cp -r ./DEBIAN ./deb-package
@@ -241,7 +239,7 @@ jobs:
           chmod 755 deb-package/DEBIAN/postrm
           chmod 755 deb-package/DEBIAN/rules
           sudo chown -R root:root deb-package/
-          sudo dpkg-deb --build ./deb-package ~/linux-$arch-go$goversion-monitoring-agent-0.1.${debMinorVersionNumber}.deb
+          sudo dpkg-deb --build ./deb-package ~/linux-$arch-go$goversion-monitoring-agent-0.1.${{needs.get-version-number.outputs.minor-version}}.deb
 
       - id: upload-deb
         uses: actions/upload-artifact@v2
