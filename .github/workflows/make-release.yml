@@ -48,15 +48,15 @@ jobs:
           echo "Building $os-$arch-$goversion"
           
           suffix=$([ "$os" == "windows" ] && echo ".exe" || echo "")
-          mkdir -p ./release/$os-$arch-Go${goversion}
-          cp ${{ env.SRCPATH }}/configuration.json ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ${{ env.SRCPATH }}/cacert.pem ./release/$os-$arch-Go${goversion}
+          mkdir ./release
+          cp ${{ env.SRCPATH }}/configuration.json ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ${{ env.SRCPATH }}/cacert.pem ./release/.
           
           pushd ${{ env.SRCPATH }}
           
           GO111MODULE=on GOOS=$os GOARCH=$arch go get ./...
           GO111MODULE=on GOOS=$os GOARCH=$arch go build -o ${{ env.SRCPATH }}/monitoring-agent$suffix
           popd
-          cp ${{ env.SRCPATH }}/monitoring-agent$suffix ./release/$os-$arch-Go${goversion}/monitoring-agent$suffix
+          cp ${{ env.SRCPATH }}/monitoring-agent$suffix ./release/monitoring-agent$suffix
       
       - name: upload builds
         uses: actions/upload-artifact@v2
