@@ -11,19 +11,17 @@ jobs:
       output1: ${{ steps.step1.outputs.test }}
       output2: ${{ steps.step2.outputs.test }}
     steps:
-      - id: step1
+      - name: step1
         run: |
           $firstCommitSha = "49cded61e36172578146ca1a7ae516540056d8b0"
           $lastCommitSha = ((Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/git/refs/heads/master -UseBasicParsing).Content | ConvertFrom-Json).object.sha
           $response = Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/compare/${firstCommitSha}...${lastCommitSha} -UseBasicParsing
           echo "::set-output name=test::$( ($response.Content | ConvertFrom-Json).total_commits )"
-      - id: step2
-        run: echo "::set-output name=test::world"
   job2:
     runs-on: ubuntu-latest
     needs: job1
     steps:
-      - run: echo ${{needs.job1.outputs.output1}} ${{needs.job1.outputs.output2}}
+      - run: echo ${{needs.job1.outputs.output1}}
 
   get-version-number:
 
