@@ -197,9 +197,8 @@ jobs:
           arch=${{ matrix.arch }}
           goversion=${{ matrix.go-version }}
           
-          Write-Host "Building .deb Installer For $os-$arch-Go${goversion}"
-          
-          Write-Host ".deb minor revision Number is: ${{needs.get-version-number.outputs.minor-version}}"
+          echo "Building .deb Installer For $os-$arch-Go${goversion}"
+          echo ".deb minor revision Number is: ${{needs.get-version-number.outputs.minor-version}}"
 
           mkdir -p deb-package/etc/monitoring-agent deb-package/usr/bin deb-package/lib/systemd/system
           cp -r ./DEBIAN ./deb-package
