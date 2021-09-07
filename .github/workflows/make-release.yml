@@ -11,7 +11,7 @@ jobs:
       output1: ${{ steps.step1.outputs.test }}
       output2: ${{ steps.step2.outputs.test }}
     steps:
-      - name: step1
+      - id: step1
         run: |
           $firstCommitSha = "49cded61e36172578146ca1a7ae516540056d8b0"
           $lastCommitSha = ((Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/git/refs/heads/master -UseBasicParsing).Content | ConvertFrom-Json).object.sha
