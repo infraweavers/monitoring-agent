@@ -198,6 +198,9 @@ jobs:
           
           chmod 600 deb-package/etc/monitoring-agent/*
           chmod 755 deb-package/DEBIAN/postinst
+          chmod 755 deb-package/DEBIAN/prerm
+          chmod 755 deb-package/DEBIAN/postrm
+          chmod 755 deb-package/DEBIAN/rules
           sudo chown -R root:root deb-package/
           sudo dpkg-deb --build ./deb-package ~/linux-$arch-go$goversion-monitoring-agent.deb
 
