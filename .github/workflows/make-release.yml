@@ -159,6 +159,9 @@ jobs:
           os=${{ matrix.os }}
           arch=${{ matrix.arch }}
           goversion=${{ matrix.go-version }}
+                    
+          pwd
+          ls -al
           
           mkdir -p deb-package/etc/monitoring-agent deb-package/usr/bin deb-package/lib/systemd/system
           cp -r ./DEBIAN ./deb-package
