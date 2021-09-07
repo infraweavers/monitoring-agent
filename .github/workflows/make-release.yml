@@ -10,7 +10,7 @@ jobs:
     runs-on: windows-latest
 
     outputs:
-      revision: step.get-version-number.outputs.revision
+      revision: ${{ steps.get-version-number.outputs.revision }}
 
     steps:
       - name: get-version-number
@@ -144,8 +144,8 @@ jobs:
           if ($arch -eq "386") { $win_arch = "x86" }
           Write-Host "Building MSI Installer For $os-$arch-Go${goversion}"
           
-          $msiRevisionNumber = ${{ steps.get-version-number.outputs.revision }}
-          Write-Host "MSI Revision Number is: ${msiRevisionNumber}"
+          $msiRevisionNumber = ${{ needs.get-version-number.outputs.revision }}
+          Write-Host "MSI minor revision Number is: ${msiRevisionNumber}"
           
           & 'C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe' .\monitoring-agent.wxs -arch $win_arch -dPlatform="$($win_arch)" -dRevisionNumber="$($msiRevisionNumber)" -dGitSha="${{ steps.short-sha.outputs.sha }}"
           & "C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" ".\monitoring-agent.wixobj"
@@ -198,7 +198,11 @@ jobs:
           os=${{ matrix.os }}
           arch=${{ matrix.arch }}
           goversion=${{ matrix.go-version }}
-          debVersionNumber=${{ steps.get-version-number.outputs.revision }}
+          
+          Write-Host "Building .deb Installer For $os-$arch-Go${goversion}"
+          
+          debVersionNumber=${{ needs.get-version-number.outputs.revision }}
+          Write-Host ".deb minor revision Number is: ${debVersionNumber}"
 
           mkdir -p deb-package/etc/monitoring-agent deb-package/usr/bin deb-package/lib/systemd/system
           cp -r ./DEBIAN ./deb-package
