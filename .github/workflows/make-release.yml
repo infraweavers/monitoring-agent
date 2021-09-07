@@ -172,6 +172,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-DEBIAN"
+          path: "DEBIAN"
 
       - name: download systemd unit file
         uses: actions/download-artifact@v2
