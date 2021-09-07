@@ -93,11 +93,11 @@ jobs:
 
       - name: create download folder
         run: |
-          mkdir -p ./download/$os-$arch-Go${goversion}
+          mkdir ./download
 
       - name: create release folder
         run: |
-          mkdir -p ./release/$os-$arch-Go${goversion}
+          mkdir ./release
 
       - name: download windows builds
         uses: actions/download-artifact@v2
