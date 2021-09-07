@@ -12,7 +12,7 @@
 <?endif ?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
   <Product Name="$(var.ProductName)" Id="*" UpgradeCode="$(var.UpgradeCode)"
-	Language='1033' Codepage='1252' Version='0.1.$(var.RevisionNumber)' Manufacturer='Codeweavers Ltd'>
+	Language='1033' Codepage='1252' Version='$(var.MajorVersion).$(var.MinorVersion).$(var.RevisionNumber)' Manufacturer='Codeweavers Ltd'>
 
 	<Package Id='*' Keywords='Installer' Description="$(var.ProductName) Installer - $(var.GitSha)"
 	  Comments='Copyright © 2021 Codeweavers Limited; Available under The MIT License' Manufacturer='Codeweavers Ltd'
