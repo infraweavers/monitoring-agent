@@ -224,9 +224,6 @@ jobs:
           arch=${{ matrix.arch }}
           goversion=${{ matrix.go-version }}
           
-          pwd
-          ls -al
-          
           mkdir -p deb-package/etc/monitoring-agent deb-package/usr/bin deb-package/lib/systemd/system
           cp -r ${{ env.SRCPATH }}/DEBIAN ./deb-package
           cp ${{ env.SRCPATH }}/configuration.json ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/cacert.pem ./deb-package/etc/monitoring-agent
