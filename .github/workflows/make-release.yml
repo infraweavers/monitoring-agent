@@ -75,9 +75,6 @@ jobs:
         arch: [386, amd64]
         
     runs-on: windows-latest
-      
-    env:
-        SRCPATH: ${{ github.workspace }}/go/src/monitoring-agent
 
     steps:
         
