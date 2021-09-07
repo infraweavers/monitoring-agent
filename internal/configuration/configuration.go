@@ -51,7 +51,8 @@ type JSONconfigServer struct {
 type JSONconfigSecurity struct {
 	DisableHTTPs                bool
 	SignedStdInOnly             bool
-	PublicKey                   minisign.PublicKey
+	PublicKey                   string
+	PublicKeyObject             minisign.PublicKey
 	AllowedAddresses            []string
 	WhitelistNetworks           []*net.IPNet
 	UseClientCertificates       bool
@@ -105,6 +106,12 @@ func Initialise(configurationDirectory string) {
 		Settings.Security.WhitelistNetworks = append(Settings.Security.WhitelistNetworks, network)
 	}
 
+	publicKeyObject, error := minisign.NewPublicKey(Settings.Security.PublicKey)
+	if error != nil {
+		panic(error)
+	}
+	Settings.Security.PublicKeyObject = publicKeyObject
+
 	Settings.Security.ClientCertificateCAFilePath = fixRelativePath(configurationDirectory, Settings.Security.ClientCertificateCAFile)
 
 }
@@ -131,7 +138,7 @@ func TestingInitialise() {
 	Settings.Authentication.Username = "test"
 	Settings.Authentication.Password = "secret"
 
-	Settings.Security.PublicKey, _ = minisign.NewPublicKey("RWTV8L06+shYI7Xw1H+NBGmsUYlbEkbrdYxr4c0ImLCAr8NGx75VhxGQ")
+	Settings.Security.PublicKeyObject, _ = minisign.NewPublicKey("RWTV8L06+shYI7Xw1H+NBGmsUYlbEkbrdYxr4c0ImLCAr8NGx75VhxGQ")
 
 	Settings.Security.WhitelistNetworks = []*net.IPNet{
 		{IP: net.IPv4(0, 0, 0, 0), Mask: net.IPv4Mask(0, 0, 0, 0)},

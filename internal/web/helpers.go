@@ -155,7 +155,7 @@ func verifySignature(stdin string, signature string) bool {
 		logwrapper.LogInfof("Signature Decoding error: %v", signatureError)
 	}
 
-	isValid, error := configuration.Settings.Security.PublicKey.Verify(stdinAsArray, signatureStruct)
+	isValid, error := configuration.Settings.Security.PublicKeyObject.Verify(stdinAsArray, signatureStruct)
 
 	if error != nil {
 		logwrapper.LogInfof("Signature Verification Error: %v", error)
