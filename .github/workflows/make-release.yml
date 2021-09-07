@@ -124,12 +124,12 @@ jobs:
           $msiRevisionNumber = ($response.Content | ConvertFrom-Json).total_commits
           Write-Host "MSI Revision Number is: ${msiRevisionNumber}"
           
-          Push-Location -Path download\$os-$arch-Go${goversion}-BIN
+          Push-Location -Path download\$os-$arch-Go${goversion}-${{ steps.short-sha.outputs.sha }}-BIN
           & 'C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe' .\monitoring-agent.wxs -arch $win_arch -dPlatform="$($win_arch)" -dRevisionNumber="$($msiRevisionNumber)" -dGitSha="${{ steps.short-sha.outputs.sha }}"
           & "C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" ".\monitoring-agent.wixobj"
           Pop-Location
           
-          Move-Item -Path ./download/$os-$arch-Go${goversion}-BIN/monitoring-agent.msi -Destination "./release/$os-$arch-Go${goversion}/monitoring-agent-$win_arch-Go${goversion}-${{ steps.short-sha.outputs.sha }}.msi"
+          Move-Item -Path ./download/$os-$arch-Go${goversion}-${{ steps.short-sha.outputs.sha }}-BIN/monitoring-agent.msi -Destination "./release/monitoring-agent-$win_arch-Go${goversion}-${{ steps.short-sha.outputs.sha }}.msi"
           
       - name: upload MSI
         uses: actions/upload-artifact@v2
