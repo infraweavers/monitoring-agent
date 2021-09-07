@@ -34,6 +34,12 @@ jobs:
         with:
           path: ${{ env.SRCPATH }}
 
+      - name: upload wix definition file
+        uses: actions/upload-artifact@v2
+        with:
+          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-wix-wxs"
+          path: ${{ env.SRCPATH }}/monitoring-agent.wxs
+
       - name: Dependencies & Build
         run: |
           os=${{ matrix.os }}
