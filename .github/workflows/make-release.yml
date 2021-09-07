@@ -11,17 +11,24 @@ jobs:
 
     outputs:
       revision: ${{ steps.get-revision.outputs.revision }}
+      minor: ${{ steps.get-revision.outputs.minor }}
 
     steps:
       - id: get-revision
-        
         run: |
           $firstCommitSha = "49cded61e36172578146ca1a7ae516540056d8b0"
           $lastCommitSha = ((Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/git/refs/heads/master -UseBasicParsing).Content | ConvertFrom-Json).object.sha
           $response = Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/compare/${firstCommitSha}...${lastCommitSha} -UseBasicParsing
           echo "::set-output name=revision::$( ($response.Content | ConvertFrom-Json).total_commits )"
-          
+
+      - id: get-minor-version
+        run: echo "::set-output name=minor::1"
+
+      - id: get-major-version
+        run: echo "::set-output name=minor::0"
+
   build-release:
+  
     strategy:
       matrix:
         go-version: [1.16.x, 1.17.x]
@@ -143,17 +150,17 @@ jobs:
           if ($arch -eq "386") { $win_arch = "x86" }
           Write-Host "Building MSI Installer For $os-$arch-Go${goversion}"
           
-          Write-Host "MSI minor revision Number is: ${{needs.get-version-number.outputs.revision}}"
+          Write-Host "MSI version is: ${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}"
           
-          & 'C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe' .\monitoring-agent.wxs -arch $win_arch -dPlatform="$($win_arch)" -dRevisionNumber="${{needs.get-version-number.outputs.revision}}" -dGitSha="${{ steps.short-sha.outputs.sha }}"
+          & 'C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe' .\monitoring-agent.wxs -arch $win_arch -dPlatform="$($win_arch)" -dMajorVersion="${{needs.get-version-number.outputs.major}}" -dMinorVersion-"${{needs.get-version-number.outputs.minor}}" -dRevisionNumber="${{needs.get-version-number.outputs.revision}}" -dGitSha="${{ steps.short-sha.outputs.sha }}"
           & "C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" ".\monitoring-agent.wixobj"
           
-          Move-Item -Path ./monitoring-agent.msi -Destination "./release/monitoring-agent-$win_arch-Go${goversion}-${{ steps.short-sha.outputs.sha }}.msi"
+          Move-Item -Path ./monitoring-agent.msi -Destination "./release/monitoring-agent-$win_arch-Go${goversion}-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ steps.short-sha.outputs.sha }}.msi"
           
       - id: upload-msi
         uses: actions/upload-artifact@v2
         with:
-          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-MSI"
+          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ steps.short-sha.outputs.sha }}-MSI"
           path: release/
 
   build-deb:
@@ -198,7 +205,7 @@ jobs:
           goversion=${{ matrix.go-version }}
           
           echo "Building .deb Installer For $os-$arch-Go${goversion}"
-          echo ".deb minor revision Number is: ${{needs.get-version-number.outputs.revision}}"
+          echo ".deb version is: ${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}"
 
           mkdir -p deb-package/etc/monitoring-agent deb-package/usr/bin deb-package/lib/systemd/system
           cp -r ./DEBIAN ./deb-package
@@ -214,10 +221,10 @@ jobs:
           chmod 755 deb-package/DEBIAN/postrm
           chmod 755 deb-package/DEBIAN/rules
           sudo chown -R root:root deb-package/
-          sudo dpkg-deb --build ./deb-package ~/linux-$arch-go$goversion-monitoring-agent-0.1.${{needs.get-version-number.outputs.revision}}.deb
+          sudo dpkg-deb --build ./deb-package ~/$arch-go$goversion-monitoring-agent-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ steps.short-sha.outputs.sha }}.deb
 
       - id: upload-deb
         uses: actions/upload-artifact@v2
         with:
-          name: "linux-${{ matrix.arch }}-go${{ matrix.go-version }}-monitoring-agent-${{ steps.short-sha.outputs.sha }}.deb"
-          path: ~/linux-${{ matrix.arch }}-go${{ matrix.go-version }}-monitoring-agent.deb
+          name: "${{ matrix.arch }}-go${{ matrix.go-version }}-monitoring-agent-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ steps.short-sha.outputs.sha }}.deb"
+          path: ~/${{ matrix.arch }}-go${{ matrix.go-version }}-monitoring-agent${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ steps.short-sha.outputs.sha }}.deb
