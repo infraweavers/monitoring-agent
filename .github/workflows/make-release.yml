@@ -64,6 +64,7 @@ jobs:
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-wix-wxs"
           path: "${{ env.SRCPATH }}/monitoring-agent.wxs"
+          if-no-files-found: error
           
       - id: upload-deb-build-files
         if: ${{ matrix.os == 'linux' }}
@@ -71,6 +72,7 @@ jobs:
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-DEBIAN"
           path: "${{ env.SRCPATH }}/DEBIAN"
+          if-no-files-found: error
 
       - id: upload-systemd-unit-file
         if: ${{ matrix.os == 'linux' }}
@@ -78,6 +80,7 @@ jobs:
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-systemd-unit-file"
           path: "${{ env.SRCPATH }}/monitoring-agent.service"
+          if-no-files-found: error
 
       - id: dependencies-and-build
         run: |
@@ -163,6 +166,7 @@ jobs:
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ steps.short-sha.outputs.sha }}-MSI"
           path: release/
+          if-no-files-found: error
 
   build-deb:
   
@@ -229,3 +233,4 @@ jobs:
         with:
           name: "${{ matrix.arch }}-go${{ matrix.go-version }}-monitoring-agent-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ steps.short-sha.outputs.sha }}.deb"
           path: ~/${{ matrix.arch }}-go${{ matrix.go-version }}-monitoring-agent${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ steps.short-sha.outputs.sha }}.deb
+          if-no-files-found: error
