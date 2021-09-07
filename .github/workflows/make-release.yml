@@ -65,7 +65,7 @@ jobs:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-BIN"
           path: release/
 
-  build-win-MSI-installer:
+  build-msi:
   
     needs: build-release
 
@@ -103,7 +103,7 @@ jobs:
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-wix-wxs"
 
-      - name: Create MSI Installer
+      - name: build msi
         run: |
           $os="${{ matrix.os }}"
           $arch="${{ matrix.arch }}"
@@ -130,7 +130,7 @@ jobs:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-MSI"
           path: release/
 
-  create-deb:
+  build-deb:
   
     strategy:
       matrix:
@@ -154,7 +154,7 @@ jobs:
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-BIN"
 
-      - name: create .deb
+      - name: build .deb
         run: |
           os=${{ matrix.os }}
           arch=${{ matrix.arch }}
