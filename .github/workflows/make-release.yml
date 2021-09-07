@@ -142,9 +142,6 @@ jobs:
   
     needs: build-release
 
-    env:
-        SRCPATH: ${{ github.workspace }}/go/src/mama
-
     steps:
 
       - uses: benjlevesque/short-sha@v1.2
@@ -164,16 +161,17 @@ jobs:
           goversion=${{ matrix.go-version }}
           
           mkdir -p deb-package/etc/monitoring-agent deb-package/usr/bin deb-package/lib/systemd/system
-          cp -r ${{ env.SRCPATH }}/DEBIAN ./deb-package
-          cp ${{ env.SRCPATH }}/configuration.json ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/cacert.pem ./deb-package/etc/monitoring-agent
-          cp ./release/$os-$arch-$goversion/monitoring-agent deb-package/usr/bin
-          cp ${{ env.SRCPATH }}/monitoring-agent.service deb-package/lib/systemd/system
+          cp -r ./DEBIAN ./deb-package
+          cp ./configuration.json ./server.crt ./server.key ./cacert.pem ./deb-package/etc/monitoring-agent
+          cp ./monitoring-agent deb-package/usr/bin
+          cp ./monitoring-agent.service deb-package/lib/systemd/system
           sed -i 's|"LogFilePath": "output.log",|"LogFilePath": "/var/log/monitoring-agent.log",|' deb-package/etc/monitoring-agent/configuration.json
           sed -i 's|Architecture: UPDATEME|Architecture: ${{ matrix.arch }}|' deb-package/DEBIAN/control
           
           chmod 600 deb-package/etc/monitoring-agent/*
           sudo chown -R root:root deb-package/
           sudo dpkg-deb --build ./deb-package ~/linux-$arch-go$goversion-monitoring-agent.deb
+
       - name: Upload .deb
         uses: actions/upload-artifact@v2
         with:
