@@ -119,7 +119,7 @@ jobs:
           GO111MODULE=on GOOS=$os GOARCH=$arch go build -o ${{ env.SRCPATH }}/monitoring-agent$suffix
           popd
           cp ${{ env.SRCPATH }}/monitoring-agent$suffix ./release/monitoring-agent$suffix
-      
+
       - id: upload-builds
         uses: actions/upload-artifact@v2
         with:
