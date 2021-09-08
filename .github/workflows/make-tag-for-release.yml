@@ -1,0 +1,30 @@
+name: Make Tag For Release
+
+on:
+  workflow_dispatch
+  
+jobs:
+
+  determine-release-version-number:
+
+    runs-on: windows-latest
+
+    outputs:
+      revision: ${{ steps.get-revision.outputs.revision }}
+      minor: ${{ steps.get-minor-version.outputs.minor }}
+      major: ${{ steps.get-major-version.outputs.major }}
+
+    steps:
+      - id: get-revision
+        run: |
+          $firstCommitSha = "49cded61e36172578146ca1a7ae516540056d8b0"
+          $lastCommitSha = ((Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/git/refs/heads/master -UseBasicParsing).Content | ConvertFrom-Json).object.sha
+          $response = Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/compare/${firstCommitSha}...${lastCommitSha} -UseBasicParsing
+          echo "::set-output name=revision::$( ($response.Content | ConvertFrom-Json).total_commits )"
+
+      - id: get-minor-version
+        run: echo "::set-output name=minor::1"
+
+      - id: get-major-version
+        run: echo "::set-output name=major::0"
+            
