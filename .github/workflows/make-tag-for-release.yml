@@ -28,18 +28,16 @@ jobs:
       - id: get-major-version
         run: echo "::set-output name=major::0"
             
-  create-tag:
+  tag-latest-revision:
   
     needs: get-release-version-number
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
 
-      - name: Create Tag
-        uses: negz/create-tag@v1
+      - id: make-tag
+        uses: tvdias/github-tagger@v0.0.1
         with:
-          version: "${{needs.get-release-version-number.outputs.major}}.${{needs.get-release-version-number.outputs.minor}}.${{needs.get-release-version-number.outputs.revision}}"
-          message: "Monitoring Agent Release ${{needs.get-release-version-number.outputs.major}}.${{needs.get-release-version-number.outputs.minor}}.${{needs.get-release-version-number.outputs.revision}}"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          tag: "${{needs.get-release-version-number.outputs.major}}.${{needs.get-release-version-number.outputs.minor}}.${{needs.get-release-version-number.outputs.revision}}"
+          
