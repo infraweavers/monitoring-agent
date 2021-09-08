@@ -116,6 +116,7 @@ jobs:
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-BIN"
           path: release/
+          if-no-files-found: error
 
   get-version-number:
 
@@ -260,6 +261,7 @@ jobs:
           chmod 755 deb-package/DEBIAN/rules
           sudo chown -R root:root deb-package/
           sudo dpkg-deb --build ./deb-package ~/$arch-go$goversion-monitoring-agent-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ steps.short-sha.outputs.sha }}.deb
+
       - id: upload-deb
         uses: actions/upload-artifact@v2
         with:
@@ -305,7 +307,6 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ steps.short-sha.outputs.sha }}-MSI"
-          if-no-files-found: error
 
       - id: upload-windows-msi-release-asset
         if: startsWith(github.ref, 'refs/tags/')
@@ -337,7 +338,6 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: "${{ matrix.arch }}-go${{ matrix.go-version }}-monitoring-agent-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ steps.short-sha.outputs.sha }}.deb"
-          if-no-files-found: error
 
       - id: upload-linux-deb-release-asset
         if: startsWith(github.ref, 'refs/tags/')
@@ -369,7 +369,6 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-BIN"
-          if-no-files-found: error
 
       - id: upload-binary-release-asset
         if: startsWith(github.ref, 'refs/tags/')
