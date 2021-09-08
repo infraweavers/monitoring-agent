@@ -1,6 +1,11 @@
 name: Test, Build, Package and Optionally Release
 
-on: [push, create]
+on:
+  push:
+    branches:
+      - "*"
+    tags:
+      - "*"
 
 jobs:
 
