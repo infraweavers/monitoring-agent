@@ -262,12 +262,6 @@ jobs:
           sudo chown -R root:root deb-package/
           sudo dpkg-deb --build ./deb-package ~/monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}.deb
 
-      - id: debug-10
-        run: |
-          echo $HOME
-          pwd
-          ls -al
-
       - id: upload-deb
         uses: actions/upload-artifact@v2
         with:
@@ -317,11 +311,6 @@ jobs:
         with:
           name: "monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}.msi"
 
-      - id: debug-1
-        run: |
-          pwd
-          ls -al
-
       - id: upload-windows-msi-release-asset
         if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-release-asset@v1
@@ -353,11 +342,6 @@ jobs:
         with:
           name: "monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}.deb"
 
-      - id: debug-2
-        run: |
-          pwd
-          ls -al
-
       - id: upload-linux-deb-release-asset
         if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-release-asset@v1
@@ -388,11 +372,6 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: "monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}-BIN"
-
-      - id: debug-3
-        run: |
-          pwd
-          ls -al
 
       - id: create-release-archive
         if: startsWith(github.ref, 'refs/tags/')
