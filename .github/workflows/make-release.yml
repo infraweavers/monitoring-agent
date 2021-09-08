@@ -286,6 +286,7 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: "./${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ steps.short-sha.outputs.sha }}.msi"
           asset_name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ steps.short-sha.outputs.sha }}.msi"
+          asset_content_type: application/octet-stream
 
   upload-linux-deb-assets:
 
@@ -317,6 +318,7 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: "./${{ matrix.arch }}-go${{ matrix.go-version }}-monitoring-agent-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ steps.short-sha.outputs.sha }}.deb"
           asset_name: "${{ matrix.arch }}-go${{ matrix.go-version }}-monitoring-agent-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ steps.short-sha.outputs.sha }}.deb"
+          asset_content_type: application/octet-stream
           
   upload-binary-release-assets:
 
@@ -348,4 +350,4 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: "./${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ steps.short-sha.outputs.sha }}-BIN"
           asset_name: "${{ matrix.arch }}-go${{ matrix.go-version }}-monitoring-agent-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ steps.short-sha.outputs.sha }}-BIN"
-          asset_content_type: application/gzip
+          asset_content_type: application/octet-stream
