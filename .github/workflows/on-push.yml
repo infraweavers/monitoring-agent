@@ -51,6 +51,35 @@ jobs:
         with:
           length: 7
 
+  get-version-number:
+
+    runs-on: windows-latest
+
+    needs: [build-release,get-commit-sha]
+
+    outputs:
+      revision: ${{ steps.get-revision.outputs.revision }}
+      minor: ${{ steps.get-minor-version.outputs.minor }}
+      major: ${{ steps.get-major-version.outputs.major }}
+      version-string: ${{ steps.get-major-version.outputs.version-string }}
+
+    steps:
+      - id: get-revision
+        run: |
+          $firstCommitSha = "49cded61e36172578146ca1a7ae516540056d8b0"
+          $lastCommitSha = ((Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/git/refs/heads/master -UseBasicParsing).Content | ConvertFrom-Json).object.sha
+          $response = Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/compare/${firstCommitSha}...${lastCommitSha} -UseBasicParsing
+          echo "::set-output name=revision::$( ($response.Content | ConvertFrom-Json).total_commits )"
+
+      - id: get-minor-version
+        run: echo "::set-output name=minor::1"
+
+      - id: get-major-version
+        run: echo "::set-output name=major::0"
+
+      - id: get-version-string
+        run: echo "::set-output name=version-string::${{steps.get-major-version.outputs.major}}.${{steps.get-minor-version.outputs.minor}}.${{steps.get-revision.outputs.revision}}-${{ needs.get-commit-sha.outputs.short-sha }}"
+
   build-release:
   
     strategy:
@@ -59,7 +88,7 @@ jobs:
         os: [linux, windows, freebsd]
         arch: [386, amd64]
 
-    needs: [test, get-commit-sha]
+    needs: [test, get-commit-sha, get-version-number]
 
     runs-on: ubuntu-latest
     
@@ -110,51 +139,28 @@ jobs:
           echo "Building $os-$arch-$goversion"
           
           suffix=$([ "$os" == "windows" ] && echo ".exe" || echo "")
-          mkdir ./release
-          cp ${{ env.SRCPATH }}/configuration.json ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ${{ env.SRCPATH }}/cacert.pem ./release/.
+          mkdir -p ./release/monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version-string}}-BIN
+          cp ${{ env.SRCPATH }}/configuration.json ${{ env.SRCPATH }}/LICENSE ${{ env.SRCPATH }}/server.crt ${{ env.SRCPATH }}/server.key ${{ env.SRCPATH }}/README.md ${{ env.SRCPATH }}/cacert.pem ./release/monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version-string}}-BIN/.
           
           pushd ${{ env.SRCPATH }}
           
           GO111MODULE=on GOOS=$os GOARCH=$arch go get ./...
           GO111MODULE=on GOOS=$os GOARCH=$arch go build -o ${{ env.SRCPATH }}/monitoring-agent$suffix
           popd
-          cp ${{ env.SRCPATH }}/monitoring-agent$suffix ./release/monitoring-agent$suffix
+          cp ${{ env.SRCPATH }}/monitoring-agent$suffix ./release/monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version-string}}-BIN/monitoring-agent$suffix
 
       - id: upload-builds
         uses: actions/upload-artifact@v2
         with:
-          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ needs.get-commit-sha.outputs.short-sha }}-BIN"
-          path: release/
+          name: "monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version-string}}-BIN"
+          path: release/monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version-string}}/
           if-no-files-found: error
 
-  get-version-number:
 
-    runs-on: windows-latest
-
-    needs: build-release
-
-    outputs:
-      revision: ${{ steps.get-revision.outputs.revision }}
-      minor: ${{ steps.get-minor-version.outputs.minor }}
-      major: ${{ steps.get-major-version.outputs.major }}
-
-    steps:
-      - id: get-revision
-        run: |
-          $firstCommitSha = "49cded61e36172578146ca1a7ae516540056d8b0"
-          $lastCommitSha = ((Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/git/refs/heads/master -UseBasicParsing).Content | ConvertFrom-Json).object.sha
-          $response = Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/compare/${firstCommitSha}...${lastCommitSha} -UseBasicParsing
-          echo "::set-output name=revision::$( ($response.Content | ConvertFrom-Json).total_commits )"
-
-      - id: get-minor-version
-        run: echo "::set-output name=minor::1"
-
-      - id: get-major-version
-        run: echo "::set-output name=major::0"
 
   build-msi:
   
-    needs: [get-commit-sha, get-version-number]
+    needs: [get-commit-sha, get-version-number, build-release]
 
     strategy:
       matrix:
@@ -191,19 +197,18 @@ jobs:
           
           $win_arch = "x64"
           if ($arch -eq "386") { $win_arch = "x86" }
-          Write-Host "Building MSI Installer For $os-$arch-Go${goversion}"
           
-          Write-Host "MSI version is: ${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}"
+          Write-Host "Building monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version-string}}.msi"
           
           & 'C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe' .\monitoring-agent.wxs -arch $win_arch -dPlatform="$($win_arch)" -dMajorVersion="${{needs.get-version-number.outputs.major}}" -dMinorVersion="${{needs.get-version-number.outputs.minor}}" -dRevisionNumber="${{needs.get-version-number.outputs.revision}}" -dGitSha="${{ needs.get-commit-sha.outputs.short-sha }}"
           & "C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" ".\monitoring-agent.wixobj"
           
-          Move-Item -Path ./monitoring-agent.msi -Destination "./release/monitoring-agent-$win_arch-Go${goversion}-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ needs.get-commit-sha.outputs.short-sha }}.msi"
+          Move-Item -Path ./monitoring-agent.msi -Destination "./release/monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version-string}}.msi"
           
       - id: upload-msi
         uses: actions/upload-artifact@v2
         with:
-          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ needs.get-commit-sha.outputs.short-sha }}.msi"
+          name: "monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version-string}}.msi"
           path: release/
           if-no-files-found: error
 
@@ -217,7 +222,7 @@ jobs:
 
     runs-on: ubuntu-latest
   
-    needs: [get-commit-sha, get-version-number]
+    needs: [get-commit-sha, get-version-number, build-release]
 
     steps:
 
@@ -239,11 +244,7 @@ jobs:
 
       - id: build-dotdeb
         run: |
-          os=${{ matrix.os }}
-          arch=${{ matrix.arch }}
-          goversion=${{ matrix.go-version }}
-          
-          echo "Building .deb Installer For $os-$arch-Go${goversion}"
+          echo "Building .deb Installer For ${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}"
           echo ".deb version is: ${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}"
           mkdir -p deb-package/etc/monitoring-agent deb-package/usr/bin deb-package/lib/systemd/system
           cp -r ./DEBIAN ./deb-package
@@ -259,13 +260,13 @@ jobs:
           chmod 755 deb-package/DEBIAN/postrm
           chmod 755 deb-package/DEBIAN/rules
           sudo chown -R root:root deb-package/
-          sudo dpkg-deb --build ./deb-package ~/$arch-go$goversion-monitoring-agent-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ needs.get-commit-sha.outputs.short-sha }}.deb
+          sudo dpkg-deb --build ./deb-package ~/monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version-string}}.deb
 
       - id: upload-deb
         uses: actions/upload-artifact@v2
         with:
-          name: "${{ matrix.arch }}-go${{ matrix.go-version }}-monitoring-agent-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ needs.get-commit-sha.outputs.short-sha }}.deb"
-          path: ~/${{ matrix.arch }}-go${{ matrix.go-version }}-monitoring-agent-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ needs.get-commit-sha.outputs.short-sha }}.deb
+          name: "monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version-string}}.deb"
+          path: "./monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version-string}}.deb"
           if-no-files-found: error
 
   make-release:
@@ -308,7 +309,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: actions/download-artifact@v2
         with:
-          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ needs.get-commit-sha.outputs.short-sha }}.msi"
+          name: "monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version-string}}.msi"
 
       - id: debug-1
         run: |
@@ -322,8 +323,8 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ needs.make-release.outputs.release-upload-url }}
-          asset_path: "./${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ needs.get-commit-sha.outputs.short-sha }}.msi"
-          asset_name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ needs.get-commit-sha.outputs.short-sha }}.msi"
+          asset_path: "./monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version-string}}.msi"
+          asset_name: "monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version-string}}.msi"
           asset_content_type: application/octet-stream
 
   upload-linux-deb-assets:
@@ -344,7 +345,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: actions/download-artifact@v2
         with:
-          name: "${{ matrix.arch }}-go${{ matrix.go-version }}-monitoring-agent-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ needs.get-commit-sha.outputs.short-sha }}.deb"
+          name: "monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version-string}}.deb"
 
       - id: debug-2
         run: |
@@ -358,8 +359,8 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ needs.make-release.outputs.release-upload-url }}
-          asset_path: "./${{ matrix.arch }}-go${{ matrix.go-version }}-monitoring-agent-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ needs.get-commit-sha.outputs.short-sha }}.deb"
-          asset_name: "${{ matrix.arch }}-go${{ matrix.go-version }}-monitoring-agent-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ needs.get-commit-sha.outputs.short-sha }}.deb"
+          asset_path: "./monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version-string}}.deb"
+          asset_name: "monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version-string}}.deb"
           asset_content_type: application/octet-stream
           
   upload-binary-release-assets:
@@ -380,7 +381,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: actions/download-artifact@v2
         with:
-          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ needs.get-commit-sha.outputs.short-sha }}-BIN"
+          name: "monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version-string}}-BIN"
 
       - id: debug-3
         run: |
@@ -394,6 +395,6 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ needs.make-release.outputs.release-upload-url }}
-          asset_path: "./${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ needs.get-commit-sha.outputs.short-sha }}-BIN"
-          asset_name: "${{ matrix.arch }}-go${{ matrix.go-version }}-monitoring-agent-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ needs.get-commit-sha.outputs.short-sha }}-BIN"
+          asset_path: "./monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version-string}}-BIN"
+          asset_name: "monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version-string}}-BIN"
           asset_content_type: application/octet-stream
