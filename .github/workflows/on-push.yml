@@ -46,11 +46,21 @@ jobs:
 
     steps:
         
-      - uses: benjlevesque/short-sha@v1.2
-        id: short-sha
+      - id: short-sha
+        uses: benjlevesque/short-sha@v1.2
         with:
           length: 7
 
+  echo-short-sha:
+  
+    needs: get-commit-sha
+    runs-on: ubuntu-latest
+    
+    steps:
+    
+      - id: echo-sha
+        run: "echo {{ needs.get-commit-sha.outputs.short-sha }}"
+    
   build-release:
   
     strategy:
