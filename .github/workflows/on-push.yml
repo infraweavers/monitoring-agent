@@ -203,7 +203,7 @@ jobs:
       - id: upload-msi
         uses: actions/upload-artifact@v2
         with:
-          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ needs.get-commit-sha.outputs.short-sha }}-MSI"
+          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ needs.get-commit-sha.outputs.short-sha }}.msi"
           path: release/
           if-no-files-found: error
 
@@ -308,7 +308,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: actions/download-artifact@v2
         with:
-          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ needs.get-commit-sha.outputs.short-sha }}-MSI"
+          name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ needs.get-commit-sha.outputs.short-sha }}.msi"
 
       - id: upload-windows-msi-release-asset
         if: startsWith(github.ref, 'refs/tags/')
