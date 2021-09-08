@@ -61,7 +61,7 @@ jobs:
       revision: ${{ steps.get-revision.outputs.revision }}
       minor: ${{ steps.get-minor-version.outputs.minor }}
       major: ${{ steps.get-major-version.outputs.major }}
-      version: ${{ steps.get-major-version.outputs.version }}
+      version: ${{ steps.get-version.outputs.version }}
 
     steps:
       - id: get-revision
