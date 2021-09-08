@@ -272,7 +272,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    needs: [get-commit-sha,build-msi,build-deb]
+    needs: [get-commit-sha,get-version-number,build-msi,build-deb]
     
     outputs:
       release-upload-url: ${{ steps.create-release.outputs.upload_url }}
