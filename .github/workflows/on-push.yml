@@ -278,7 +278,7 @@ jobs:
           tag_name: "${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}"
           
         env:
-          GITHUB_TOKEN: ${{ github.token }
+          GITHUB_TOKEN: ${{ github.token }}
 
   upload-windows-release-assets:
 
