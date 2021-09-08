@@ -78,7 +78,7 @@ jobs:
         run: echo "::set-output name=major::0"
 
       - id: get-version
-        run: echo "::set-output name=version::`"${{steps.get-major-version.outputs.major}}.${{steps.get-minor-version.outputs.minor}}.${{steps.get-revision.outputs.revision}}-${{ needs.get-commit-sha.outputs.short-sha }}`""
+        run: echo "::set-output name=version::${{steps.get-major-version.outputs.major}}.${{steps.get-minor-version.outputs.minor}}.${{steps.get-revision.outputs.revision}}-${{ needs.get-commit-sha.outputs.short-sha }}"
 
   build-release:
   
