@@ -262,11 +262,17 @@ jobs:
           sudo chown -R root:root deb-package/
           sudo dpkg-deb --build ./deb-package ~/monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}.deb
 
+      - id: debug-10
+        run: |
+          echo $HOME
+          pwd
+          ls -al
+
       - id: upload-deb
         uses: actions/upload-artifact@v2
         with:
           name: "monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}.deb"
-          path: "./monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}.deb"
+          path: "~/monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}.deb"
           if-no-files-found: error
 
   make-release:
