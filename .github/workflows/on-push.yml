@@ -310,6 +310,11 @@ jobs:
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ needs.get-commit-sha.outputs.short-sha }}.msi"
 
+      - id: debug-1
+        run: |
+          pwd
+          ls -al
+
       - id: upload-windows-msi-release-asset
         if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-release-asset@v1
@@ -341,6 +346,11 @@ jobs:
         with:
           name: "${{ matrix.arch }}-go${{ matrix.go-version }}-monitoring-agent-${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ needs.get-commit-sha.outputs.short-sha }}.deb"
 
+      - id: debug-2
+        run: |
+          pwd
+          ls -al
+
       - id: upload-linux-deb-release-asset
         if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-release-asset@v1
@@ -371,6 +381,11 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ needs.get-commit-sha.outputs.short-sha }}-BIN"
+
+      - id: debug-3
+        run: |
+          pwd
+          ls -al
 
       - id: upload-binary-release-asset
         if: startsWith(github.ref, 'refs/tags/')
