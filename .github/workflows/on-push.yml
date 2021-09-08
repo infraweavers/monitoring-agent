@@ -55,7 +55,7 @@ jobs:
 
     runs-on: windows-latest
 
-    needs: [build-release,get-commit-sha]
+    needs: get-commit-sha
 
     outputs:
       revision: ${{ steps.get-revision.outputs.revision }}
