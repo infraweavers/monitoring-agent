@@ -395,6 +395,7 @@ jobs:
           ls -al
 
       - id: create-release-archive
+        if: startsWith(github.ref, 'refs/tags/')
         run: tar cvzf ./monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}-BIN.tar.gz ./*
 
       - id: upload-binary-release-asset
