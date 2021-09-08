@@ -165,12 +165,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-        
-      - uses: benjlevesque/short-sha@v1.2
-        id: short-sha
-        with:
-          length: 7
-     
+
       - id: install-wix-tool-set
         run: |
           Invoke-WebRequest -UseBasicParsing -Uri https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311.exe -OutFile wix311.exe
@@ -225,11 +220,6 @@ jobs:
     needs: [get-commit-sha, get-version-number]
 
     steps:
-
-      - uses: benjlevesque/short-sha@v1.2
-        id: short-sha
-        with:
-          length: 7
 
       - id: download-linux-build
         uses: actions/download-artifact@v2
