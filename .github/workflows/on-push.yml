@@ -130,6 +130,7 @@ jobs:
           $lastCommitSha = ((Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/git/refs/heads/master -UseBasicParsing).Content | ConvertFrom-Json).object.sha
           $response = Invoke-WebRequest -uri https://api.github.com/repos/infraweavers/monitoring-agent/compare/${firstCommitSha}...${lastCommitSha} -UseBasicParsing
           echo "::set-output name=revision::$( ($response.Content | ConvertFrom-Json).total_commits )"
+
       - id: get-minor-version
         run: echo "::set-output name=minor::1"
 
