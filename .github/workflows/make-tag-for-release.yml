@@ -38,6 +38,6 @@ jobs:
       - id: make-tag
         uses: tvdias/github-tagger@v0.0.1
         with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          repo-token: "${{ secrets.INFRAWEAVERS_ACTION_PAT }}"
           tag: "${{needs.get-release-version-number.outputs.major}}.${{needs.get-release-version-number.outputs.minor}}.${{needs.get-release-version-number.outputs.revision}}"
           
