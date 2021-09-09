@@ -33,18 +33,6 @@ func Initialise(configurationDirectory string) {
 		panic(err)
 	}
 
-	// durationValue, parseError := time.ParseDuration(Settings.Server.HTTPRequestTimeout)
-	// if parseError != nil {
-	// 	panic(parseError)
-	// }
-	// Settings.Server.HTTPRequestTimeoutDuration = durationValue
-
-	// durationValue, parseError = time.ParseDuration(Settings.Server.DefaultScriptTimeout)
-	// if parseError != nil {
-	// 	panic(parseError)
-	// }
-	// Settings.Server.DefaultScriptTimeoutDuration = durationValue
-
 	for x := 0; x < len(Settings.Security.AllowedAddresses); x++ {
 		_, network, error := net.ParseCIDR(Settings.Security.AllowedAddresses[x])
 		if error != nil {
