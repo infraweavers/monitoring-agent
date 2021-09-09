@@ -48,9 +48,8 @@ type JSONconfigServer struct {
 type JSONconfigSecurity struct {
 	DisableHTTPs              bool
 	SignedStdInOnly           bool
-	PublicKey                 string             `json:"PublicKey" mandatory:"true"`
-	PublicKeyObject           minisign.PublicKey `json:"PublicKeyObject" mandatory:"true"`
-	AllowedAddresses          AllowedNetworks    `json:"AllowedAddresses" mandatory:"true"`
+	PublicKey                 Sig             `json:"PublicKey" mandatory:"true"`
+	AllowedAddresses          AllowedNetworks `json:"AllowedAddresses" mandatory:"true"`
 	UseClientCertificates     bool
 	ClientCertificateCAFile   ClientCertCA `json:"ClientCertificateCAFile" mandatory:"true"`
 	ApprovedPathArgumentsOnly bool
@@ -64,7 +63,7 @@ type JSONconfigPaths struct {
 	PrivateKeyPath         string `json:"PrivateKeyPath" mandatory:"true"`
 }
 
-func Unmarshal(data []byte, v interface{}) error {
+func unmarshal(data []byte, v interface{}) error {
 	err := json.Unmarshal(data, v)
 	if err != nil {
 		return err
@@ -95,7 +94,6 @@ func validateStruct(item interface{}) error {
 	}
 
 	for i := 0; i < value.NumField(); i++ {
-
 		field := value.Field(i)
 
 		if field.Kind() == reflect.Struct {
@@ -104,7 +102,6 @@ func validateStruct(item interface{}) error {
 				return err
 			}
 		} else {
-
 			name := value.Type().Field(i).Name
 			isMandatory, _ := strconv.ParseBool(value.Type().Field(i).Tag.Get("mandatory"))
 			isZero := value.Field(i).IsZero()
@@ -173,11 +170,30 @@ func (allowedNetworks *AllowedNetworks) UnmarshalJSON(b []byte) error {
 	}
 
 	for x := 0; x < len(unmarshalledJson); x++ {
-		_, network, error := net.ParseCIDR(unmarshalledJson[x])
-		if error != nil {
-			return error
+		_, network, err := net.ParseCIDR(unmarshalledJson[x])
+		if err != nil {
+			return err
 		}
 		allowedNetworks.CIDR = append(allowedNetworks.CIDR, network)
+	}
+	return nil
+}
+
+type Sig struct {
+	PubKey minisign.PublicKey
+}
+
+func (sig *Sig) UnmarshalJSON(b []byte) error {
+	var unmarshalledJson string
+
+	err := json.Unmarshal(b, &unmarshalledJson)
+	if err != nil {
+		return err
+	}
+
+	sig.PubKey, err = minisign.NewPublicKey(unmarshalledJson)
+	if err != nil {
+		return err
 	}
 
 	return nil
