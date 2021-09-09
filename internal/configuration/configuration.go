@@ -27,16 +27,12 @@ func Initialise(configurationDirectory string) {
 		panic(err)
 	}
 
-	err = Unmarshal(jsonFile, &Settings)
+	err = unmarshal(jsonFile, &Settings)
 	if err != nil {
 		panic(err)
 	}
 
-	publicKeyObject, error := minisign.NewPublicKey(Settings.Security.PublicKey)
-	if error != nil {
-		panic(error)
-	}
-	Settings.Security.PublicKeyObject = publicKeyObject
+	Settings.Logging.LogFilePath = fixRelativePath(configurationDirectory, Settings.Logging.LogFilePath)
 }
 
 func fixRelativePath(configurationDirectory string, filePath string) string {
@@ -61,7 +57,7 @@ func TestingInitialise() {
 	Settings.Authentication.Username = "test"
 	Settings.Authentication.Password = "secret"
 
-	Settings.Security.PublicKeyObject, _ = minisign.NewPublicKey("RWTV8L06+shYI7Xw1H+NBGmsUYlbEkbrdYxr4c0ImLCAr8NGx75VhxGQ")
+	Settings.Security.PublicKey.PubKey, _ = minisign.NewPublicKey("RWTV8L06+shYI7Xw1H+NBGmsUYlbEkbrdYxr4c0ImLCAr8NGx75VhxGQ")
 
 	Settings.Security.AllowedAddresses.CIDR = []*net.IPNet{
 		{IP: net.IPv4(0, 0, 0, 0), Mask: net.IPv4Mask(0, 0, 0, 0)},
