@@ -50,8 +50,7 @@ type JSONconfigSecurity struct {
 	SignedStdInOnly           bool
 	PublicKey                 string             `json:"PublicKey" mandatory:"true"`
 	PublicKeyObject           minisign.PublicKey `json:"PublicKeyObject" mandatory:"true"`
-	AllowedAddresses          []string           `json:"AllowedAddresses" mandatory:"true"`
-	WhitelistNetworks         []*net.IPNet
+	AllowedAddresses          AllowedNetworks    `json:"AllowedAddresses" mandatory:"true"`
 	UseClientCertificates     bool
 	ClientCertificateCAFile   ClientCertCA `json:"ClientCertificateCAFile" mandatory:"true"`
 	ApprovedPathArgumentsOnly bool
@@ -158,5 +157,28 @@ func (clientCertCA *ClientCertCA) UnmarshalJSON(b []byte) error {
 	}
 
 	clientCertCA.Path = fixRelativePath(Settings.Paths.ConfigurationDirectory, unmarshalledJson)
+	return nil
+}
+
+type AllowedNetworks struct {
+	CIDR []*net.IPNet
+}
+
+func (allowedNetworks *AllowedNetworks) UnmarshalJSON(b []byte) error {
+	var unmarshalledJson []string
+
+	err := json.Unmarshal(b, &unmarshalledJson)
+	if err != nil {
+		return err
+	}
+
+	for x := 0; x < len(unmarshalledJson); x++ {
+		_, network, error := net.ParseCIDR(unmarshalledJson[x])
+		if error != nil {
+			return error
+		}
+		allowedNetworks.CIDR = append(allowedNetworks.CIDR, network)
+	}
+
 	return nil
 }

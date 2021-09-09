@@ -174,7 +174,7 @@ func verifyRemoteHost(remoteAddr string) bool {
 	}
 
 	remoteIp := net.ParseIP(host)
-	allowedAddresses := configuration.Settings.Security.WhitelistNetworks
+	allowedAddresses := configuration.Settings.Security.AllowedAddresses.CIDR
 
 	for x := 0; x < len(allowedAddresses); x++ {
 		if allowedAddresses[x].Contains(remoteIp) {
