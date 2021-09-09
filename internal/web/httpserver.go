@@ -27,7 +27,7 @@ func LaunchServer() {
 	var clientAuthenticationMethod = tls.NoClientCert
 
 	clientCACertPool := x509.NewCertPool()
-	if configuration.Settings.Security.UseClientCertificates {
+	if *configuration.Settings.Security.UseClientCertificates {
 		clientAuthenticationMethod = tls.RequireAndVerifyClientCert
 		certificateContent, clientCALoaderror := ioutil.ReadFile(configuration.Settings.Security.ClientCertificateCAFile.Path)
 
@@ -56,10 +56,10 @@ func LaunchServer() {
 
 	logwrapper.LogInfof("Launching web server: https://%s", configuration.Settings.Server.BindAddress)
 
-	logwrapper.LogInfof("configuration.Settings.DisableHTTPs: %t", configuration.Settings.Security.DisableHTTPs)
-	if configuration.Settings.Security.DisableHTTPs {
-		logwrapper.LogCriticalf("!! The HTTP server is running insecurely due to 'configuration.Settings.DisableHTTPs'='%t'. This is not a recommended setting !!", configuration.Settings.Security.DisableHTTPs)
-		logwrapper.LogCritical("!! Re-enable HTTPs by setting 'DisableHTTPs' to 'true' as soon as possible !!")
+	logwrapper.LogInfof("configuration.Settings.DisableHTTPs: %t", *configuration.Settings.Security.DisableHTTPs)
+	if *configuration.Settings.Security.DisableHTTPs {
+		logwrapper.LogCriticalf("!! The HTTP server is running insecurely due to 'configuration.Settings.DisableHTTPs'='%t'. This is not a recommended setting !!", *configuration.Settings.Security.DisableHTTPs)
+		logwrapper.LogCritical("!! Re-enable HTTPs by setting 'DisableHTTPs' to 'false' as soon as possible !!")
 		err := server.ListenAndServe()
 		if err != nil {
 			logwrapper.Log.Panicf(err.Error())

@@ -23,8 +23,8 @@ func NewRouter() *mux.Router {
 			Handler(route.HandlerFunc)
 	}
 
-	logwrapper.LogInfof("configuration.Settings.LoadPprof: %t", configuration.Settings.Server.LoadPprof)
-	if configuration.Settings.Server.LoadPprof {
+	logwrapper.LogInfof("configuration.Settings.LoadPprof: %t", *configuration.Settings.Server.LoadPprof)
+	if *configuration.Settings.Server.LoadPprof {
 		logwrapper.LogDebugf("registering '/debug/pprof' route due to configuration")
 		router.PathPrefix("/debug/pprof").Handler(http.DefaultServeMux)
 	}
