@@ -30,13 +30,13 @@ func NewRouter() *mux.Router {
 	}
 
 	logwrapper.LogInfof("configuration.Settings.LogHTTPRequests: %t", configuration.Settings.Logging.LogHTTPRequests)
-	if configuration.Settings.Logging.LogHTTPRequests {
+	if isTrue(configuration.Settings.Logging.LogHTTPRequests) {
 		logwrapper.LogDebugf("appending httpRequestLogger middleware due to configuration")
 		router.Use(httpRequestLogger)
 	}
 
 	logwrapper.LogInfof("configuration.Settings.LogHTTPResponses: %t", configuration.Settings.Logging.LogHTTPResponses)
-	if configuration.Settings.Logging.LogHTTPResponses {
+	if isTrue(configuration.Settings.Logging.LogHTTPResponses) {
 		logwrapper.LogDebugf("appending httpResponseLogger middleware due to configuration")
 		router.Use(httpResponseLogger)
 	}
@@ -48,4 +48,11 @@ func NewRouter() *mux.Router {
 	router.Use(BasicAuth)
 
 	return router
+}
+
+func isTrue(v *bool) bool {
+	if v != nil {
+		return true
+	}
+	return false
 }

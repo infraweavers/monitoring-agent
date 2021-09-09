@@ -32,8 +32,8 @@ type JSONconfigLogging struct {
 	LogLevel                        string `json:"LogLevel" mandatory:"true"`
 	LogArchiveFilesToRetain         int    `json:"LogArchiveFilesToRetain" mandatory:"true"`
 	LogRotationThresholdInMegaBytes int    `json:"LogRotationThresholdInMegaBytes" mandatory:"true"`
-	LogHTTPRequests                 bool
-	LogHTTPResponses                bool
+	LogHTTPRequests                 *bool  `json:"LogHTTPRequests,omitempty" mandatory:"true"`
+	LogHTTPResponses                *bool  `json:"LogHTTPResponses,omitempty" mandatory:"true"`
 }
 
 // JSONconfigServer is a struct for unmarshalling the configuration.json file, server section
