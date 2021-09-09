@@ -48,7 +48,7 @@ type JSONconfigServer struct {
 type JSONconfigSecurity struct {
 	DisableHTTPs              bool
 	SignedStdInOnly           bool
-	PublicKey                 Sig             `json:"PublicKey" mandatory:"true"`
+	MiniSign                  MiniSign        `json:"PublicKey" mandatory:"true"`
 	AllowedAddresses          AllowedNetworks `json:"AllowedAddresses" mandatory:"true"`
 	UseClientCertificates     bool
 	ClientCertificateCAFile   ClientCertCA `json:"ClientCertificateCAFile" mandatory:"true"`
@@ -179,11 +179,11 @@ func (allowedNetworks *AllowedNetworks) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-type Sig struct {
-	PubKey minisign.PublicKey
+type MiniSign struct {
+	minisign.PublicKey
 }
 
-func (sig *Sig) UnmarshalJSON(b []byte) error {
+func (ms *MiniSign) UnmarshalJSON(b []byte) error {
 	var unmarshalledJson string
 
 	err := json.Unmarshal(b, &unmarshalledJson)
@@ -191,7 +191,7 @@ func (sig *Sig) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
-	sig.PubKey, err = minisign.NewPublicKey(unmarshalledJson)
+	ms.PublicKey, err = minisign.NewPublicKey(unmarshalledJson)
 	if err != nil {
 		return err
 	}
