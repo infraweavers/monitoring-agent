@@ -1,7 +1,6 @@
 package configuration
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"net"
 	"os"
@@ -11,63 +10,6 @@ import (
 
 	"github.com/jedisct1/go-minisign"
 )
-
-// JSONconfig is a struct for unmarshalling the configuration.json file
-type JSONconfig struct {
-	Authentication JSONconfigAuthentication `json:"Authentication"`
-	Logging        JSONconfigLogging        `json:"Logging"`
-	Server         JSONconfigServer         `json:"Server"`
-	Security       JSONconfigSecurity       `json:"Security"`
-	Paths          JSONconfigPaths          `json:"Paths"`
-}
-
-// JSONconfigAuthentication is a struct for unmarshalling the configuration.json file
-type JSONconfigAuthentication struct {
-	Username string
-	Password string
-}
-
-// JSONconfigLogging is a struct for unmarshalling the configuration.json file, server section
-type JSONconfigLogging struct {
-	LogFilePath                     string
-	LogLevel                        string
-	LogArchiveFilesToRetain         int
-	LogRotationThresholdInMegaBytes int
-	LogHTTPRequests                 bool
-	LogHTTPResponses                bool
-}
-
-// JSONconfigServer is a struct for unmarshalling the configuration.json file, server section
-type JSONconfigServer struct {
-	HTTPRequestTimeout           string
-	HTTPRequestTimeoutDuration   time.Duration
-	DefaultScriptTimeout         string
-	DefaultScriptTimeoutDuration time.Duration
-	BindAddress                  string
-	LoadPprof                    bool
-}
-
-// JSONconfigSecurity is a struct for unmarshalling the configuration.json file
-type JSONconfigSecurity struct {
-	DisableHTTPs                bool
-	SignedStdInOnly             bool
-	PublicKey                   string
-	PublicKeyObject             minisign.PublicKey
-	AllowedAddresses            []string
-	WhitelistNetworks           []*net.IPNet
-	UseClientCertificates       bool
-	ClientCertificateCAFile     string
-	ClientCertificateCAFilePath string
-	ApprovedPathArgumentsOnly   bool
-	ApprovedPathArguments       map[string][][]string
-}
-
-// JSONconfigPaths is a struct for unmarshalling the configuration.json file
-type JSONconfigPaths struct {
-	ConfigurationDirectory string
-	CertificatePath        string
-	PrivateKeyPath         string
-}
 
 // Settings is the loaded/updated settings from the configuration file
 var Settings = JSONconfig{}
@@ -80,10 +22,15 @@ func Initialise(configurationDirectory string) {
 	Settings.Paths.PrivateKeyPath = filepath.FromSlash(configurationDirectory + "/server.key")
 
 	var configurationFileJSON = filepath.FromSlash(configurationDirectory + "/configuration.json")
-	jsonFile, jsonErr := ioutil.ReadFile(configurationFileJSON)
-	json.Unmarshal(jsonFile, &Settings)
-	if jsonErr != nil {
-		panic(jsonErr)
+	jsonFile, err := ioutil.ReadFile(configurationFileJSON)
+	if err != nil {
+		panic(err)
+	}
+
+	// json.Unmarshal(jsonFile, &Settings)
+	err = Unmarshal(jsonFile, &Settings)
+	if err != nil {
+		panic(err)
 	}
 
 	durationValue, parseError := time.ParseDuration(Settings.Server.HTTPRequestTimeout)
