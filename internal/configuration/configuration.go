@@ -27,7 +27,6 @@ func Initialise(configurationDirectory string) {
 		panic(err)
 	}
 
-	// json.Unmarshal(jsonFile, &Settings)
 	err = Unmarshal(jsonFile, &Settings)
 	if err != nil {
 		panic(err)
