@@ -19,7 +19,7 @@ func LaunchServer() {
 	}
 
 	logwrapper.LogInfof("configuration.Settings.HTTPRequestTimeout: %v", configuration.Settings.Server.HTTPRequestTimeout)
-	var requestTimeout = configuration.Settings.Server.HTTPRequestTimeoutDuration
+	var requestTimeout = configuration.Settings.Server.HTTPRequestTimeout.Duration
 
 	router := NewRouter()
 	handlerWithTimeout := http.TimeoutHandler(router, requestTimeout, "Request Timeout\n")

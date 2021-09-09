@@ -33,17 +33,17 @@ func Initialise(configurationDirectory string) {
 		panic(err)
 	}
 
-	durationValue, parseError := time.ParseDuration(Settings.Server.HTTPRequestTimeout)
-	if parseError != nil {
-		panic(parseError)
-	}
-	Settings.Server.HTTPRequestTimeoutDuration = durationValue
+	// durationValue, parseError := time.ParseDuration(Settings.Server.HTTPRequestTimeout)
+	// if parseError != nil {
+	// 	panic(parseError)
+	// }
+	// Settings.Server.HTTPRequestTimeoutDuration = durationValue
 
-	durationValue, parseError = time.ParseDuration(Settings.Server.DefaultScriptTimeout)
-	if parseError != nil {
-		panic(parseError)
-	}
-	Settings.Server.DefaultScriptTimeoutDuration = durationValue
+	// durationValue, parseError = time.ParseDuration(Settings.Server.DefaultScriptTimeout)
+	// if parseError != nil {
+	// 	panic(parseError)
+	// }
+	// Settings.Server.DefaultScriptTimeoutDuration = durationValue
 
 	for x := 0; x < len(Settings.Security.AllowedAddresses); x++ {
 		_, network, error := net.ParseCIDR(Settings.Security.AllowedAddresses[x])
@@ -79,8 +79,8 @@ func TestingInitialise() {
 	Initialise(configurationDirectory)
 
 	Settings.Server.BindAddress = "127.0.0.1:9000"
-	Settings.Server.HTTPRequestTimeoutDuration = time.Second * 11
-	Settings.Server.DefaultScriptTimeoutDuration = time.Second * 10
+	Settings.Server.HTTPRequestTimeout.Duration = time.Second * 11
+	Settings.Server.DefaultScriptTimeout.Duration = time.Second * 10
 
 	Settings.Authentication.Username = "test"
 	Settings.Authentication.Password = "secret"

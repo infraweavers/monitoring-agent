@@ -38,12 +38,10 @@ type JSONconfigLogging struct {
 
 // JSONconfigServer is a struct for unmarshalling the configuration.json file, server section
 type JSONconfigServer struct {
-	HTTPRequestTimeout           string `json:"HTTPRequestTimeout" mandatory:"true"`
-	HTTPRequestTimeoutDuration   time.Duration
-	DefaultScriptTimeout         string
-	DefaultScriptTimeoutDuration time.Duration
-	BindAddress                  string
-	LoadPprof                    bool
+	HTTPRequestTimeout   Duration
+	DefaultScriptTimeout Duration
+	BindAddress          string
+	LoadPprof            bool
 }
 
 // JSONconfigSecurity is a struct for unmarshalling the configuration.json file
@@ -119,4 +117,33 @@ func validateStruct(item interface{}) error {
 		}
 	}
 	return nil
+}
+
+type Duration struct {
+	time.Duration
+}
+
+func (duration *Duration) UnmarshalJSON(b []byte) error {
+	var v interface{}
+	if err := json.Unmarshal(b, &v); err != nil {
+		return err
+	}
+	switch value := v.(type) {
+	case float64:
+		duration.Duration = time.Duration(value)
+		return nil
+	case string:
+		var err error
+		d.Duration, err = time.ParseDuration(value)
+		if err != nil {
+			return err
+		}
+		return nil
+	default:
+		return fmt.Errorf("invalid duration")
+	}
+}
+
+type Message struct {
+	Elapsed Duration `json:"elapsed"`
 }
