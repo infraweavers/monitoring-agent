@@ -48,7 +48,7 @@ func APIV1RunscriptstdinPostHandler(responseWriter http.ResponseWriter, request 
 		if script.StdInSignature == "" {
 			responseWriter.WriteHeader(http.StatusBadRequest)
 			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Only signed stdin can be executed", http.StatusBadRequest)))
-			logwrapper.LogWarningf("Attempt to execute script with no signature when configuration.Seetings.SignedStdInOnly is %t: '%s' '%s' ", configuration.Settings.Security.SignedStdInOnly, request.RemoteAddr, request.UserAgent())
+			logwrapper.LogWarningf("Attempt to execute script with no signature when configuration.Settings.SignedStdInOnly is %t: '%s' '%s' ", configuration.Settings.Security.SignedStdInOnly, request.RemoteAddr, request.UserAgent())
 			return
 		}
 		if !verifySignature(script.StdIn, script.StdInSignature) {
