@@ -102,12 +102,11 @@ func validateStruct(item interface{}) error {
 				return err
 			}
 		} else {
-			name := value.Type().Field(i).Name
 			isMandatory, _ := strconv.ParseBool(value.Type().Field(i).Tag.Get("mandatory"))
 			isZero := value.Field(i).IsZero()
 
 			if isMandatory && isZero {
-				return fmt.Errorf("%s not set when tagged with 'mandatory:\"true\"'", name)
+				return fmt.Errorf("%s not set when tagged with 'mandatory:\"true\"'", value.Type().Field(i).Name)
 			}
 		}
 	}
