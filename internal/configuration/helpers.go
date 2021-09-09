@@ -41,17 +41,17 @@ type JSONconfigServer struct {
 	HTTPRequestTimeout   Duration `json:"HTTPRequestTimeout" mandatory:"true"`
 	DefaultScriptTimeout Duration `json:"DefaultScriptTimeout" mandatory:"true"`
 	BindAddress          string   `json:"BindAddress" mandatory:"true"`
-	LoadPprof            bool
+	LoadPprof            *bool    `json:"LoadPprof,omitempty" mandatory:"true"`
 }
 
 // JSONconfigSecurity is a struct for unmarshalling the configuration.json file
 type JSONconfigSecurity struct {
-	DisableHTTPs              bool
-	SignedStdInOnly           bool
+	DisableHTTPs              *bool           `json:"DisableHTTPs,omitempty" mandatory:"true"`
+	SignedStdInOnly           *bool           `json:"SignedStdInOnly,omitempty" mandatory:"true"`
 	MiniSign                  MiniSign        `json:"PublicKey" mandatory:"true"`
 	AllowedAddresses          AllowedNetworks `json:"AllowedAddresses" mandatory:"true"`
-	UseClientCertificates     bool
-	ClientCertificateCAFile   ClientCertCA `json:"ClientCertificateCAFile" mandatory:"true"`
+	UseClientCertificates     *bool           `json:"UseClientCertificates,omitempty" mandatory:"true"`
+	ClientCertificateCAFile   ClientCertCA    `json:"ClientCertificateCAFile" mandatory:"true"`
 	ApprovedPathArgumentsOnly bool
 	ApprovedPathArguments     map[string][][]string `json:"ApprovedPathArguments" mandatory:"true"`
 }
