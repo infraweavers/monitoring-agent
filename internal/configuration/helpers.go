@@ -38,8 +38,8 @@ type JSONconfigLogging struct {
 
 // JSONconfigServer is a struct for unmarshalling the configuration.json file, server section
 type JSONconfigServer struct {
-	HTTPRequestTimeout   Duration
-	DefaultScriptTimeout Duration
+	HTTPRequestTimeout   Duration `json:"HTTPRequestTimeout" mandatory:"true"`
+	DefaultScriptTimeout Duration `json:"DefaultScriptTimeout" mandatory:"true"`
 	BindAddress          string
 	LoadPprof            bool
 }
