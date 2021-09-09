@@ -57,7 +57,7 @@ func TestingInitialise() {
 	Settings.Authentication.Username = "test"
 	Settings.Authentication.Password = "secret"
 
-	Settings.Security.PublicKey.PubKey, _ = minisign.NewPublicKey("RWTV8L06+shYI7Xw1H+NBGmsUYlbEkbrdYxr4c0ImLCAr8NGx75VhxGQ")
+	Settings.Security.MiniSign.PublicKey, _ = minisign.NewPublicKey("RWTV8L06+shYI7Xw1H+NBGmsUYlbEkbrdYxr4c0ImLCAr8NGx75VhxGQ")
 
 	Settings.Security.AllowedAddresses.CIDR = []*net.IPNet{
 		{IP: net.IPv4(0, 0, 0, 0), Mask: net.IPv4Mask(0, 0, 0, 0)},
