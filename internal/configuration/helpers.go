@@ -40,7 +40,7 @@ type JSONconfigLogging struct {
 type JSONconfigServer struct {
 	HTTPRequestTimeout   Duration `json:"HTTPRequestTimeout" mandatory:"true"`
 	DefaultScriptTimeout Duration `json:"DefaultScriptTimeout" mandatory:"true"`
-	BindAddress          string
+	BindAddress          string   `json:"BindAddress" mandatory:"true"`
 	LoadPprof            bool
 }
 
