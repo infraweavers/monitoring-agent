@@ -28,17 +28,17 @@ type JSONconfigAuthentication struct {
 
 // JSONconfigLogging is a struct for unmarshalling the configuration.json file, server section
 type JSONconfigLogging struct {
-	LogFilePath                     string
-	LogLevel                        string
-	LogArchiveFilesToRetain         int
-	LogRotationThresholdInMegaBytes int
+	LogFilePath                     string `json:"LogFilePath" mandatory:"true"`
+	LogLevel                        string `json:"LogLevel" mandatory:"true"`
+	LogArchiveFilesToRetain         int    `json:"LogArchiveFilesToRetain" mandatory:"true"`
+	LogRotationThresholdInMegaBytes int    `json:"LogRotationThresholdInMegaBytes" mandatory:"true"`
 	LogHTTPRequests                 bool
 	LogHTTPResponses                bool
 }
 
 // JSONconfigServer is a struct for unmarshalling the configuration.json file, server section
 type JSONconfigServer struct {
-	HTTPRequestTimeout           string
+	HTTPRequestTimeout           string `json:"HTTPRequestTimeout" mandatory:"true"`
 	HTTPRequestTimeoutDuration   time.Duration
 	DefaultScriptTimeout         string
 	DefaultScriptTimeoutDuration time.Duration
@@ -50,22 +50,22 @@ type JSONconfigServer struct {
 type JSONconfigSecurity struct {
 	DisableHTTPs                bool
 	SignedStdInOnly             bool
-	PublicKey                   string
-	PublicKeyObject             minisign.PublicKey
-	AllowedAddresses            []string
+	PublicKey                   string             `json:"PublicKey" mandatory:"true"`
+	PublicKeyObject             minisign.PublicKey `json:"PublicKeyObject" mandatory:"true"`
+	AllowedAddresses            []string           `json:"AllowedAddresses" mandatory:"true"`
 	WhitelistNetworks           []*net.IPNet
 	UseClientCertificates       bool
-	ClientCertificateCAFile     string
+	ClientCertificateCAFile     string `json:"ClientCertificateCAFile" mandatory:"true"`
 	ClientCertificateCAFilePath string
 	ApprovedPathArgumentsOnly   bool
-	ApprovedPathArguments       map[string][][]string
+	ApprovedPathArguments       map[string][][]string `json:"ApprovedPathArguments" mandatory:"true"`
 }
 
 // JSONconfigPaths is a struct for unmarshalling the configuration.json file
 type JSONconfigPaths struct {
-	ConfigurationDirectory string
-	CertificatePath        string
-	PrivateKeyPath         string
+	ConfigurationDirectory string `json:"ConfigurationDirectory" mandatory:"true"`
+	CertificatePath        string `json:"CertificatePath" mandatory:"true"`
+	PrivateKeyPath         string `json:"PrivateKeyPath" mandatory:"true"`
 }
 
 func Unmarshal(data []byte, v interface{}) error {
@@ -109,10 +109,12 @@ func validateStruct(item interface{}) error {
 			}
 		} else {
 
-			fieldMandatory, _ := strconv.ParseBool(value.Type().Field(i).Tag.Get("mandatory"))
+			name := value.Type().Field(i).Name
+			isMandatory, _ := strconv.ParseBool(value.Type().Field(i).Tag.Get("mandatory"))
+			isZero := value.Field(i).IsZero()
 
-			if fieldMandatory && value.Field(i).IsZero() {
-				return fmt.Errorf("%s not set when tagged with 'mandatory:\"true\"'", value.Type().Field(i).Name)
+			if isMandatory && isZero {
+				return fmt.Errorf("%s not set when tagged with 'mandatory:\"true\"'", name)
 			}
 		}
 	}
