@@ -120,30 +120,29 @@ func validateStruct(item interface{}) error {
 }
 
 type Duration struct {
-	time.Duration
+	Duration time.Duration
 }
 
 func (duration *Duration) UnmarshalJSON(b []byte) error {
-	var v interface{}
-	if err := json.Unmarshal(b, &v); err != nil {
+	var unmarshalledJson interface{}
+
+	err := json.Unmarshal(b, &unmarshalledJson)
+	if err != nil {
 		return err
 	}
-	switch value := v.(type) {
+
+	switch value := unmarshalledJson.(type) {
 	case float64:
 		duration.Duration = time.Duration(value)
-		return nil
 	case string:
 		var err error
-		d.Duration, err = time.ParseDuration(value)
+		duration.Duration, err = time.ParseDuration(value)
 		if err != nil {
 			return err
 		}
-		return nil
 	default:
 		return fmt.Errorf("invalid duration")
 	}
-}
 
-type Message struct {
-	Elapsed Duration `json:"elapsed"`
+	return nil
 }
