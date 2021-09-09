@@ -46,9 +46,6 @@ func Initialise(configurationDirectory string) {
 		panic(error)
 	}
 	Settings.Security.PublicKeyObject = publicKeyObject
-
-	Settings.Security.ClientCertificateCAFilePath = fixRelativePath(configurationDirectory, Settings.Security.ClientCertificateCAFile)
-
 }
 
 func fixRelativePath(configurationDirectory string, filePath string) string {

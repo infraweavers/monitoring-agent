@@ -46,17 +46,16 @@ type JSONconfigServer struct {
 
 // JSONconfigSecurity is a struct for unmarshalling the configuration.json file
 type JSONconfigSecurity struct {
-	DisableHTTPs                bool
-	SignedStdInOnly             bool
-	PublicKey                   string             `json:"PublicKey" mandatory:"true"`
-	PublicKeyObject             minisign.PublicKey `json:"PublicKeyObject" mandatory:"true"`
-	AllowedAddresses            []string           `json:"AllowedAddresses" mandatory:"true"`
-	WhitelistNetworks           []*net.IPNet
-	UseClientCertificates       bool
-	ClientCertificateCAFile     string `json:"ClientCertificateCAFile" mandatory:"true"`
-	ClientCertificateCAFilePath string
-	ApprovedPathArgumentsOnly   bool
-	ApprovedPathArguments       map[string][][]string `json:"ApprovedPathArguments" mandatory:"true"`
+	DisableHTTPs              bool
+	SignedStdInOnly           bool
+	PublicKey                 string             `json:"PublicKey" mandatory:"true"`
+	PublicKeyObject           minisign.PublicKey `json:"PublicKeyObject" mandatory:"true"`
+	AllowedAddresses          []string           `json:"AllowedAddresses" mandatory:"true"`
+	WhitelistNetworks         []*net.IPNet
+	UseClientCertificates     bool
+	ClientCertificateCAFile   ClientCertCA `json:"ClientCertificateCAFile" mandatory:"true"`
+	ApprovedPathArgumentsOnly bool
+	ApprovedPathArguments     map[string][][]string `json:"ApprovedPathArguments" mandatory:"true"`
 }
 
 // JSONconfigPaths is a struct for unmarshalling the configuration.json file
@@ -120,7 +119,7 @@ func validateStruct(item interface{}) error {
 }
 
 type Duration struct {
-	Duration time.Duration
+	time.Duration
 }
 
 func (duration *Duration) UnmarshalJSON(b []byte) error {
@@ -135,7 +134,6 @@ func (duration *Duration) UnmarshalJSON(b []byte) error {
 	case float64:
 		duration.Duration = time.Duration(value)
 	case string:
-		var err error
 		duration.Duration, err = time.ParseDuration(value)
 		if err != nil {
 			return err
@@ -144,5 +142,21 @@ func (duration *Duration) UnmarshalJSON(b []byte) error {
 		return fmt.Errorf("invalid duration")
 	}
 
+	return nil
+}
+
+type ClientCertCA struct {
+	Path string
+}
+
+func (clientCertCA *ClientCertCA) UnmarshalJSON(b []byte) error {
+	var unmarshalledJson string
+
+	err := json.Unmarshal(b, &unmarshalledJson)
+	if err != nil {
+		return err
+	}
+
+	clientCertCA.Path = fixRelativePath(Settings.Paths.ConfigurationDirectory, unmarshalledJson)
 	return nil
 }
