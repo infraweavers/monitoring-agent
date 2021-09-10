@@ -28,12 +28,12 @@ type JSONconfigAuthentication struct {
 
 // JSONconfigLogging is a struct for unmarshalling the configuration.json file, server section
 type JSONconfigLogging struct {
-	LogFilePath                     string `json:"LogFilePath" mandatory:"true"`
-	LogLevel                        string `json:"LogLevel" mandatory:"true"`
-	LogArchiveFilesToRetain         int    `json:"LogArchiveFilesToRetain" mandatory:"true"`
-	LogRotationThresholdInMegaBytes int    `json:"LogRotationThresholdInMegaBytes" mandatory:"true"`
-	LogHTTPRequests                 *bool  `json:"LogHTTPRequests,omitempty" mandatory:"true"`
-	LogHTTPResponses                *bool  `json:"LogHTTPResponses,omitempty" mandatory:"true"`
+	LogFilePath                     string   `json:"LogFilePath" mandatory:"true"`
+	LogLevel                        string   `json:"LogLevel" mandatory:"true"`
+	LogArchiveFilesToRetain         int      `json:"LogArchiveFilesToRetain" mandatory:"true"`
+	LogRotationThresholdInMegaBytes int      `json:"LogRotationThresholdInMegaBytes" mandatory:"true"`
+	LogHTTPRequests                 NullBool `json:"LogHTTPRequests,omitempty" mandatory:"true"`
+	LogHTTPResponses                NullBool `json:"LogHTTPResponses,omitempty" mandatory:"true"`
 }
 
 // JSONconfigServer is a struct for unmarshalling the configuration.json file, server section
@@ -41,18 +41,18 @@ type JSONconfigServer struct {
 	HTTPRequestTimeout   Duration `json:"HTTPRequestTimeout" mandatory:"true"`
 	DefaultScriptTimeout Duration `json:"DefaultScriptTimeout" mandatory:"true"`
 	BindAddress          string   `json:"BindAddress" mandatory:"true"`
-	LoadPprof            *bool    `json:"LoadPprof,omitempty" mandatory:"true"`
+	LoadPprof            NullBool `json:"LoadPprof,omitempty" mandatory:"true"`
 }
 
 // JSONconfigSecurity is a struct for unmarshalling the configuration.json file
 type JSONconfigSecurity struct {
-	DisableHTTPs              *bool           `json:"DisableHTTPs,omitempty" mandatory:"true"`
-	SignedStdInOnly           *bool           `json:"SignedStdInOnly,omitempty" mandatory:"true"`
+	DisableHTTPs              NullBool        `json:"DisableHTTPs,omitempty" mandatory:"true"`
+	SignedStdInOnly           NullBool        `json:"SignedStdInOnly,omitempty" mandatory:"true"`
 	MiniSign                  MiniSign        `json:"PublicKey" mandatory:"true"`
 	AllowedAddresses          AllowedNetworks `json:"AllowedAddresses" mandatory:"true"`
-	UseClientCertificates     *bool           `json:"UseClientCertificates,omitempty" mandatory:"true"`
+	UseClientCertificates     NullBool        `json:"UseClientCertificates,omitempty" mandatory:"true"`
 	ClientCertificateCAFile   ClientCertCA    `json:"ClientCertificateCAFile" mandatory:"true"`
-	ApprovedPathArgumentsOnly bool
+	ApprovedPathArgumentsOnly NullBool
 	ApprovedPathArguments     map[string][][]string `json:"ApprovedPathArguments" mandatory:"true"`
 }
 
@@ -69,10 +69,10 @@ func unmarshal(data []byte, v interface{}) error {
 		return err
 	}
 
-	err = validateStruct(v)
-	if err != nil {
-		return err
-	}
+	// err = validateStruct(v)
+	// if err != nil {
+	// 	return err
+	// }
 
 	return nil
 }
@@ -194,6 +194,25 @@ func (ms *MiniSign) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
+
+	return nil
+}
+
+type NullBool struct {
+	IsTrue   bool
+	HasValue bool
+}
+
+func (nullBool *NullBool) UnmarshalJSON(b []byte) error {
+	var unmarshalledJson bool
+
+	err := json.Unmarshal(b, &unmarshalledJson)
+	if err != nil {
+		return err
+	}
+
+	nullBool.IsTrue = unmarshalledJson
+	nullBool.HasValue = true
 
 	return nil
 }

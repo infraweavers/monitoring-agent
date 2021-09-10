@@ -6,7 +6,7 @@
     "Logging": {
         "LogFilePath": "output.log",
         "LogLevel": "INFO",
-        "LogArchiveFilesToRetain": 10,
+        "LogArchiveFilesToRetain": 0,
         "LogRotationThresholdInMegaBytes": 100,
         "LogHTTPRequests": false,
         "LogHTTPResponses": false
