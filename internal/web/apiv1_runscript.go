@@ -52,7 +52,7 @@ func APIV1RunscriptPostHandler(responseWriter http.ResponseWriter, request *http
 		}
 	}
 
-	if configuration.Settings.Security.ApprovedPathArgumentsOnly {
+	if configuration.Settings.Security.ApprovedPathArgumentsOnly.IsTrue {
 		if !verifyPathArguments(script.Path, script.Args) {
 			responseWriter.WriteHeader(http.StatusBadRequest)
 			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Unapproved Path/Args", http.StatusBadRequest)))

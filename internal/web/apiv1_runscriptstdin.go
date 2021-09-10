@@ -35,7 +35,7 @@ func APIV1RunscriptstdinPostHandler(responseWriter http.ResponseWriter, request 
 		return
 	}
 
-	if configuration.Settings.Security.ApprovedPathArgumentsOnly {
+	if configuration.Settings.Security.ApprovedPathArgumentsOnly.IsTrue {
 		if !verifyPathArguments(script.Path, script.Args) {
 			responseWriter.WriteHeader(http.StatusBadRequest)
 			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Unapproved Path/Args", http.StatusBadRequest)))
@@ -44,7 +44,7 @@ func APIV1RunscriptstdinPostHandler(responseWriter http.ResponseWriter, request 
 		}
 	}
 
-	if *configuration.Settings.Security.SignedStdInOnly {
+	if configuration.Settings.Security.SignedStdInOnly.IsTrue {
 		if script.StdInSignature == "" {
 			responseWriter.WriteHeader(http.StatusBadRequest)
 			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Only signed stdin can be executed", http.StatusBadRequest)))
