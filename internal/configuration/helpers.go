@@ -32,8 +32,8 @@ type JSONconfigLogging struct {
 	LogLevel                        string   `json:"LogLevel" mandatory:"true"`
 	LogArchiveFilesToRetain         int      `json:"LogArchiveFilesToRetain" mandatory:"true"`
 	LogRotationThresholdInMegaBytes int      `json:"LogRotationThresholdInMegaBytes" mandatory:"true"`
-	LogHTTPRequests                 NullBool `json:"LogHTTPRequests,omitempty" mandatory:"true"`
-	LogHTTPResponses                NullBool `json:"LogHTTPResponses,omitempty" mandatory:"true"`
+	LogHTTPRequests                 NullBool `json:"LogHTTPRequests" mandatory:"true"`
+	LogHTTPResponses                NullBool `json:"LogHTTPResponses" mandatory:"true"`
 }
 
 // JSONconfigServer is a struct for unmarshalling the configuration.json file, server section
@@ -41,18 +41,18 @@ type JSONconfigServer struct {
 	HTTPRequestTimeout   Duration `json:"HTTPRequestTimeout" mandatory:"true"`
 	DefaultScriptTimeout Duration `json:"DefaultScriptTimeout" mandatory:"true"`
 	BindAddress          string   `json:"BindAddress" mandatory:"true"`
-	LoadPprof            NullBool `json:"LoadPprof,omitempty" mandatory:"true"`
+	LoadPprof            NullBool `json:"LoadPprof" mandatory:"true"`
 }
 
 // JSONconfigSecurity is a struct for unmarshalling the configuration.json file
 type JSONconfigSecurity struct {
-	DisableHTTPs              NullBool        `json:"DisableHTTPs,omitempty" mandatory:"true"`
-	SignedStdInOnly           NullBool        `json:"SignedStdInOnly,omitempty" mandatory:"true"`
-	MiniSign                  MiniSign        `json:"PublicKey" mandatory:"true"`
-	AllowedAddresses          AllowedNetworks `json:"AllowedAddresses" mandatory:"true"`
-	UseClientCertificates     NullBool        `json:"UseClientCertificates,omitempty" mandatory:"true"`
-	ClientCertificateCAFile   ClientCertCA    `json:"ClientCertificateCAFile" mandatory:"true"`
-	ApprovedPathArgumentsOnly NullBool
+	DisableHTTPs              NullBool              `json:"DisableHTTPs" mandatory:"true"`
+	SignedStdInOnly           NullBool              `json:"SignedStdInOnly" mandatory:"true"`
+	MiniSign                  MiniSign              `json:"PublicKey" mandatory:"true"`
+	AllowedAddresses          AllowedNetworks       `json:"AllowedAddresses" mandatory:"true"`
+	UseClientCertificates     NullBool              `json:"UseClientCertificates" mandatory:"true"`
+	ClientCertificateCAFile   ClientCertCA          `json:"ClientCertificateCAFile" mandatory:"true"`
+	ApprovedPathArgumentsOnly NullBool              `json:"ApprovedPathArgumentsOnly" mandatory:"true"`
 	ApprovedPathArguments     map[string][][]string `json:"ApprovedPathArguments" mandatory:"true"`
 }
 
@@ -69,10 +69,10 @@ func unmarshal(data []byte, v interface{}) error {
 		return err
 	}
 
-	// err = validateStruct(v)
-	// if err != nil {
-	// 	return err
-	// }
+	err = validateStruct(v)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -94,12 +94,21 @@ func validateStruct(item interface{}) error {
 	}
 
 	for i := 0; i < value.NumField(); i++ {
-		field := value.Field(i)
 
+		field := value.Field(i)
 		if field.Kind() == reflect.Struct {
-			err := validateStruct(field.Interface())
-			if err != nil {
-				return err
+
+			if field.Type().String() == "configuration.NullBool" {
+				isMandatory, _ := strconv.ParseBool(value.Type().Field(i).Tag.Get("mandatory"))
+
+				if isMandatory && value.Field(i).IsZero() {
+					return fmt.Errorf("%s not set when tagged with 'mandatory:\"true\"'", value.Type().Field(i).Name)
+				}
+			} else {
+				err := validateStruct(field.Interface())
+				if err != nil {
+					return err
+				}
 			}
 		} else {
 			isMandatory, _ := strconv.ParseBool(value.Type().Field(i).Tag.Get("mandatory"))
@@ -108,6 +117,7 @@ func validateStruct(item interface{}) error {
 			if isMandatory && isZero {
 				return fmt.Errorf("%s not set when tagged with 'mandatory:\"true\"'", value.Type().Field(i).Name)
 			}
+
 		}
 	}
 	return nil
