@@ -8,7 +8,7 @@ import (
 // to the main executable or defaulted to the the directory in which the main executable is stored.
 // The remaining paths are derived from configuration path.
 type Paths struct {
-	ConfigurationDirectory string `json:"ConfigurationDirectory"`
+	ConfigurationDirectory string `json:"-"`
 	CertificatePath        string `json:"CertificatePath" mandatory:"true"`
 	PrivateKeyPath         string `json:"PrivateKeyPath" mandatory:"true"`
 }
