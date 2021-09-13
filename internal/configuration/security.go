@@ -2,9 +2,6 @@ package configuration
 
 import (
 	"encoding/json"
-	"fmt"
-	"reflect"
-	"strconv"
 )
 
 // JSONconfigSecurity is a struct for unmarshalling the configuration.json file
@@ -29,19 +26,9 @@ func (security *Security) UnmarshalJSON(b []byte) error {
 	}
 
 	*security = Security(jsonTmp)
-
-	value := reflect.ValueOf(security)
-	if value.Kind() == reflect.Ptr && !value.IsNil() {
-		value = value.Elem()
-	}
-
-	for i := 0; i < value.NumField(); i++ {
-		isMandatory, _ := strconv.ParseBool(value.Type().Field(i).Tag.Get("mandatory"))
-		isZero := value.Field(i).IsZero()
-
-		if isMandatory && isZero {
-			return fmt.Errorf("%s not set when tagged with 'mandatory:\"true\"'", value.Type().Field(i).Name)
-		}
+	err = validateStruct(security)
+	if err != nil {
+		return err
 	}
 
 	return nil

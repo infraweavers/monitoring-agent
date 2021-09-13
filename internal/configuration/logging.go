@@ -2,9 +2,6 @@ package configuration
 
 import (
 	"encoding/json"
-	"fmt"
-	"reflect"
-	"strconv"
 )
 
 // JSONconfigLogging is a struct for unmarshalling the configuration.json file, server section
@@ -28,18 +25,9 @@ func (logging *Logging) UnmarshalJSON(b []byte) error {
 
 	*logging = Logging(jsonTmp)
 
-	value := reflect.ValueOf(logging)
-	if value.Kind() == reflect.Ptr && !value.IsNil() {
-		value = value.Elem()
-	}
-
-	for i := 0; i < value.NumField(); i++ {
-		isMandatory, _ := strconv.ParseBool(value.Type().Field(i).Tag.Get("mandatory"))
-		isZero := value.Field(i).IsZero()
-
-		if isMandatory && isZero {
-			return fmt.Errorf("%s not set when tagged with 'mandatory:\"true\"'", value.Type().Field(i).Name)
-		}
+	err = validateStruct(logging)
+	if err != nil {
+		return err
 	}
 
 	return nil
