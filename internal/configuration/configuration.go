@@ -2,11 +2,14 @@ package configuration
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net"
 	"os"
 	"path"
 	"path/filepath"
+	"reflect"
+	"strconv"
 	"time"
 
 	"github.com/jedisct1/go-minisign"
@@ -75,4 +78,31 @@ func fixRelativePath(configurationDirectory string, filePath string) string {
 		return filepath.FromSlash(configurationDirectory + "/" + filePath)
 	}
 	return filePath
+}
+
+func validateStruct(item interface{}) error {
+
+	value := reflect.ValueOf(item)
+
+	if value.Kind() == reflect.Ptr && !value.IsNil() {
+		value = value.Elem()
+	}
+
+	if value.Kind() == reflect.Interface {
+		value = reflect.ValueOf(value)
+	}
+
+	if value.Kind() != reflect.Struct {
+		return fmt.Errorf("value type was %s rather than struct", reflect.TypeOf(value))
+	}
+
+	for i := 0; i < value.NumField(); i++ {
+		isMandatory, _ := strconv.ParseBool(value.Type().Field(i).Tag.Get("mandatory"))
+		isZero := value.Field(i).IsZero()
+
+		if isMandatory && isZero {
+			return fmt.Errorf("%s not set when tagged with 'mandatory:\"true\"'", value.Type().Field(i).Name)
+		}
+	}
+	return nil
 }

@@ -2,9 +2,6 @@ package configuration
 
 import (
 	"encoding/json"
-	"fmt"
-	"reflect"
-	"strconv"
 )
 
 // Server is a struct for unmarshalling the configuration.json file, server section
@@ -26,22 +23,9 @@ func (server *Server) UnmarshalJSON(b []byte) error {
 
 	*server = Server(jsonTmp)
 
-	value := reflect.ValueOf(server)
-	if value.Kind() == reflect.Ptr && !value.IsNil() {
-		value = value.Elem()
-	}
-
-	if value.Kind() == reflect.Interface {
-		value = reflect.ValueOf(value)
-	}
-
-	for i := 0; i < value.NumField(); i++ {
-		isMandatory, _ := strconv.ParseBool(value.Type().Field(i).Tag.Get("mandatory"))
-		isZero := value.Field(i).IsZero()
-
-		if isMandatory && isZero {
-			return fmt.Errorf("%s not set when tagged with 'mandatory:\"true\"'", value.Type().Field(i).Name)
-		}
+	err = validateStruct(server)
+	if err != nil {
+		return err
 	}
 
 	return nil
