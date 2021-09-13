@@ -15,7 +15,7 @@ func LaunchServer() {
 	tlsCert, loadError := tls.LoadX509KeyPair(configuration.Settings.Paths.CertificatePath, configuration.Settings.Paths.PrivateKeyPath)
 
 	if loadError != nil {
-		logwrapper.Log.Panicf(loadError.Error())
+		logwrapper.Log.Panicf("%s, CertificatePath: %#v PrivateKeyPath: %#v", loadError.Error(), configuration.Settings.Paths.CertificatePath, configuration.Settings.Paths.PrivateKeyPath)
 	}
 
 	logwrapper.LogInfof("configuration.Settings.HTTPRequestTimeout: %v", configuration.Settings.Server.HTTPRequestTimeout)

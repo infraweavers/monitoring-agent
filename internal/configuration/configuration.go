@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"net"
 	"os"
@@ -12,34 +13,39 @@ import (
 )
 
 // Settings is the loaded/updated settings from the configuration file
-var Settings = JSONconfig{}
+var Settings = Config{}
 
 // Initialise loads the settings from the configurationfile
 func Initialise(configurationDirectory string) {
 
-	Settings.Paths.ConfigurationDirectory = configurationDirectory
-	Settings.Paths.CertificatePath = filepath.FromSlash(configurationDirectory + "/server.crt")
-	Settings.Paths.PrivateKeyPath = filepath.FromSlash(configurationDirectory + "/server.key")
+	var paths = Paths{
+		ConfigurationDirectory: configurationDirectory,
+		CertificatePath:        filepath.FromSlash(configurationDirectory + "/server.crt"),
+		PrivateKeyPath:         filepath.FromSlash(configurationDirectory + "/server.key"),
+	}
 
-	var configurationFileJSON = filepath.FromSlash(configurationDirectory + "/configuration.json")
+	var configurationFileJSON = filepath.FromSlash(paths.ConfigurationDirectory + "/configuration.json")
 	jsonFile, err := ioutil.ReadFile(configurationFileJSON)
 	if err != nil {
 		panic(err)
 	}
 
-	err = unmarshal(jsonFile, &Settings)
+	err = json.Unmarshal(jsonFile, &Settings)
 	if err != nil {
 		panic(err)
 	}
 
-	Settings.Logging.LogFilePath = fixRelativePath(configurationDirectory, Settings.Logging.LogFilePath)
-}
+	Settings.Paths.ConfigurationDirectory = paths.ConfigurationDirectory
 
-func fixRelativePath(configurationDirectory string, filePath string) string {
-	if filePath == path.Base(filePath) {
-		return filepath.FromSlash(configurationDirectory + "/" + filePath)
+	if Settings.Paths.CertificatePath == "" {
+		Settings.Paths.CertificatePath = paths.CertificatePath
 	}
-	return filePath
+
+	if Settings.Paths.PrivateKeyPath == "" {
+		Settings.Paths.PrivateKeyPath = paths.PrivateKeyPath
+	}
+
+	Settings.Logging.LogFilePath = fixRelativePath(configurationDirectory, Settings.Logging.LogFilePath)
 }
 
 // TestingInitialise only for use in integration tests
@@ -62,4 +68,11 @@ func TestingInitialise() {
 	Settings.Security.AllowedAddresses.CIDR = []*net.IPNet{
 		{IP: net.IPv4(0, 0, 0, 0), Mask: net.IPv4Mask(0, 0, 0, 0)},
 	}
+}
+
+func fixRelativePath(configurationDirectory string, filePath string) string {
+	if filePath == path.Base(filePath) {
+		return filepath.FromSlash(configurationDirectory + "/" + filePath)
+	}
+	return filePath
 }
