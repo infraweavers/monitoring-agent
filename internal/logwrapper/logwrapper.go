@@ -72,7 +72,7 @@ func Initialise(isRunInteractively bool, newline string) {
 
 	Log.SetOutput(&lumberjack.Logger{
 		Filename:   logFile.Name(),
-		MaxBackups: configuration.Settings.Logging.LogArchiveFilesToRetain,
+		MaxBackups: configuration.Settings.Logging.LogArchiveFilesToRetain.Value,
 		MaxSize:    configuration.Settings.Logging.LogRotationThresholdInMegaBytes,
 	})
 

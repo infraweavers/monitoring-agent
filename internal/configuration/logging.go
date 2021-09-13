@@ -8,7 +8,7 @@ import (
 type Logging struct {
 	LogFilePath                     string   `json:"LogFilePath" mandatory:"true"`
 	LogLevel                        string   `json:"LogLevel" mandatory:"true"`
-	LogArchiveFilesToRetain         int      `json:"LogArchiveFilesToRetain" mandatory:"true"`
+	LogArchiveFilesToRetain         NullInt  `json:"LogArchiveFilesToRetain" mandatory:"true"`
 	LogRotationThresholdInMegaBytes int      `json:"LogRotationThresholdInMegaBytes" mandatory:"true"`
 	LogHTTPRequests                 NullBool `json:"LogHTTPRequests" mandatory:"true"`
 	LogHTTPResponses                NullBool `json:"LogHTTPResponses" mandatory:"true"`
