@@ -246,10 +246,14 @@ jobs:
         run: |
           echo "Building .deb Installer For ${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}"
           echo ".deb version is: ${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}"
+          
           mkdir -p deb-package/etc/monitoring-agent deb-package/usr/bin deb-package/lib/systemd/system
+          
           cp -r ./DEBIAN ./deb-package
           cp ./configuration.json ./server.crt ./server.key ./cacert.pem ./deb-package/etc/monitoring-agent
           cp ./monitoring-agent deb-package/usr/bin
+          chmod +x deb-package/usr/bin/monitoring-agent
+          
           cp ./monitoring-agent.service deb-package/lib/systemd/system
           sed -i 's|"LogFilePath": "output.log",|"LogFilePath": "/var/log/monitoring-agent.log",|' deb-package/etc/monitoring-agent/configuration.json
           sed -i 's|Architecture: UPDATEME|Architecture: ${{ matrix.arch }}|' deb-package/DEBIAN/control
@@ -259,6 +263,7 @@ jobs:
           chmod 755 deb-package/DEBIAN/prerm
           chmod 755 deb-package/DEBIAN/postrm
           chmod 755 deb-package/DEBIAN/rules
+          
           sudo chown -R root:root deb-package/
           sudo dpkg-deb --build ./deb-package ~/monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}.deb
 
