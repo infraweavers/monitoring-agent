@@ -79,7 +79,7 @@ func main() {
 	logwrapper.Initialise(service.Interactive(), NewLine)
 
 	serviceConfiguration := &service.Config{
-		Name: "Monitoring Agent",
+		Name: "monitoring-agent",
 	}
 
 	program := &program{}
