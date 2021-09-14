@@ -29,25 +29,28 @@ func (paths *Paths) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
+	paths.ConfigurationDirectory = ConfigurationDirectory
 	return nil
 }
 
 func InitialisePaths(configurationDirectory string) Paths {
+	ConfigurationDirectory = configurationDirectory
+
 	return Paths{
-		ConfigurationDirectory: configurationDirectory,
+		ConfigurationDirectory: ConfigurationDirectory,
 		CertificatePath:        filepath.FromSlash(configurationDirectory + "/server.crt"),
 		PrivateKeyPath:         filepath.FromSlash(configurationDirectory + "/server.key"),
 	}
 }
 
-func (paths *Paths) mmmmm(p Paths) {
+func (paths *Paths) Reset(p Paths) {
 	paths.ConfigurationDirectory = p.ConfigurationDirectory
 
 	if Settings.Paths.CertificatePath == "" {
-		Settings.Paths.CertificatePath = paths.CertificatePath
+		Settings.Paths.CertificatePath = p.CertificatePath
 	}
 
 	if Settings.Paths.PrivateKeyPath == "" {
-		Settings.Paths.PrivateKeyPath = paths.PrivateKeyPath
+		Settings.Paths.PrivateKeyPath = p.PrivateKeyPath
 	}
 }

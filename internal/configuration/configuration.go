@@ -17,6 +17,7 @@ import (
 
 // Settings is the loaded/updated settings from the configuration file
 var Settings = Config{}
+var ConfigurationDirectory string
 
 // Initialise loads the settings from the configurationfile
 func Initialise(configurationDirectory string) {
@@ -34,8 +35,7 @@ func Initialise(configurationDirectory string) {
 		panic(err)
 	}
 
-	Settings.Paths.mmmmm(paths)
-	Settings.Logging.LogFilePath = fixRelativePath(configurationDirectory, Settings.Logging.LogFilePath)
+	Settings.Paths.Reset(paths)
 }
 
 // TestingInitialise only for use in integration tests

@@ -16,6 +16,6 @@ func (clientCertCA *ClientCertCA) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
-	clientCertCA.Path = fixRelativePath(Settings.Paths.ConfigurationDirectory, unmarshalledJson)
+	clientCertCA.Path = fixRelativePath(ConfigurationDirectory, unmarshalledJson)
 	return nil
 }

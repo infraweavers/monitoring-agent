@@ -24,6 +24,7 @@ func (logging *Logging) UnmarshalJSON(b []byte) error {
 	}
 
 	*logging = Logging(jsonTmp)
+	logging.LogFilePath = fixRelativePath(ConfigurationDirectory, logging.LogFilePath)
 
 	err = validateStruct(logging)
 	if err != nil {
