@@ -3,6 +3,7 @@ package configuration
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -73,8 +74,8 @@ func TestConfigJsonImport(t *testing.T) {
 	assert.NotEmpty(t, settings.Paths, "settings.Paths struct is populated")
 	assert.NotEmpty(t, settings.Authentication.Password, "settings.Authentication.Password is populated")
 	assert.Equal(t, true, settings.Logging.LogHTTPRequests.HasValue, "NullBool type (settings.Logging.LogHTTPRequests) is not null")
-	assert.Equal(t, ConfigurationDirectory+"\\"+"output.log", settings.Logging.LogFilePath, "settings.Logging.LogFilePath includes ConfigurationDirectory %s", ConfigurationDirectory)
-	assert.Equal(t, ConfigurationDirectory+"\\"+"PathToClientCertificateCAFile", settings.Security.ClientCertificateCAFile.Path, "settings.Security.ClientCertificateCAFile is set and path includes ConfigurationDirectory %s", ConfigurationDirectory)
+	assert.Equal(t, filepath.FromSlash(ConfigurationDirectory+"/"+"output.log"), settings.Logging.LogFilePath, "settings.Logging.LogFilePath includes ConfigurationDirectory %s", ConfigurationDirectory)
+	assert.Equal(t, filepath.FromSlash(ConfigurationDirectory+"/"+"PathToClientCertificateCAFile"), settings.Security.ClientCertificateCAFile.Path, "settings.Security.ClientCertificateCAFile is set and path includes ConfigurationDirectory %s", ConfigurationDirectory)
 
 	expectedDuration, _ := time.ParseDuration("15s")
 	assert.Equal(t, expectedDuration, settings.Server.DefaultScriptTimeout.Duration, "settings.Server.DefaultScriptTimeout matches supplied JSON value")
