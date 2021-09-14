@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -16,7 +17,7 @@ func testSetup(jsonbytes []byte) (settings Config, err error) {
 
 	settings = Config{}
 	err = json.Unmarshal(jsonbytes, &settings)
-	settings.Paths.mmmmm(paths)
+	settings.Paths.Reset(paths)
 
 	return
 }
@@ -68,5 +69,14 @@ func TestConfigJsonImport(t *testing.T) {
 	`))
 
 	assert.Empty(t, err, "unmarshalling json should not result in an error")
-	assert.NotEmpty(t, settings, "settings struct is populated by valid json with no missing mandatory values")
+	assert.NotEmpty(t, settings, "settings struct is populated with no missing mandatory values")
+	assert.NotEmpty(t, settings.Paths, "settings.Paths struct is populated")
+	assert.NotEmpty(t, settings.Authentication.Password, "settings.Authentication.Password is populated")
+	assert.Equal(t, true, settings.Logging.LogHTTPRequests.HasValue, "NullBool type (settings.Logging.LogHTTPRequests) is not null")
+	assert.Equal(t, ConfigurationDirectory+"\\"+"output.log", settings.Logging.LogFilePath, "settings.Logging.LogFilePath includes ConfigurationDirectory %s", ConfigurationDirectory)
+	assert.Equal(t, ConfigurationDirectory+"\\"+"PathToClientCertificateCAFile", settings.Security.ClientCertificateCAFile.Path, "settings.Security.ClientCertificateCAFile is set and path includes ConfigurationDirectory %s", ConfigurationDirectory)
+
+	expectedDuration, _ := time.ParseDuration("15s")
+	assert.Equal(t, expectedDuration, settings.Server.DefaultScriptTimeout.Duration, "settings.Server.DefaultScriptTimeout matches supplied JSON value")
+
 }
