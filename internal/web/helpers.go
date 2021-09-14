@@ -70,7 +70,7 @@ func jsonDecodeScript(responseWriter http.ResponseWriter, request *http.Request)
 	if error != nil {
 		responseWriter.WriteHeader(http.StatusBadRequest)
 		responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request", http.StatusBadRequest)))
-		logwrapper.LogWarningf("Failed JSON decode: '%s' '%s' '%s'", request.URL.RawPath, request.RemoteAddr, request.UserAgent())
+		logwrapper.LogWarningf("Failed JSON decode: '%s' '%s' '%s'", request.URL.Path, request.RemoteAddr, request.UserAgent())
 		return script, error
 	}
 
