@@ -76,7 +76,7 @@ func main() {
 	flag.Parse()
 
 	configuration.Initialise(configurationDirectory(configDirectory))
-	logwrapper.Initialise(service.Interactive())
+	logwrapper.Initialise(service.Interactive(), NewLine)
 
 	serviceConfiguration := &service.Config{
 		Name: "Monitoring Agent",

@@ -52,9 +52,10 @@ var level logLevel
 var Log *log.Logger
 
 var runningInteractively = false
+var linebreak string
 
 // Initialise and configure the logging
-func Initialise(isRunInteractively bool) {
+func Initialise(isRunInteractively bool, newline string) {
 
 	logFile, err := os.OpenFile(configuration.Settings.Logging.LogFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
@@ -66,6 +67,7 @@ func Initialise(isRunInteractively bool) {
 		panic(err)
 	}
 
+	linebreak = newline
 	Log = log.New(logFile, "ma ", log.LstdFlags)
 
 	Log.SetOutput(&lumberjack.Logger{
@@ -85,7 +87,7 @@ func writef(lvl logLevel, message string, v ...interface{}) {
 	if lvl > level {
 		return
 	}
-	format := fmt.Sprintf("%s : %s", logLevel.String(lvl), message)
+	format := fmt.Sprintf("%s : %s%s", logLevel.String(lvl), message, linebreak)
 	Log.Printf(format, v...)
 
 	if runningInteractively {
@@ -97,7 +99,7 @@ func write(lvl logLevel, message string) {
 	if lvl > level {
 		return
 	}
-	message = fmt.Sprintf("%s : %s", logLevel.String(lvl), message)
+	message = fmt.Sprintf("%s : %s%s", logLevel.String(lvl), message, linebreak)
 	Log.Print(message)
 
 	if runningInteractively {
