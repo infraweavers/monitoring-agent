@@ -2,6 +2,7 @@ package configuration
 
 import (
 	"encoding/json"
+	"path/filepath"
 )
 
 // Paths is a struct for storing key paths. The ConfigurationDirectory itself is passed in as a flag
@@ -29,4 +30,24 @@ func (paths *Paths) UnmarshalJSON(b []byte) error {
 	}
 
 	return nil
+}
+
+func InitialisePaths(configurationDirectory string) Paths {
+	return Paths{
+		ConfigurationDirectory: configurationDirectory,
+		CertificatePath:        filepath.FromSlash(configurationDirectory + "/server.crt"),
+		PrivateKeyPath:         filepath.FromSlash(configurationDirectory + "/server.key"),
+	}
+}
+
+func (paths *Paths) mmmmm(p Paths) {
+	paths.ConfigurationDirectory = p.ConfigurationDirectory
+
+	if Settings.Paths.CertificatePath == "" {
+		Settings.Paths.CertificatePath = paths.CertificatePath
+	}
+
+	if Settings.Paths.PrivateKeyPath == "" {
+		Settings.Paths.PrivateKeyPath = paths.PrivateKeyPath
+	}
 }
