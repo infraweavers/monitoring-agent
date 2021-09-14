@@ -25,14 +25,14 @@
 
 	<Directory Id='TARGETDIR' Name='SourceDir'>
 	  <Directory Id="$(var.PlatformProgramFilesFolder)">
-		<Directory Id='INSTALLDIR' Name='MonitoringAgent'>
+		<Directory Id='INSTALLDIR' Name='monitoring-agent'>
 
 			<Component Id='MainExecutable' Guid='0dbe56a4-660e-4299-9232-0677a3d294a0' Win64="$(var.Win64)">
 				<File Id='MonitoringAgentExe' Name='Monitoring-Agent.exe' DiskId='1' Source='Monitoring-Agent.exe' KeyPath='yes' />
 				<ServiceInstall
 					Description='Permits execution of commands for host monitoring purposes'
 					ErrorControl='ignore'
-					Name = 'Monitoring Agent'
+					Name = 'monitoring-agent'
 					Id='MonitoringAgentService'
 					Start='auto'
 					Type='ownProcess'
