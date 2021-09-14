@@ -21,11 +21,7 @@ var Settings = Config{}
 // Initialise loads the settings from the configurationfile
 func Initialise(configurationDirectory string) {
 
-	var paths = Paths{
-		ConfigurationDirectory: configurationDirectory,
-		CertificatePath:        filepath.FromSlash(configurationDirectory + "/server.crt"),
-		PrivateKeyPath:         filepath.FromSlash(configurationDirectory + "/server.key"),
-	}
+	paths := InitialisePaths(configurationDirectory)
 
 	var configurationFileJSON = filepath.FromSlash(paths.ConfigurationDirectory + "/configuration.json")
 	jsonFile, err := ioutil.ReadFile(configurationFileJSON)
@@ -38,16 +34,7 @@ func Initialise(configurationDirectory string) {
 		panic(err)
 	}
 
-	Settings.Paths.ConfigurationDirectory = paths.ConfigurationDirectory
-
-	if Settings.Paths.CertificatePath == "" {
-		Settings.Paths.CertificatePath = paths.CertificatePath
-	}
-
-	if Settings.Paths.PrivateKeyPath == "" {
-		Settings.Paths.PrivateKeyPath = paths.PrivateKeyPath
-	}
-
+	Settings.Paths.mmmmm(paths)
 	Settings.Logging.LogFilePath = fixRelativePath(configurationDirectory, Settings.Logging.LogFilePath)
 }
 
