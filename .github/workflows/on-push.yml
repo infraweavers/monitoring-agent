@@ -291,7 +291,7 @@ jobs:
           draft: true
           prerelease: false
           release_name: "${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}"
-          tag_name: "${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}-${{ needs.get-commit-sha.outputs.short-sha }}"
+          tag_name: "${{needs.get-version-number.outputs.major}}.${{needs.get-version-number.outputs.minor}}.${{needs.get-version-number.outputs.revision}}"
           
         env:
           GITHUB_TOKEN: ${{ github.token }}
