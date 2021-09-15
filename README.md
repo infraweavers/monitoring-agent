@@ -8,11 +8,11 @@ A simple, modern, maintainable and flexible monitoring agent that works cross pl
 
 ### Status
 
-Testing
+Released
 
 ### Current Features
 
-* Designed to work with Nagios, Naemon and other similar monitoring platforms
+* Designed to work with Nagios, Naemon and other similar monitoring platforms that perform active checks
 * Cross platform
 * Executes a passed in script (no need to deploy scripts to monitored hosts)
 * Continuous Integration/Delivery
