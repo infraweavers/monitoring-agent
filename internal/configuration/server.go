@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 )
 
-// Server is a struct for unmarshalling the configuration.json file, server section
+// Server is a struct for representing server configuration, unmarshalled from the configuration.json file
 type Server struct {
 	HTTPRequestTimeout   Duration `json:"HTTPRequestTimeout" mandatory:"true"`
 	DefaultScriptTimeout Duration `json:"DefaultScriptTimeout" mandatory:"true"`
@@ -12,9 +12,10 @@ type Server struct {
 	LoadPprof            NullBool `json:"LoadPprof" mandatory:"true"`
 }
 
+// UnmarshalJSON is a method to implement unmarshalling of the Server type
 func (server *Server) UnmarshalJSON(b []byte) error {
-	type JsonTmp Server
-	var jsonTmp JsonTmp
+	type JSONTmp Server
+	var jsonTmp JSONTmp
 
 	err := json.Unmarshal(b, &jsonTmp)
 	if err != nil {

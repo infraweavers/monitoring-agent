@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 )
 
-// JSONconfigSecurity is a struct for unmarshalling the configuration.json file
+// Security is a struct for representing security configuration, unmarshalled from the configuration.json file
 type Security struct {
 	DisableHTTPs              NullBool              `json:"DisableHTTPs" mandatory:"true"`
 	SignedStdInOnly           NullBool              `json:"SignedStdInOnly" mandatory:"true"`
@@ -16,9 +16,10 @@ type Security struct {
 	ApprovedPathArguments     map[string][][]string `json:"ApprovedPathArguments" mandatory:"true"`
 }
 
+// UnmarshalJSON is a method to implement unmarshalling of the Security type
 func (security *Security) UnmarshalJSON(b []byte) error {
-	type JsonTmp Security
-	var jsonTmp JsonTmp
+	type JSONTmp Security
+	var jsonTmp JSONTmp
 
 	err := json.Unmarshal(b, &jsonTmp)
 	if err != nil {

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 )
 
-// JSONconfigLogging is a struct for unmarshalling the configuration.json file, server section
+// Logging is a struct representing the logging configuration, unmarshalled from the configuration.json file
 type Logging struct {
 	LogFilePath                     string   `json:"LogFilePath" mandatory:"true"`
 	LogLevel                        string   `json:"LogLevel" mandatory:"true"`
@@ -14,9 +14,10 @@ type Logging struct {
 	LogHTTPResponses                NullBool `json:"LogHTTPResponses" mandatory:"true"`
 }
 
+// UnmarshalJSON is a method to implement unmarshalling of the AllowedNetworks type
 func (logging *Logging) UnmarshalJSON(b []byte) error {
-	type JsonTmp Logging
-	var jsonTmp JsonTmp
+	type JSONTmp Logging
+	var jsonTmp JSONTmp
 
 	err := json.Unmarshal(b, &jsonTmp)
 	if err != nil {

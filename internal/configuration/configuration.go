@@ -17,6 +17,8 @@ import (
 
 // Settings is the loaded/updated settings from the configuration file
 var Settings = Config{}
+
+// ConfigurationDirectory represents the path to the JSON configuration file
 var ConfigurationDirectory string
 
 // Initialise loads the settings from the configurationfile

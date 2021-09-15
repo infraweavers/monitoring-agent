@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 )
 
-// JsonConfig is a struct for unmarshalling the configuration.json file
+// Config is a struct for unmarshalling the configuration.json file
 type Config struct {
 	Authentication Authentication `json:"Authentication" mandatory:"true"`
 	Logging        Logging        `json:"Logging" mandatory:"true"`
@@ -13,9 +13,10 @@ type Config struct {
 	Paths          Paths          `json:"Paths"`
 }
 
+// UnmarshalJSON is a method to implement unmarshalling of the Config type
 func (config *Config) UnmarshalJSON(b []byte) error {
-	type JsonTmp Config
-	var jsonTmp JsonTmp
+	type JSONTmp Config
+	var jsonTmp JSONTmp
 
 	err := json.Unmarshal(b, &jsonTmp)
 	if err != nil {

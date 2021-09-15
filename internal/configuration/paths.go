@@ -14,9 +14,10 @@ type Paths struct {
 	PrivateKeyPath         string `json:"PrivateKeyPath" mandatory:"true"`
 }
 
+// UnmarshalJSON is a method to implement unmarshalling of the Paths type
 func (paths *Paths) UnmarshalJSON(b []byte) error {
-	type JsonTmp Paths
-	var jsonTmp JsonTmp
+	type JSONTmp Paths
+	var jsonTmp JSONTmp
 
 	err := json.Unmarshal(b, &jsonTmp)
 	if err != nil {
@@ -33,6 +34,7 @@ func (paths *Paths) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+// InitialisePaths is a function for setting Paths.CertificatePath and Paths.PrivateKeyPath to their default values based on ConfigurationDirectory
 func InitialisePaths(configurationDirectory string) Paths {
 	ConfigurationDirectory = configurationDirectory
 
@@ -43,6 +45,8 @@ func InitialisePaths(configurationDirectory string) Paths {
 	}
 }
 
+// Reset is a method for resetting Paths.CertificatePath and Paths.PrivateKeyPath to their default values based on ConfigurationDirectory, if
+// they remain as empty string ("") after importing the configuration.json file
 func (paths *Paths) Reset(p Paths) {
 	paths.ConfigurationDirectory = p.ConfigurationDirectory
 
