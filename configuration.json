@@ -28,19 +28,18 @@
         "ApprovedPathArguments": {
             "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe": [
                 ["-command", "-"],
-                ["-command","start-sleep 1"],
-                ["-command","Write-Host 'Hello, World'"],
-                ["-command","Write-Host \"Hello, World\""],
-                ["-command"]
+                ["-command","C:\\Scripts\\RunMyScript.ps1"]
             ],
             "sh": [
                 ["-s"]
             ],
             "perl": [
-                ["-"]
+                ["-"],
+                ["/etc/monitoring-agent/scripts/check_disks.pl"]
             ],
             "python": [
-                ["-"]
+                ["-"],
+                ["/etc/monitoring-agent/scripts/check_cpu.py"]
             ]
         }
     }
