@@ -35,11 +35,11 @@
             ],
             "perl": [
                 ["-"],
-                ["/etc/monitoring-agent/scripts/check_disks.pl"]
+                ["/etc/monitoring-agent/scripts/check_disks.pl", "/dev/sda", "/dev/sdb"]
             ],
             "python": [
                 ["-"],
-                ["/etc/monitoring-agent/scripts/check_cpu.py"]
+                ["/etc/monitoring-agent/scripts/check_cpu.py", "50%", "80%"]
             ]
         }
     }
