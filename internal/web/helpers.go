@@ -16,7 +16,7 @@ import (
 	"github.com/jedisct1/go-minisign"
 )
 
-// Script represents an object submitted to the runscript endpoint
+// Script represents an object submitted to the runexecutable endpoint
 type Script struct {
 	Path           string   `json:"path"`
 	Args           []string `json:"args,omitempty"`
@@ -25,7 +25,7 @@ type Script struct {
 	Timeout        string   `json:"timeout,omitempty"`
 }
 
-// Result represents the object returned from the runscript endpoint
+// Result represents the object returned from the runexecutable endpoint
 type Result struct {
 	Exitcode int    `json:"exitcode"`
 	Output   string `json:"output"`
@@ -94,7 +94,7 @@ func processResult(responseWriter http.ResponseWriter, exitCode int, output stri
 	return resultJSON
 }
 
-func runScript(responseWriter http.ResponseWriter, scriptToRun Script) []byte {
+func runExecutable(responseWriter http.ResponseWriter, scriptToRun Script) []byte {
 
 	var exitcode int = 0
 	var timeoutOccured bool = false

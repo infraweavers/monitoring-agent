@@ -8,5 +8,5 @@ import (
 func APIV1HomeGetHandler(reponseWriter http.ResponseWriter, request *http.Request) {
 	reponseWriter.Header().Set("Content-Type", "application/json")
 	reponseWriter.WriteHeader(http.StatusOK)
-	reponseWriter.Write([]byte(`{"endpoints": ["runscript", "runscriptstdin", "info"]}`))
+	reponseWriter.Write([]byte(`{"endpoints": ["runexecutable", "runscriptstdin", "info"]}`))
 }

@@ -11,17 +11,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type RunScriptTestCase struct {
+type RunExecutableTestCase struct {
 	ScriptToRun
 	ExpectedResult
 }
 
-type RunScriptWithTimeoutTestCase struct {
+type RunExecutableWithTimeoutTestCase struct {
 	ScriptToRun
 	Timeout
 }
 
-var osSpecifiTestCases = map[string]RunScriptTestCase{
+var osSpecifiTestCases = map[string]RunExecutableTestCase{
 	"linux": {
 		ScriptToRun{
 			Path: "sh",
@@ -42,7 +42,7 @@ var osSpecifiTestCases = map[string]RunScriptTestCase{
 	},
 }
 
-func TestRunscriptApiHandler(t *testing.T) {
+func TestRunexecutableApiHandler(t *testing.T) {
 
 	TestSetup()
 	defer TestTeardown()
@@ -52,7 +52,7 @@ func TestRunscriptApiHandler(t *testing.T) {
 		assert := assert.New(t)
 
 		jsonBody, _ := json.Marshal(osSpecifiTestCases[runtime.GOOS].ScriptToRun)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscript", bytes.NewBuffer(jsonBody))
+		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runexecutable", bytes.NewBuffer(jsonBody))
 
 		output := TestHTTPRequestWithDefaultCredentials(t, request)
 
@@ -64,7 +64,7 @@ func TestRunscriptApiHandler(t *testing.T) {
 		assert := assert.New(t)
 
 		jsonBody, _ := json.Marshal(`{"foo": "bar", "doh": "car"}`)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscript", bytes.NewBuffer(jsonBody))
+		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runexecutable", bytes.NewBuffer(jsonBody))
 
 		output := TestHTTPRequestWithDefaultCredentials(t, request)
 
@@ -88,7 +88,7 @@ func TestRunscriptApiHandler(t *testing.T) {
 		assert := assert.New(t)
 
 		jsonBody, _ := json.Marshal(scriptBodyToTest)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscript", bytes.NewBuffer(jsonBody))
+		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runexecutable", bytes.NewBuffer(jsonBody))
 
 		output := TestHTTPRequestWithDefaultCredentials(t, request)
 
@@ -97,7 +97,7 @@ func TestRunscriptApiHandler(t *testing.T) {
 	})
 
 	t.Run("Returns HTTP status 400 bad request with invalid supplied", func(t *testing.T) {
-		var scriptBodyToTest = RunScriptWithTimeoutTestCase{
+		var scriptBodyToTest = RunExecutableWithTimeoutTestCase{
 			ScriptToRun{
 				Path: "sh",
 				Args: []string{"sh", "-s"},
@@ -109,7 +109,7 @@ func TestRunscriptApiHandler(t *testing.T) {
 		assert := assert.New(t)
 
 		jsonBody, _ := json.Marshal(scriptBodyToTest)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscript", bytes.NewBuffer(jsonBody))
+		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runexecutable", bytes.NewBuffer(jsonBody))
 
 		output := TestHTTPRequestWithDefaultCredentials(t, request)
 
@@ -118,7 +118,7 @@ func TestRunscriptApiHandler(t *testing.T) {
 	})
 
 	t.Run("Returns HTTP status 200 and \"exitcode: 3, output: The script timed out\" when timeout exceeded", func(t *testing.T) {
-		var osSpecifiTestCases = map[string]RunScriptWithTimeoutTestCase{
+		var osSpecifiTestCases = map[string]RunExecutableWithTimeoutTestCase{
 			"linux": {
 				ScriptToRun{
 					Path: "sh",
@@ -141,7 +141,7 @@ func TestRunscriptApiHandler(t *testing.T) {
 		assert := assert.New(t)
 
 		jsonBody, _ := json.Marshal(osSpecifiTestCases[runtime.GOOS])
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscript", bytes.NewBuffer(jsonBody))
+		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runexecutable", bytes.NewBuffer(jsonBody))
 
 		output := TestHTTPRequestWithDefaultCredentials(t, request)
 
@@ -150,7 +150,7 @@ func TestRunscriptApiHandler(t *testing.T) {
 	})
 
 	t.Run("Returns HTTP status 200 when timeout not exceeded", func(t *testing.T) {
-		var osSpecifiTestCases = map[string]RunScriptWithTimeoutTestCase{
+		var osSpecifiTestCases = map[string]RunExecutableWithTimeoutTestCase{
 			"linux": {
 				ScriptToRun{
 					Path: "sh",
@@ -173,7 +173,7 @@ func TestRunscriptApiHandler(t *testing.T) {
 		assert := assert.New(t)
 
 		jsonBody, _ := json.Marshal(osSpecifiTestCases[runtime.GOOS])
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscript", bytes.NewBuffer(jsonBody))
+		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runexecutable", bytes.NewBuffer(jsonBody))
 
 		output := TestHTTPRequestWithDefaultCredentials(t, request)
 
@@ -188,10 +188,10 @@ func TestRunscriptApiHandler(t *testing.T) {
 			"sh": {{"-c", "uname"}},
 		}
 
-		osSpecificRunScript := osSpecifiTestCases[runtime.GOOS].ScriptToRun
+		osSpecificRunExecutable := osSpecifiTestCases[runtime.GOOS].ScriptToRun
 
-		jsonBody, _ := json.Marshal(osSpecificRunScript)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscript", bytes.NewBuffer(jsonBody))
+		jsonBody, _ := json.Marshal(osSpecificRunExecutable)
+		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runexecutable", bytes.NewBuffer(jsonBody))
 
 		output := TestHTTPRequestWithDefaultCredentials(t, request)
 
@@ -208,10 +208,10 @@ func TestRunscriptApiHandler(t *testing.T) {
 			"sh": {{"-c", "-s"}},
 		}
 
-		osSpecificRunScript := osSpecifiTestCases[runtime.GOOS].ScriptToRun
+		osSpecificRunExecutable := osSpecifiTestCases[runtime.GOOS].ScriptToRun
 
-		jsonBody, _ := json.Marshal(osSpecificRunScript)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscript", bytes.NewBuffer(jsonBody))
+		jsonBody, _ := json.Marshal(osSpecificRunExecutable)
+		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runexecutable", bytes.NewBuffer(jsonBody))
 
 		output := TestHTTPRequestWithDefaultCredentials(t, request)
 

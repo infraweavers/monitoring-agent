@@ -76,5 +76,5 @@ func APIV1RunscriptstdinPostHandler(responseWriter http.ResponseWriter, request 
 		}
 	}
 
-	responseWriter.Write(runScript(responseWriter, script))
+	responseWriter.Write(runExecutable(responseWriter, script))
 }
