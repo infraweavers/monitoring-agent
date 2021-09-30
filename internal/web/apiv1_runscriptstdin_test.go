@@ -73,7 +73,7 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 	defer TestTeardown()
 
 	t.Run("Runs supplied script, returns HTTP status 200 and expected script output", func(t *testing.T) {
-		configuration.Settings.Security.ApprovedPathArgumentsOnly.IsTrue = false
+		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = false
 		jsonBody, _ := json.Marshal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun)
 		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
@@ -86,7 +86,7 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 	})
 
 	t.Run("Returns HTTP status 400 bad request with erronous post", func(t *testing.T) {
-		configuration.Settings.Security.ApprovedPathArgumentsOnly.IsTrue = false
+		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = false
 		jsonBody, _ := json.Marshal(`{"foo": "bar", "doh": "car"}`)
 
@@ -99,7 +99,7 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 	})
 
 	t.Run("Returns HTTP status 400 bad request without stdin supplied", func(t *testing.T) {
-		configuration.Settings.Security.ApprovedPathArgumentsOnly.IsTrue = false
+		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = false
 		var test = ScriptToRun{
 			Path: "sh",
@@ -117,7 +117,7 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 	})
 
 	t.Run("Returns HTTP status 400 bad request without stdin supplied", func(t *testing.T) {
-		configuration.Settings.Security.ApprovedPathArgumentsOnly.IsTrue = false
+		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
 		var test = ScriptToRun{
 			Path: "sh",
@@ -135,7 +135,7 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 	})
 
 	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
-		configuration.Settings.Security.ApprovedPathArgumentsOnly.IsTrue = false
+		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
 
 		jsonBody, _ := json.Marshal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun)
@@ -150,7 +150,7 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 	})
 
 	t.Run("Runs unsigned script, returns HTTP status 400 and expected failed signiture verification", func(t *testing.T) {
-		configuration.Settings.Security.ApprovedPathArgumentsOnly.IsTrue = false
+		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
 
 		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
@@ -173,7 +173,7 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 	})
 
 	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
-		configuration.Settings.Security.ApprovedPathArgumentsOnly.IsTrue = false
+		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
 
 		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
@@ -206,7 +206,7 @@ U54CjtRd9nA/jp4iEhdbQ35eE4yWQRY0nbJlw4elRwilslde8nrZwfaIK1a2R+7gzfeuiZq8xTlKtIvT
 	})
 
 	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
-		configuration.Settings.Security.ApprovedPathArgumentsOnly.IsTrue = true
+		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = false
 
 		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
@@ -231,7 +231,7 @@ U54CjtRd9nA/jp4iEhdbQ35eE4yWQRY0nbJlw4elRwilslde8nrZwfaIK1a2R+7gzfeuiZq8xTlKtIvT
 	})
 
 	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
-		configuration.Settings.Security.ApprovedPathArgumentsOnly.IsTrue = true
+		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
 
 		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
@@ -265,7 +265,7 @@ U54CjtRd9nA/jp4iEhdbQ35eE4yWQRY0nbJlw4elRwilslde8nrZwfaIK1a2R+7gzfeuiZq8xTlKtIvT
 
 	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
-		configuration.Settings.Security.ApprovedPathArgumentsOnly.IsTrue = true
+		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
 
 		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
 		if runtime.GOOS == "windows" {
@@ -296,7 +296,7 @@ JkeUlACQaVsrlHmFWg0U0Y5AcnbusFKHNF4bF3kGyixXS3B3/fCZ9T9LMyMbPwZyUJyMGBpfAVXgAQQd
 	})
 
 	t.Run("Runs valid path/arg supplied, returns HTTP status 200 and expected output", func(t *testing.T) {
-		configuration.Settings.Security.ApprovedPathArgumentsOnly.IsTrue = true
+		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
 
 		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
@@ -313,7 +313,7 @@ JkeUlACQaVsrlHmFWg0U0Y5AcnbusFKHNF4bF3kGyixXS3B3/fCZ9T9LMyMbPwZyUJyMGBpfAVXgAQQd
 	})
 
 	t.Run("Bad request due to invalid path/arg combo", func(t *testing.T) {
-		configuration.Settings.Security.ApprovedPathArgumentsOnly.IsTrue = true
+		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
 
 		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun

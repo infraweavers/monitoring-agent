@@ -51,8 +51,8 @@ func TestConfigJsonImport(t *testing.T) {
 			"AllowedAddresses": ["::1/128","127.0.0.0/8","0.0.0.0/0"],
 			"UseClientCertificates": false,
 			"ClientCertificateCAFile": "PathToClientCertificateCAFile",
-			"ApprovedPathArgumentsOnly": false,
-			"ApprovedPathArguments": {
+			"ApprovedExecutablesOnly": false,
+			"ApprovedExecutableArguments": {
 				"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe": [
 					["-command", "-"],
 					["-command","start-sleep 1"],
@@ -110,8 +110,8 @@ func TestLogFilesToRetainSetToZeroDoesNotCauseError(t *testing.T) {
 			"AllowedAddresses": ["::1/128","127.0.0.0/8","0.0.0.0/0"],
 			"UseClientCertificates": false,
 			"ClientCertificateCAFile": "PathToClientCertificateCAFile",
-			"ApprovedPathArgumentsOnly": false,
-			"ApprovedPathArguments": {
+			"ApprovedExecutablesOnly": false,
+			"ApprovedExecutableArguments": {
 				"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe": [
 					["-command", "-"],
 					["-command","start-sleep 1"],
@@ -157,8 +157,8 @@ func TestConfigJsonImportFailsWhenAuthorisationSectionIsMissing(t *testing.T) {
 			"AllowedAddresses": ["::1/128","127.0.0.0/8","0.0.0.0/0"],
 			"UseClientCertificates": false,
 			"ClientCertificateCAFile": "PathToClientCertificateCAFile",
-			"ApprovedPathArgumentsOnly": false,
-			"ApprovedPathArguments": {
+			"ApprovedExecutablesOnly": false,
+			"ApprovedExecutableArguments": {
 				"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe": [
 					["-command", "-"],
 					["-command","start-sleep 1"],
@@ -206,8 +206,8 @@ func TestConfigJsonImportFailsWhenAuthorisationUsernameIsMissing(t *testing.T) {
 			"AllowedAddresses": ["::1/128","127.0.0.0/8","0.0.0.0/0"],
 			"UseClientCertificates": false,
 			"ClientCertificateCAFile": "PathToClientCertificateCAFile",
-			"ApprovedPathArgumentsOnly": false,
-			"ApprovedPathArguments": {
+			"ApprovedExecutablesOnly": false,
+			"ApprovedExecutableArguments": {
 				"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe": [
 					["-command", "-"],
 					["-command","start-sleep 1"],
@@ -255,8 +255,8 @@ func TestConfigJsonImportFailsWhenLogArchiveFilesToRetainIsMissing(t *testing.T)
 			"AllowedAddresses": ["::1/128","127.0.0.0/8","0.0.0.0/0"],
 			"UseClientCertificates": false,
 			"ClientCertificateCAFile": "PathToClientCertificateCAFile",
-			"ApprovedPathArgumentsOnly": false,
-			"ApprovedPathArguments": {
+			"ApprovedExecutablesOnly": false,
+			"ApprovedExecutableArguments": {
 				"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe": [
 					["-command", "-"],
 					["-command","start-sleep 1"],
@@ -304,8 +304,8 @@ func TestConfigJsonImportFailsWhenLogHTTPRequestsIsMissing(t *testing.T) {
 			"AllowedAddresses": ["::1/128","127.0.0.0/8","0.0.0.0/0"],
 			"UseClientCertificates": false,
 			"ClientCertificateCAFile": "PathToClientCertificateCAFile",
-			"ApprovedPathArgumentsOnly": false,
-			"ApprovedPathArguments": {
+			"ApprovedExecutablesOnly": false,
+			"ApprovedExecutableArguments": {
 				"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe": [
 					["-command", "-"],
 					["-command","start-sleep 1"],
@@ -353,8 +353,8 @@ func TestConfigJsonImportFailsWhenHTTPRequestTimeoutIsMissing(t *testing.T) {
 			"AllowedAddresses": ["::1/128","127.0.0.0/8","0.0.0.0/0"],
 			"UseClientCertificates": false,
 			"ClientCertificateCAFile": "PathToClientCertificateCAFile",
-			"ApprovedPathArgumentsOnly": false,
-			"ApprovedPathArguments": {
+			"ApprovedExecutablesOnly": false,
+			"ApprovedExecutableArguments": {
 				"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe": [
 					["-command", "-"],
 					["-command","start-sleep 1"],
@@ -402,8 +402,8 @@ func TestConfigJsonImportFailsWhenClientCertificateCAFileIsMissing(t *testing.T)
 			"PublicKey": "RWTV8L06+shYI7Xw1H+NBGmsUYlbEkbrdYxr4c0ImLCAr8NGx75VhxGQ",
 			"AllowedAddresses": ["::1/128","127.0.0.0/8","0.0.0.0/0"],
 			"UseClientCertificates": false,
-			"ApprovedPathArgumentsOnly": false,
-			"ApprovedPathArguments": {
+			"ApprovedExecutablesOnly": false,
+			"ApprovedExecutableArguments": {
 				"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe": [
 					["-command", "-"],
 					["-command","start-sleep 1"],

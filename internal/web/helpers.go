@@ -186,7 +186,7 @@ func verifyRemoteHost(remoteAddr string) bool {
 
 func verifyPathArguments(path string, args []string) bool {
 	isValid := false
-	allowedSets := configuration.Settings.Security.ApprovedPathArguments[path]
+	allowedSets := configuration.Settings.Security.ApprovedExecutableArguments[path]
 	for _, arguments := range allowedSets {
 		if cmp.Equal(arguments, args) {
 			isValid = true

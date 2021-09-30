@@ -24,8 +24,8 @@
         "AllowedAddresses": ["::1/128","127.0.0.0/8","0.0.0.0/0"],
         "UseClientCertificates": false,
         "ClientCertificateCAFile": "PathToClientCertificateCAFile",
-        "ApprovedPathArgumentsOnly": false,
-        "ApprovedPathArguments": {
+        "ApprovedExecutablesOnly": false,
+        "ApprovedExecutableArguments": {
             "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe": [
                 ["-command", "-"],
                 ["-command","C:\\Scripts\\RunMyScript.ps1"]
