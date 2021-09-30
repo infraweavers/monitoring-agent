@@ -30,27 +30,27 @@ Released
 
 #### Linux against Linux
 ```
-$ curl -k -H "Content-Type: application/json" --data '{ "path": "perl", "args": [ "-e", "print \"Hello, World\"" ] }' https://test:secret@127.0.0.1:9000/v1/runscript
+$ curl -k -H "Content-Type: application/json" --data '{ "path": "perl", "args": [ "-e", "print \"Hello, World\"" ] }' https://test:secret@127.0.0.1:9000/v1/runexecutable
 ```
 
 #### Windows (cmd) against Linux
 ```
-curl -k -H "Content-Type: application/json" --data "{""path"":""perl"",""args"":[""-e"",""print 'Hello, World'""]}" https://test:secret@127.0.0.1:9000/v1/runscript
+curl -k -H "Content-Type: application/json" --data "{""path"":""perl"",""args"":[""-e"",""print 'Hello, World'""]}" https://test:secret@127.0.0.1:9000/v1/runexecutable
 ```
 
 #### Windows (cmd) against Windows
 ```
-curl -k -H "Content-Type: application/json" --data "{""path"":""C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"",""args"":[""-Command"",""Write-Host Hello, World""]}" https://test:secret@127.0.0.1:9000/v1/runscript
+curl -k -H "Content-Type: application/json" --data "{""path"":""C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"",""args"":[""-Command"",""Write-Host Hello, World""]}" https://test:secret@127.0.0.1:9000/v1/runexecutable
 ```
 
 #### Windows (powershell 7) against Windows
 ```
-Invoke-RestMethod -SkipCertificateCheck -Method POST -UseBasicParsing -Credential (Get-Credential) -Uri "https://127.0.0.1:9000/v1/runscript" -ContentType "application/json" -Body '{"path":"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe","args":["-Command","Write-Host Hello, World"]}'
+Invoke-RestMethod -SkipCertificateCheck -Method POST -UseBasicParsing -Credential (Get-Credential) -Uri "https://127.0.0.1:9000/v1/runexecutable" -ContentType "application/json" -Body '{"path":"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe","args":["-Command","Write-Host Hello, World"]}'
 ```
 
 #### Linux against Windows
 ```
-curl -k -H "Content-Type: application/json" --data '{ "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "args": [ "-Command", "Write-Host Hello, World" ] }' https://test:secret@127.0.0.1:9000/v1/runscript
+curl -k -H "Content-Type: application/json" --data '{ "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "args": [ "-Command", "Write-Host Hello, World" ] }' https://test:secret@127.0.0.1:9000/v1/runexecutable
 ```
 All of these examples should produce the following output.
 Output:
