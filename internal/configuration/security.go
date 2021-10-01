@@ -14,6 +14,7 @@ type Security struct {
 	ClientCertificateCAFile     ClientCertCA          `json:"ClientCertificateCAFile" mandatory:"true"`
 	ApprovedExecutablesOnly     NullBool              `json:"ApprovedExecutablesOnly" mandatory:"true"`
 	ApprovedExecutableArguments map[string][][]string `json:"ApprovedExecutableArguments" mandatory:"true"`
+	AllowScriptArguments        NullBool              `json:"AllowScriptArguments" mandatory:"true"`
 }
 
 // UnmarshalJSON is a method to implement unmarshalling of the Security type

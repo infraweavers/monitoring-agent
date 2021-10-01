@@ -93,7 +93,7 @@ func TestRunexecutableApiHandler(t *testing.T) {
 		output := TestHTTPRequestWithDefaultCredentials(t, request)
 
 		assert.Equal(http.StatusBadRequest, output.ResponseStatus, "Response code should be Bad Request")
-		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - This endpoint does not use stdin"}`, output.ResponseBody)
+		assert.Equal(`{"exitcode":3,"output":"400 Bad Request"}`, output.ResponseBody)
 	})
 
 	t.Run("Returns HTTP status 400 bad request with invalid supplied", func(t *testing.T) {

@@ -64,7 +64,8 @@ func TestConfigJsonImport(t *testing.T) {
 					["-s"],
 					["-c"]
 				]
-			}
+			},
+			"AllowScriptArguments": false
 		}
 	}
 	`))
@@ -123,7 +124,8 @@ func TestLogFilesToRetainSetToZeroDoesNotCauseError(t *testing.T) {
 					["-s"],
 					["-c"]
 				]
-			}
+			},
+			"AllowScriptArguments": false
 		}
 	}
 	`))
@@ -170,7 +172,8 @@ func TestConfigJsonImportFailsWhenAuthorisationSectionIsMissing(t *testing.T) {
 					["-s"],
 					["-c"]
 				]
-			}
+			},
+			"AllowScriptArguments": false
 		}
 	}
 	`))

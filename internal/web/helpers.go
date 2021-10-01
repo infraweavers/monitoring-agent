@@ -16,13 +16,21 @@ import (
 	"github.com/jedisct1/go-minisign"
 )
 
-// Script represents an object submitted to the runexecutable endpoint
-type Script struct {
-	Path           string   `json:"path"`
-	Args           []string `json:"args,omitempty"`
-	StdIn          string   `json:"stdin,omitempty"`
-	StdInSignature string   `json:"stdinsignature,omitempty"`
-	Timeout        string   `json:"timeout,omitempty"`
+// ExecutionRequest represents an object submitted to the runexecutable endpoint
+type ExecutionRequest struct {
+	Path    string   `json:"path"`
+	Args    []string `json:"args,omitempty"`
+	Timeout string   `json:"timeout,omitempty"`
+}
+
+// ScriptExecutionRequest represents an object submitted to the runscriptstdin endpoint
+type ScriptExecutionRequest struct {
+	Path            string   `json:"path"`
+	Args            []string `json:"args,omitempty"`
+	StdIn           string   `json:"stdin,omitempty"`
+	StdInSignature  string   `json:"stdinsignature,omitempty"`
+	ScriptArguments []string `json:"scriptarguments,omitempty"`
+	Timeout         string   `json:"timeout,omitempty"`
 }
 
 // Result represents the object returned from the runexecutable endpoint
@@ -62,10 +70,25 @@ func KillAllRunningProcs() {
 	runningProcesses.mutex.Unlock()
 }
 
-func jsonDecodeScript(responseWriter http.ResponseWriter, request *http.Request) (Script, error) {
+func jsonDecodeScript(responseWriter http.ResponseWriter, request *http.Request) (ExecutionRequest, error) {
 	dec := json.NewDecoder(request.Body)
 	dec.DisallowUnknownFields()
-	var script Script
+	var script ExecutionRequest
+	error := dec.Decode(&script)
+	if error != nil {
+		responseWriter.WriteHeader(http.StatusBadRequest)
+		responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request", http.StatusBadRequest)))
+		logwrapper.LogWarningf("Failed JSON decode: '%s' '%s' '%s'", request.URL.Path, request.RemoteAddr, request.UserAgent())
+		return script, error
+	}
+
+	return script, nil
+}
+
+func jsonDecodeScriptStdIn(responseWriter http.ResponseWriter, request *http.Request) (ScriptExecutionRequest, error) {
+	dec := json.NewDecoder(request.Body)
+	dec.DisallowUnknownFields()
+	var script ScriptExecutionRequest
 	error := dec.Decode(&script)
 	if error != nil {
 		responseWriter.WriteHeader(http.StatusBadRequest)
@@ -94,11 +117,28 @@ func processResult(responseWriter http.ResponseWriter, exitCode int, output stri
 	return resultJSON
 }
 
-func runExecutable(responseWriter http.ResponseWriter, scriptToRun Script) []byte {
+func runExecutable(responseWriter http.ResponseWriter, scriptToRun ExecutionRequest) []byte {
+
+	var scriptReq ScriptExecutionRequest
+
+	scriptReq.Args = scriptToRun.Args
+	scriptReq.Path = scriptToRun.Path
+	scriptReq.Timeout = scriptToRun.Timeout
+
+	return runScriptWithStdIn(responseWriter, scriptReq)
+}
+
+func runScriptWithStdIn(responseWriter http.ResponseWriter, scriptToRun ScriptExecutionRequest) []byte {
 
 	var exitcode int = 0
 	var timeoutOccured bool = false
-	command := exec.Command(scriptToRun.Path, scriptToRun.Args...)
+
+	var argumentsToRunWith = scriptToRun.Args
+	if len(scriptToRun.ScriptArguments) > 0 {
+		argumentsToRunWith = append(argumentsToRunWith, scriptToRun.ScriptArguments...)
+	}
+
+	command := exec.Command(scriptToRun.Path, argumentsToRunWith...)
 
 	if scriptToRun.StdIn != "" {
 		command.Stdin = strings.NewReader(scriptToRun.StdIn)

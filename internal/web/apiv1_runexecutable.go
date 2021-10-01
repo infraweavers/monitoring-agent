@@ -35,13 +35,6 @@ func APIV1RunexecutablePostHandler(responseWriter http.ResponseWriter, request *
 		return
 	}
 
-	if script.StdIn != "" {
-		responseWriter.WriteHeader(http.StatusBadRequest)
-		responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - This endpoint does not use stdin", http.StatusBadRequest)))
-		logwrapper.LogWarningf("Request received to /runexecutable with stdin supplied: '%s' '%s'", request.RemoteAddr, request.UserAgent())
-		return
-	}
-
 	if script.Timeout != "" {
 		_, parseError := time.ParseDuration(script.Timeout)
 		if parseError != nil {

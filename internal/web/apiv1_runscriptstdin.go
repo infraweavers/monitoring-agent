@@ -30,7 +30,7 @@ func APIV1RunscriptstdinGetHandler(responseWriter http.ResponseWriter, request *
 func APIV1RunscriptstdinPostHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	responseWriter.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
-	script, error := jsonDecodeScript(responseWriter, request)
+	script, error := jsonDecodeScriptStdIn(responseWriter, request)
 	if error != nil {
 		return
 	}
@@ -40,6 +40,15 @@ func APIV1RunscriptstdinPostHandler(responseWriter http.ResponseWriter, request 
 			responseWriter.WriteHeader(http.StatusBadRequest)
 			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Unapproved Path/Args", http.StatusBadRequest)))
 			logwrapper.LogWarningf("Attempted to use unapproved path and argument(s) combo.", request.RemoteAddr, request.UserAgent())
+			return
+		}
+	}
+
+	if configuration.Settings.Security.AllowScriptArguments.IsTrue == false {
+		if script.ScriptArguments != nil || len(script.ScriptArguments) > 0 {
+			responseWriter.WriteHeader(http.StatusBadRequest)
+			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Script Arguments Passed But Not Permitted", http.StatusBadRequest)))
+			logwrapper.LogWarningf("Attempted to pass ScriptArguments however configuration denies this", request.RemoteAddr, request.UserAgent())
 			return
 		}
 	}
@@ -76,5 +85,5 @@ func APIV1RunscriptstdinPostHandler(responseWriter http.ResponseWriter, request 
 		}
 	}
 
-	responseWriter.Write(runExecutable(responseWriter, script))
+	responseWriter.Write(runScriptWithStdIn(responseWriter, script))
 }
