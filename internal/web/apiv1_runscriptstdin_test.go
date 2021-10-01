@@ -329,4 +329,20 @@ JkeUlACQaVsrlHmFWg0U0Y5AcnbusFKHNF4bF3kGyixXS3B3/fCZ9T9LMyMbPwZyUJyMGBpfAVXgAQQd
 		assert.Equal(http.StatusBadRequest, output.ResponseStatus)
 		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - Unapproved Path/Args"}`, output.ResponseBody)
 	})
+
+	t.Run("Runs valid path/arg supplied, returns HTTP status 200 and expected output", func(t *testing.T) {
+		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
+		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
+		configuration.Settings.Security.AllowScriptArguments.IsTrue = false
+
+		jsonBody := []byte("{\"Path\":\"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\",\"Args\":[\"-command\",\"-\"],\"ScriptArguments\":[\"scriptArgument\"],\"StdIn\":\"Write-Host 'Hello, World'\",\"StdInSignature\":\"untrusted comment: signature from minisign secret key\\nRWTV8L06+shYIx/hkk/yLgwyrJvVfYNoGDsCsv6/+2Tp1Feq/S6DLwpOENGpsUe15ZedtCZzjmXQrJ+vVeC2oNB3vR88G25o0wo=\\ntrusted comment: timestamp:1629361915\\tfile:writehost.txt\\nOfDNTVG4KeQatDps8OzEXZGNhSQrfHOWTYJ2maNyrWe+TGss7VchEEFMrKMvvTP5q0NL9YoLvbyxoWxCd2H0Cg==\\n\"}")
+		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
+
+		output := TestHTTPRequestWithDefaultCredentials(t, request)
+
+		assert := assert.New(t)
+
+		assert.Equal(http.StatusBadRequest, output.ResponseStatus, "Response code should be Bad Request")
+		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - Script Arguments Passed But Not Permitted"}`, output.ResponseBody, "Body did not match expected output")
+	})
 }
