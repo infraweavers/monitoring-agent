@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// APIV1RunExecutableGetHandler creates a http response for the API /runexecutable http get requests
+// APIV1RunexecutableGetHandler creates a http response for the API /runexecutable http get requests
 func APIV1RunexecutableGetHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	var desc = endpointDescription{
 		Endpoint:        "runexecutable",
@@ -26,7 +26,7 @@ func APIV1RunexecutableGetHandler(responseWriter http.ResponseWriter, request *h
 	responseWriter.Write([]byte(descJSON))
 }
 
-// APIV1RunExecutablePostHandler executes a script as specified in a http request and returns an http response with the result
+// APIV1RunexecutablePostHandler executes a script as specified in a http request and returns an http response with the result
 func APIV1RunexecutablePostHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	responseWriter.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
