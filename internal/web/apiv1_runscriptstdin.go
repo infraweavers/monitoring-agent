@@ -45,7 +45,8 @@ func APIV1RunscriptstdinPostHandler(responseWriter http.ResponseWriter, request 
 	}
 
 	if configuration.Settings.Security.AllowScriptArguments.IsTrue == false {
-		if script.ScriptArguments != nil || len(script.ScriptArguments) > 0 {
+
+		if script.ScriptArguments != nil && len(script.ScriptArguments) > 0 {
 			responseWriter.WriteHeader(http.StatusBadRequest)
 			responseWriter.Write(processResult(responseWriter, 3, fmt.Sprintf("%d Bad Request - Script Arguments Passed But Not Permitted", http.StatusBadRequest)))
 			logwrapper.LogWarningf("Attempted to pass ScriptArguments however configuration denies this", request.RemoteAddr, request.UserAgent())
