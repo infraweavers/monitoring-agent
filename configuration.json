@@ -29,6 +29,17 @@
             "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe": [
                 ["-command", "-"],
                 ["-command","C:\\Scripts\\RunMyScript.ps1"]
+            ],
+            "sh": [
+                ["-s"]
+            ],
+            "perl": [
+                ["-"],
+                ["/etc/monitoring-agent/scripts/check_disks.pl", "/dev/sda", "/dev/sdb"]
+            ],
+            "python": [
+                ["-"],
+                ["/etc/monitoring-agent/scripts/check_cpu.py", "50%", "80%"]
             ]
         },
         "AllowScriptArguments": true
