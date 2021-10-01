@@ -165,20 +165,27 @@ func runScriptWithStdIn(responseWriter http.ResponseWriter, scriptToRun ScriptEx
 		timeoutOccured = true
 	})
 
-	output, error := command.CombinedOutput()
+	output, errorVariable := command.CombinedOutput()
 	processKiller.Stop()
 
 	runningProcesses.mutex.Lock()
 	delete(runningProcesses.collection, command)
 	runningProcesses.mutex.Unlock()
 
-	if error != nil {
-		if exitError, ok := error.(*exec.ExitError); ok {
+	var outputString = string(output)
+
+	if errorVariable != nil {
+
+		if exitError, ok := errorVariable.(*exec.ExitError); ok {
 			exitcode = exitError.ExitCode()
+		}
+
+		if OurExecError, ok := errorVariable.(*exec.Error); ok {
+			exitcode = 3
+			outputString += "An error ocurred executing the command: " + OurExecError.Error()
 		}
 	}
 
-	var outputString = string(output)
 	if timeoutOccured {
 		exitcode = 3
 		outputString = "The script timed out"
