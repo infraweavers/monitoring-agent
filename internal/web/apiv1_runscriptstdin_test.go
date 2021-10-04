@@ -361,7 +361,7 @@ JkeUlACQaVsrlHmFWg0U0Y5AcnbusFKHNF4bF3kGyixXS3B3/fCZ9T9LMyMbPwZyUJyMGBpfAVXgAQQd
 		if runtime.GOOS == "linux" {
 			osSpecificRunScript.Path = `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`
 			osSpecificRunScript.Args = []string{"-command", "-"}
-			expectedOutput = ""
+			expectedOutput = `{"exitcode":3,"output":"An error ocurred executing the command: exec: \"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\": executable file not found in $PATH"}`
 		}
 
 		jsonBody, _ := json.Marshal(osSpecificRunScript)
