@@ -376,29 +376,22 @@ JkeUlACQaVsrlHmFWg0U0Y5AcnbusFKHNF4bF3kGyixXS3B3/fCZ9T9LMyMbPwZyUJyMGBpfAVXgAQQd
 	})
 
 	t.Run("Tries to run invalid path configured but incorrect, returns HTTP status 200 and error output", func(t *testing.T) {
+
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
 		configuration.Settings.Security.AllowScriptArguments.IsTrue = false
 
-		jsonBody := []byte(`{
-			"args": [
-				"-command",
-				"-"
-			],
-			"path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
-			"scriptarguments": [
-				"arg1"
-			],
-			"stdin": "#!/bin/bash\necho \"First line.\";\necho \"Second line.\";\necho \"Third lime.\";\n\npos=1\nfor arg in \"$@\"; do\n  echo \"$pos-th argument : $arg\"\n  (( pos += 1 ))\ndone\n\n\n",
-			"timeout": "10s"
-		}`)
+		testRequest := map[string]interface{}{
+			"args":            []string{"-command", "-"},
+			"path":            `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
+			"scriptarguments": []string{"arg1"},
+			"stdin":           "#!/bin/bash\necho \"First line.\";\necho \"Second line.\";\necho \"Third lime.\";\n\npos=1\nfor arg in \"$@\"; do\n  echo \"$pos-th argument : $arg\"\n  (( pos += 1 ))\ndone\n\n\n",
+			"timeout":         "10s",
+		}
 
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
-
-		output := TestHTTPRequestWithDefaultCredentials(t, request)
+		output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
 
 		assert := assert.New(t)
-
 		assert.Equal(http.StatusBadRequest, output.ResponseStatus, "Response code should be Bad Request")
 		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - Script Arguments Passed But Not Permitted"}`, output.ResponseBody, "Body did not match expected output")
 	})

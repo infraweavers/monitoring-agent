@@ -1,6 +1,9 @@
 package web
 
 import (
+	"bytes"
+	"encoding/json"
+	"io"
 	"io/ioutil"
 	"monitoringagent/internal/configuration"
 	"net/http"
@@ -90,6 +93,12 @@ func TestHTTPRequestWithDefaultCredentials(t *testing.T, request *http.Request) 
 	return TestHTTPRequest(t, request)
 }
 
+// TestHTTPRequest Runs the test against the relative URL against the test HTTP server
+func RunTestRequest(t *testing.T, method, url string, body io.Reader) TestHTTPResponse {
+	request, _ := http.NewRequest(method, GetTestServerURL(t)+url, body)
+	return TestHTTPRequestWithDefaultCredentials(t, request)
+}
+
 // TestHTTPRequest executes an HTTP request with the provided request. Returns an HTTP Response.
 func TestHTTPRequest(t *testing.T, request *http.Request) TestHTTPResponse {
 	response, err := http.DefaultClient.Do(request)
@@ -108,4 +117,11 @@ func TestHTTPRequest(t *testing.T, request *http.Request) TestHTTPResponse {
 		ResponseStatus: response.StatusCode,
 		ResponseBody:   string(body),
 	}
+}
+
+// JsonSerialize returns a byte buffer of an input object
+func JsonSerialize(inputObject interface{}) *bytes.Buffer {
+	byteArray, _ := json.Marshal(inputObject)
+	byteArrayBuffer := bytes.NewBuffer(byteArray)
+	return byteArrayBuffer
 }
