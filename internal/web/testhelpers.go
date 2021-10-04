@@ -93,7 +93,7 @@ func TestHTTPRequestWithDefaultCredentials(t *testing.T, request *http.Request) 
 	return TestHTTPRequest(t, request)
 }
 
-// TestHTTPRequest Runs the test against the relative URL against the test HTTP server
+// RunTestRequest Runs the test JSON against the relative URL on the test HTTP server
 func RunTestRequest(t *testing.T, method, url string, body io.Reader) TestHTTPResponse {
 	request, _ := http.NewRequest(method, GetTestServerURL(t)+url, body)
 	return TestHTTPRequestWithDefaultCredentials(t, request)
