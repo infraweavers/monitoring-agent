@@ -316,24 +316,6 @@ JkeUlACQaVsrlHmFWg0U0Y5AcnbusFKHNF4bF3kGyixXS3B3/fCZ9T9LMyMbPwZyUJyMGBpfAVXgAQQd
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
 
-		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
-		osSpecificRunScript.ScriptToRun.Args = append(osSpecificRunScript.ScriptToRun.Args, "")
-
-		jsonBody, _ := json.Marshal(osSpecificRunScript)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
-
-		output := TestHTTPRequestWithDefaultCredentials(t, request)
-
-		assert := assert.New(t)
-
-		assert.Equal(http.StatusBadRequest, output.ResponseStatus)
-		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - Unapproved Path/Args"}`, output.ResponseBody)
-	})
-
-	t.Run("Tries to run invalid path configured but incorrect, returns HTTP status 200 and error output", func(t *testing.T) {
-		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
-		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
-
 		testRequest := map[string]interface{}{}
 		expectedOutput := ""
 
