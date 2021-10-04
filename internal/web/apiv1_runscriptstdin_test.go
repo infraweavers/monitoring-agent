@@ -335,32 +335,14 @@ JkeUlACQaVsrlHmFWg0U0Y5AcnbusFKHNF4bF3kGyixXS3B3/fCZ9T9LMyMbPwZyUJyMGBpfAVXgAQQd
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
 		configuration.Settings.Security.AllowScriptArguments.IsTrue = false
 
-		testRequest := map[string]interface{}{}
-		expectedOutput := ""
-
-		if runtime.GOOS == "windows" {
-			testRequest = map[string]interface{}{
-				"path":            `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
-				"args":            []string{"-command", "-"},
-				"ScriptArguments": []string{"scriptArgument"},
-				"stdin":           `Write-Host 'Hello, World'`,
-				"stdinsignature": "untrusted comment: signature from minisign secret key\nRWTV8L06+shYIx/hkk/yLgwyrJvVfYNoGDsCsv6/+2Tp1Feq/S6DLwpOENGpsUe15ZedtCZzjmXQrJ+vVeC2oNB3vR88G25o0wo=\ntrusted comment: timestamp:1629361915	file:writehost.txt\nOfDNTVG4KeQatDps8OzEXZGNhSQrfHOWTYJ2maNyrWe+TGss7VchEEFMrKMvvTP5q0NL9YoLvbyxoWxCd2H0Cg==\n",
-			}
-			expectedOutput = `{"exitcode":3,"output":"400 Bad Request - Script Arguments Passed But Not Permitted"}`
+		testRequest := map[string]interface{}{
+			"path":            `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
+			"args":            []string{"-command", "-"},
+			"ScriptArguments": []string{"scriptArgument"},
+			"stdin":           `Write-Host 'Hello, World'`,
+			"stdinsignature": "untrusted comment: signature from minisign secret key\nRWTV8L06+shYIx/hkk/yLgwyrJvVfYNoGDsCsv6/+2Tp1Feq/S6DLwpOENGpsUe15ZedtCZzjmXQrJ+vVeC2oNB3vR88G25o0wo=\ntrusted comment: timestamp:1629361915	file:writehost.txt\nOfDNTVG4KeQatDps8OzEXZGNhSQrfHOWTYJ2maNyrWe+TGss7VchEEFMrKMvvTP5q0NL9YoLvbyxoWxCd2H0Cg==\n",
 		}
-		if runtime.GOOS == "linux" {
-			testRequest = map[string]interface{}{
-				"path":  `sh`,
-				"args":  []string{"-s"},
-				"stdin": `uname`,
-				"stdinsignature": `untrusted comment: signature from minisign secret key
-RWTV8L06+shYI8mVzlQxqbNt9+ldPNoPREsedr+sAHAnkrkyg80yQo1UrrYD7+ScU9ZXqYv79ukLN3nEgK8tsQ4uUSH7Sgpw1AY=
-trusted comment: timestamp:1629361789	file:uname.txt
-6ZxQL0d64hC8LCCPpKct+oyPN/JV1zqnD+92Uk9z9dEYnugpYmgVv9ZXabaLePEIP3bfNYe5JeD83YHWYS4/Aw==
-`,
-			}
-			expectedOutput = `{"exitcode":3,"output":"400 Bad Request - Script Arguments Passed But Not Permitted"}`
-		}
+		expectedOutput := `{"exitcode":3,"output":"400 Bad Request - Script Arguments Passed But Not Permitted"}`
 
 		output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
 
