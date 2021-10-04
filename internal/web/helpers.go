@@ -182,7 +182,7 @@ func runScriptWithStdIn(responseWriter http.ResponseWriter, scriptToRun ScriptEx
 
 		if OurExecError, ok := errorVariable.(*exec.Error); ok {
 			exitcode = 3
-			outputString += "An error ocurred executing the command: " + OurExecError.Error()
+			outputString += "An error occurred executing the command: " + OurExecError.Error()
 		}
 	}
 
