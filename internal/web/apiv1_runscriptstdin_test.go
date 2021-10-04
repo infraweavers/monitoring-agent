@@ -335,15 +335,20 @@ JkeUlACQaVsrlHmFWg0U0Y5AcnbusFKHNF4bF3kGyixXS3B3/fCZ9T9LMyMbPwZyUJyMGBpfAVXgAQQd
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
 		configuration.Settings.Security.AllowScriptArguments.IsTrue = false
 
-		jsonBody := []byte(`{"Path":"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe","Args":["-command","-"],"ScriptArguments":["scriptArgument"],"StdIn":"Write-Host 'Hello, World'","StdInSignature":"untrusted comment: signature from minisign secret key\nRWTV8L06+shYIx/hkk/yLgwyrJvVfYNoGDsCsv6/+2Tp1Feq/S6DLwpOENGpsUe15ZedtCZzjmXQrJ+vVeC2oNB3vR88G25o0wo=\ntrusted comment: timestamp:1629361915\tfile:writehost.txt\nOfDNTVG4KeQatDps8OzEXZGNhSQrfHOWTYJ2maNyrWe+TGss7VchEEFMrKMvvTP5q0NL9YoLvbyxoWxCd2H0Cg==\n"}`)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
+		testRequest := map[string]interface{}{
+			"path":            `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
+			"args":            []string{"-command", "-"},
+			"ScriptArguments": []string{"scriptArgument"},
+			"stdin":           `Write-Host 'Hello, World'`,
+			"stdinsignature": "untrusted comment: signature from minisign secret key\nRWTV8L06+shYIx/hkk/yLgwyrJvVfYNoGDsCsv6/+2Tp1Feq/S6DLwpOENGpsUe15ZedtCZzjmXQrJ+vVeC2oNB3vR88G25o0wo=\ntrusted comment: timestamp:1629361915	file:writehost.txt\nOfDNTVG4KeQatDps8OzEXZGNhSQrfHOWTYJ2maNyrWe+TGss7VchEEFMrKMvvTP5q0NL9YoLvbyxoWxCd2H0Cg==\n",
+		}
+		expectedOutput := `{"exitcode":3,"output":"400 Bad Request - Script Arguments Passed But Not Permitted"}`
 
-		output := TestHTTPRequestWithDefaultCredentials(t, request)
+		output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
 
 		assert := assert.New(t)
-
 		assert.Equal(http.StatusBadRequest, output.ResponseStatus, "Response code should be Bad Request")
-		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - Script Arguments Passed But Not Permitted"}`, output.ResponseBody, "Body did not match expected output")
+		assert.Equal(expectedOutput, output.ResponseBody, "Body did not match expected output")
 	})
 
 	t.Run("Tries to run invalid path configured but incorrect, returns HTTP status 200 and error output", func(t *testing.T) {
