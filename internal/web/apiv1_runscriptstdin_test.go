@@ -350,6 +350,7 @@ JkeUlACQaVsrlHmFWg0U0Y5AcnbusFKHNF4bF3kGyixXS3B3/fCZ9T9LMyMbPwZyUJyMGBpfAVXgAQQd
 		expectedOutput := ""
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
+		configuration.Settings.Security.AllowScriptArguments.IsTrue = true
 
 		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
 
