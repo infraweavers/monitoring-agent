@@ -347,30 +347,34 @@ JkeUlACQaVsrlHmFWg0U0Y5AcnbusFKHNF4bF3kGyixXS3B3/fCZ9T9LMyMbPwZyUJyMGBpfAVXgAQQd
 	})
 
 	t.Run("Tries to run invalid path configured but incorrect, returns HTTP status 200 and error output", func(t *testing.T) {
-		expectedOutput := ""
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
 
-		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
+		testRequest := map[string]interface{}{}
+		expectedOutput := ""
 
 		if runtime.GOOS == "windows" {
-			osSpecificRunScript.Path = "sh"
-			osSpecificRunScript.Args = []string{"-s"}
+			testRequest = map[string]interface{}{
+				"path":  `sh`,
+				"args":  []string{"-s"},
+				"stdin": `Write-Host 'Hello, World'`,
+				"stdinsignature": "untrusted comment: signature from minisign secret key\nRWTV8L06+shYIx/hkk/yLgwyrJvVfYNoGDsCsv6/+2Tp1Feq/S6DLwpOENGpsUe15ZedtCZzjmXQrJ+vVeC2oNB3vR88G25o0wo=\ntrusted comment: timestamp:1629361915	file:writehost.txt\nOfDNTVG4KeQatDps8OzEXZGNhSQrfHOWTYJ2maNyrWe+TGss7VchEEFMrKMvvTP5q0NL9YoLvbyxoWxCd2H0Cg==\n",
+			}
 			expectedOutput = `{"exitcode":3,"output":"An error ocurred executing the command: exec: \"sh\": executable file not found in %PATH%"}`
 		}
 		if runtime.GOOS == "linux" {
-			osSpecificRunScript.Path = `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`
-			osSpecificRunScript.Args = []string{"-command", "-"}
+			testRequest = map[string]interface{}{
+				"path":  `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
+				"args":  []string{"-command", "-"},
+				"stdin": `uname`,
+				"stdinsignature": `untrusted comment: signature from minisign secret key\nRWTV8L06+shYI8mVzlQxqbNt9+ldPNoPREsedr+sAHAnkrkyg80yQo1UrrYD7+ScU9ZXqYv79ukLN3nEgK8tsQ4uUSH7Sgpw1AY=\ntrusted comment: timestamp:1629361789	file:uname.txt\n6ZxQL0d64hC8LCCPpKct+oyPN/JV1zqnD+92Uk9z9dEYnugpYmgVv9ZXabaLePEIP3bfNYe5JeD83YHWYS4/Aw==\n`,
+			}
 			expectedOutput = `{"exitcode":3,"output":"An error ocurred executing the command: exec: \"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\": executable file not found in $PATH"}`
 		}
 
-		jsonBody, _ := json.Marshal(osSpecificRunScript)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
-
-		output := TestHTTPRequestWithDefaultCredentials(t, request)
+		output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
 
 		assert := assert.New(t)
-
 		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
 		assert.Equal(expectedOutput, output.ResponseBody)
 	})
@@ -395,5 +399,4 @@ JkeUlACQaVsrlHmFWg0U0Y5AcnbusFKHNF4bF3kGyixXS3B3/fCZ9T9LMyMbPwZyUJyMGBpfAVXgAQQd
 		assert.Equal(http.StatusBadRequest, output.ResponseStatus, "Response code should be Bad Request")
 		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - Script Arguments Passed But Not Permitted"}`, output.ResponseBody, "Body did not match expected output")
 	})
-
 }
