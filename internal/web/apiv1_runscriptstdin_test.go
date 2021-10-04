@@ -367,11 +367,7 @@ JkeUlACQaVsrlHmFWg0U0Y5AcnbusFKHNF4bF3kGyixXS3B3/fCZ9T9LMyMbPwZyUJyMGBpfAVXgAQQd
 				"path":  `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
 				"args":  []string{"-command", "-"},
 				"stdin": `uname`,
-				"stdinsignature": `untrusted comment: signature from minisign secret key
-RWTV8L06+shYI8mVzlQxqbNt9+ldPNoPREsedr+sAHAnkrkyg80yQo1UrrYD7+ScU9ZXqYv79ukLN3nEgK8tsQ4uUSH7Sgpw1AY=
-trusted comment: timestamp:1629361789	file:uname.txt
-6ZxQL0d64hC8LCCPpKct+oyPN/JV1zqnD+92Uk9z9dEYnugpYmgVv9ZXabaLePEIP3bfNYe5JeD83YHWYS4/Aw==
-`,
+				"stdinsignature": `untrusted comment: signature from minisign secret key\nRWTV8L06+shYI8mVzlQxqbNt9+ldPNoPREsedr+sAHAnkrkyg80yQo1UrrYD7+ScU9ZXqYv79ukLN3nEgK8tsQ4uUSH7Sgpw1AY=\ntrusted comment: timestamp:1629361789	file:uname.txt\n6ZxQL0d64hC8LCCPpKct+oyPN/JV1zqnD+92Uk9z9dEYnugpYmgVv9ZXabaLePEIP3bfNYe5JeD83YHWYS4/Aw==\n`,
 			}
 			expectedOutput = `{"exitcode":3,"output":"An error ocurred executing the command: exec: \"C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\": executable file not found in $PATH"}`
 		}
