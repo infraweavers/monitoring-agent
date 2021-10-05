@@ -429,107 +429,116 @@ trusted comment: timestamp:1629361789	file:uname.txt
 	})
 
 	t.Run("When script arguments are disabled, passing scriptarguments should be rejected", func(t *testing.T) {
+		if runtime.GOOS == "linux" {
+			configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
+			configuration.Settings.Security.SignedStdInOnly.IsTrue = true
+			configuration.Settings.Security.AllowScriptArguments.IsTrue = false
 
-		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
-		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
-		configuration.Settings.Security.AllowScriptArguments.IsTrue = false
+			testRequest := map[string]interface{}{
+				"args":            []string{"-command", "-"},
+				"path":            `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
+				"scriptarguments": []string{"arg1"},
+				"stdin":           "#!/bin/bash\necho \"First line.\";\necho \"Second line.\";\necho \"Third lime.\";\n\npos=1\nfor arg in \"$@\"; do\n  echo \"$pos-th argument : $arg\"\n  (( pos += 1 ))\ndone\n\n\n",
+				"timeout":         "10s",
+			}
 
-		testRequest := map[string]interface{}{
-			"args":            []string{"-command", "-"},
-			"path":            `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
-			"scriptarguments": []string{"arg1"},
-			"stdin":           "#!/bin/bash\necho \"First line.\";\necho \"Second line.\";\necho \"Third lime.\";\n\npos=1\nfor arg in \"$@\"; do\n  echo \"$pos-th argument : $arg\"\n  (( pos += 1 ))\ndone\n\n\n",
-			"timeout":         "10s",
+			output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
+
+			assert := assert.New(t)
+			assert.Equal(http.StatusBadRequest, output.ResponseStatus, "Response code should be Bad Request")
+			assert.Equal(`{"exitcode":3,"output":"400 Bad Request - Script Arguments Passed But Not Permitted"}`, output.ResponseBody, "Body did not match expected output")
 		}
-
-		output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
-
-		assert := assert.New(t)
-		assert.Equal(http.StatusBadRequest, output.ResponseStatus, "Response code should be Bad Request")
-		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - Script Arguments Passed But Not Permitted"}`, output.ResponseBody, "Body did not match expected output")
 	})
 
 	t.Run("When script arguments are provided the underlying script received them", func(t *testing.T) {
-		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
-		configuration.Settings.Security.SignedStdInOnly.IsTrue = false
-		configuration.Settings.Security.AllowScriptArguments.IsTrue = true
+		if runtime.GOOS == "linux" {
+			configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
+			configuration.Settings.Security.SignedStdInOnly.IsTrue = false
+			configuration.Settings.Security.AllowScriptArguments.IsTrue = true
 
-		testRequest := map[string]interface{}{
-			"path":            `bash`,
-			"args":            []string{"-s"},
-			"stdin":           "#!/bin/bash\necho \"First line.\";\necho \"Second line.\";\necho \"Third lime.\";\n\npos=1\nfor arg in \"$@\"; do\n  echo \"$pos-th argument : $arg\"\n  (( pos += 1 ))\ndone\n\n\n",
-			"scriptarguments": []string{"arg1"},
+			testRequest := map[string]interface{}{
+				"path":            `bash`,
+				"args":            []string{"-s"},
+				"stdin":           "#!/bin/bash\necho \"First line.\";\necho \"Second line.\";\necho \"Third lime.\";\n\npos=1\nfor arg in \"$@\"; do\n  echo \"$pos-th argument : $arg\"\n  (( pos += 1 ))\ndone\n\n\n",
+				"scriptarguments": []string{"arg1"},
+			}
+
+			expectedOutput := `{"exitcode":0,"output":"First line.\nSecond line.\nThird lime.\n1-th argument : arg1\n"}`
+
+			output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
+
+			assert := assert.New(t)
+			assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
+			assert.Equal(expectedOutput, output.ResponseBody)
 		}
-
-		expectedOutput := `{"exitcode":0,"output":"First line.\nSecond line.\nThird lime.\n1-th argument : arg1\n"}`
-
-		output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
-
-		assert := assert.New(t)
-		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
-		assert.Equal(expectedOutput, output.ResponseBody)
 	})
 
 	t.Run("When script arguments are provided with special characters the underlying script received them", func(t *testing.T) {
-		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
-		configuration.Settings.Security.SignedStdInOnly.IsTrue = false
-		configuration.Settings.Security.AllowScriptArguments.IsTrue = true
+		if runtime.GOOS == "linux" {
+			configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
+			configuration.Settings.Security.SignedStdInOnly.IsTrue = false
+			configuration.Settings.Security.AllowScriptArguments.IsTrue = true
 
-		testRequest := map[string]interface{}{
-			"path":            `bash`,
-			"args":            []string{"-s"},
-			"stdin":           "#!/bin/bash\necho \"First line.\";\necho \"Second line.\";\necho \"Third lime.\";\n\npos=1\nfor arg in \"$@\"; do\n  echo \"$pos-th argument : $arg\"\n  (( pos += 1 ))\ndone\n\n\n",
-			"scriptarguments": []string{"arg1", "|", "cat"},
+			testRequest := map[string]interface{}{
+				"path":            `bash`,
+				"args":            []string{"-s"},
+				"stdin":           "#!/bin/bash\necho \"First line.\";\necho \"Second line.\";\necho \"Third lime.\";\n\npos=1\nfor arg in \"$@\"; do\n  echo \"$pos-th argument : $arg\"\n  (( pos += 1 ))\ndone\n\n\n",
+				"scriptarguments": []string{"arg1", "|", "cat"},
+			}
+
+			expectedOutput := `{"exitcode":0,"output":"First line.\nSecond line.\nThird lime.\n1-th argument : arg1\n2-th argument : |\n3-th argument : cat\n"}`
+
+			output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
+
+			assert := assert.New(t)
+			assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
+			assert.Equal(expectedOutput, output.ResponseBody)
 		}
-
-		expectedOutput := `{"exitcode":0,"output":"First line.\nSecond line.\nThird lime.\n1-th argument : arg1\n2-th argument : |\n3-th argument : cat\n"}`
-
-		output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
-
-		assert := assert.New(t)
-		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
-		assert.Equal(expectedOutput, output.ResponseBody)
 	})
 
 	t.Run("When script arguments are provided with special characters the underlying script received them and a file is not created", func(t *testing.T) {
-		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
-		configuration.Settings.Security.SignedStdInOnly.IsTrue = false
-		configuration.Settings.Security.AllowScriptArguments.IsTrue = true
+		if runtime.GOOS == "linux" {
+			configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
+			configuration.Settings.Security.SignedStdInOnly.IsTrue = false
+			configuration.Settings.Security.AllowScriptArguments.IsTrue = true
 
-		testRequest := map[string]interface{}{
-			"path":            `bash`,
-			"args":            []string{"-s"},
-			"stdin":           "#!/bin/bash\necho \"First line.\";\necho \"Second line.\";\necho \"Third lime.\";\n\npos=1\nfor arg in \"$@\"; do\n  echo \"$pos-th argument : $arg\"\n  (( pos += 1 ))\ndone\n\n\n",
-			"scriptarguments": []string{"arg1", ">", "outputfile.temp"},
+			testRequest := map[string]interface{}{
+				"path":            `bash`,
+				"args":            []string{"-s"},
+				"stdin":           "#!/bin/bash\necho \"First line.\";\necho \"Second line.\";\necho \"Third lime.\";\n\npos=1\nfor arg in \"$@\"; do\n  echo \"$pos-th argument : $arg\"\n  (( pos += 1 ))\ndone\n\n\n",
+				"scriptarguments": []string{"arg1", ">", "outputfile.temp"},
+			}
+
+			expectedOutput := `{"exitcode":0,"output":"First line.\nSecond line.\nThird lime.\n1-th argument : arg1\n2-th argument : \u003e\n3-th argument : outputfile.temp\n"}`
+
+			output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
+
+			assert := assert.New(t)
+			assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
+			assert.Equal(expectedOutput, output.ResponseBody)
 		}
-
-		expectedOutput := `{"exitcode":0,"output":"First line.\nSecond line.\nThird lime.\n1-th argument : arg1\n2-th argument : \u003e\n3-th argument : outputfile.temp\n"}`
-
-		output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
-
-		assert := assert.New(t)
-		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
-		assert.Equal(expectedOutput, output.ResponseBody)
 	})
 
 	t.Run("When script arguments are provided with special characters the underlying script received them and a file is not read", func(t *testing.T) {
-		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
-		configuration.Settings.Security.SignedStdInOnly.IsTrue = false
-		configuration.Settings.Security.AllowScriptArguments.IsTrue = true
+		if runtime.GOOS == "linux" {
+			configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
+			configuration.Settings.Security.SignedStdInOnly.IsTrue = false
+			configuration.Settings.Security.AllowScriptArguments.IsTrue = true
 
-		testRequest := map[string]interface{}{
-			"path":            `bash`,
-			"args":            []string{"-s"},
-			"stdin":           "#!/bin/bash\necho \"First line.\";\necho \"Second line.\";\necho \"Third lime.\";\n\npos=1\nfor arg in \"$@\"; do\n  echo \"$pos-th argument : $arg\"\n  (( pos += 1 ))\ndone\n\n\n",
-			"scriptarguments": []string{"arg1", "<", "inputfile.temp"},
+			testRequest := map[string]interface{}{
+				"path":            `bash`,
+				"args":            []string{"-s"},
+				"stdin":           "#!/bin/bash\necho \"First line.\";\necho \"Second line.\";\necho \"Third lime.\";\n\npos=1\nfor arg in \"$@\"; do\n  echo \"$pos-th argument : $arg\"\n  (( pos += 1 ))\ndone\n\n\n",
+				"scriptarguments": []string{"arg1", "<", "inputfile.temp"},
+			}
+
+			expectedOutput := `{"exitcode":0,"output":"First line.\nSecond line.\nThird lime.\n1-th argument : arg1\n2-th argument : \u003c\n3-th argument : inputfile.temp\n"}`
+
+			output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
+
+			assert := assert.New(t)
+			assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
+			assert.Equal(expectedOutput, output.ResponseBody)
 		}
-
-		expectedOutput := `{"exitcode":0,"output":"First line.\nSecond line.\nThird lime.\n1-th argument : arg1\n2-th argument : \u003c\n3-th argument : inputfile.temp\n"}`
-
-		output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
-
-		assert := assert.New(t)
-		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
-		assert.Equal(expectedOutput, output.ResponseBody)
 	})
 }
