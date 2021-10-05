@@ -9,17 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type ScriptAsStdInToRun struct {
-	ScriptToRun
-	StdIn
-	StdInSignature
-}
-
-type RunScriptStdInTestCase struct {
-	ScriptAsStdInToRun
-	ExpectedResult
-}
-
 func TestRunScriptStdInApiHandler(t *testing.T) {
 
 	TestSetup()
