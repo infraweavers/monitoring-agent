@@ -205,27 +205,33 @@ U54CjtRd9nA/jp4iEhdbQ35eE4yWQRY0nbJlw4elRwilslde8nrZwfaIK1a2R+7gzfeuiZq8xTlKtIvT
 		assert.Equal(`{"exitcode":0,"output":"This script is a test.\n"}`, output.ResponseBody, "Body did not match expected output")
 	})
 
-	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
+	t.Run("Runs supplied unsigned script while script signing is set to false, returns HTTP status 200 and expected script output", func(t *testing.T) {
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = false
+		configuration.Settings.Security.AllowScriptArguments.IsTrue = false
 
-		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
+		testRequest := map[string]interface{}{}
+
 		if runtime.GOOS == "windows" {
-			osSpecificRunScript.StdIn.StdIn = `Write-Host 'This script is a test.'`
-			osSpecificRunScript.StdInSignature.StdInSignature = ``
+			testRequest = map[string]interface{}{
+				"path":           `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
+				"args":           []string{"-command", "-"},
+				"stdin":          `Write-Host 'This script is a test.'`,
+				"stdinsignature": ``,
+			}
 		}
 		if runtime.GOOS == "linux" {
-			osSpecificRunScript.StdIn.StdIn = `echo "This script is a test."`
-			osSpecificRunScript.StdInSignature.StdInSignature = ``
+			testRequest = map[string]interface{}{
+				"path":           `sh`,
+				"args":           []string{"-s"},
+				"stdin":          `echo "This script is a test."`,
+				"stdinsignature": ``,
+			}
 		}
 
-		jsonBody, _ := json.Marshal(osSpecificRunScript)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
-
-		output := TestHTTPRequestWithDefaultCredentials(t, request)
+		output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
 
 		assert := assert.New(t)
-
 		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
 		assert.Equal(`{"exitcode":0,"output":"This script is a test.\n"}`, output.ResponseBody, "Body did not match expected output")
 	})
