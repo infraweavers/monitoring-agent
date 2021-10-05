@@ -9,16 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type RunExecutableTestCase struct {
-	ScriptToRun
-	ExpectedResult
-}
-
-type RunExecutableWithTimeoutTestCase struct {
-	ScriptToRun
-	Timeout
-}
-
 func TestRunexecutableApiHandler(t *testing.T) {
 
 	TestSetup()

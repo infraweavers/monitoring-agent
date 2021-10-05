@@ -13,32 +13,6 @@ import (
 
 var testServer *httptest.Server
 
-// StdIn is a struct for use in setting up a test case that passes standard input (StdIn) to an endpoint
-type StdIn struct {
-	StdIn string
-}
-
-// Timeout is a struct for use in setting up a test case that passes standard input (StdIn) to an endpoint
-type Timeout struct {
-	Timeout string
-}
-
-// ExpectedResult is a struct for use in setting up a test case that defines the output string that an endpoint should return
-type ExpectedResult struct {
-	Output string
-}
-
-// StdInSignature is a struct for storing the signature of the script passed to stdin
-type StdInSignature struct {
-	StdInSignature string
-}
-
-// ScriptToRun is a struct that defines a script (path and arguments) to be passed to an endpoint under test
-type ScriptToRun struct {
-	Path string
-	Args []string
-}
-
 // TestCredential is a struct for representing a set of credentials (user name and password), used in setting up test cases
 type TestCredential struct {
 	Username string
