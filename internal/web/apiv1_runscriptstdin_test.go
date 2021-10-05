@@ -315,17 +315,18 @@ JkeUlACQaVsrlHmFWg0U0Y5AcnbusFKHNF4bF3kGyixXS3B3/fCZ9T9LMyMbPwZyUJyMGBpfAVXgAQQd
 	t.Run("Bad request due to invalid path/arg combo", func(t *testing.T) {
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
+		configuration.Settings.Security.AllowScriptArguments.IsTrue = false
 
-		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
-		osSpecificRunScript.ScriptToRun.Args = append(osSpecificRunScript.ScriptToRun.Args, "")
+		testRequest := map[string]interface{}{
+			"path":  `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
+			"args":  []string{"-wrong", "args"},
+			"stdin": `Write-Host 'Hello, World'`,
+			"stdinsignature": "untrusted comment: signature from minisign secret key\nRWTV8L06+shYIx/hkk/yLgwyrJvVfYNoGDsCsv6/+2Tp1Feq/S6DLwpOENGpsUe15ZedtCZzjmXQrJ+vVeC2oNB3vR88G25o0wo=\ntrusted comment: timestamp:1629361915	file:writehost.txt\nOfDNTVG4KeQatDps8OzEXZGNhSQrfHOWTYJ2maNyrWe+TGss7VchEEFMrKMvvTP5q0NL9YoLvbyxoWxCd2H0Cg==\n",
+		}
 
-		jsonBody, _ := json.Marshal(osSpecificRunScript)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
-
-		output := TestHTTPRequestWithDefaultCredentials(t, request)
+		output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
 
 		assert := assert.New(t)
-
 		assert.Equal(http.StatusBadRequest, output.ResponseStatus)
 		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - Unapproved Path/Args"}`, output.ResponseBody)
 	})
