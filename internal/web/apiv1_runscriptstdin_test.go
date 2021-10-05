@@ -456,17 +456,12 @@ trusted comment: timestamp:1629361789	file:uname.txt
 			configuration.Settings.Security.AllowScriptArguments.IsTrue = false
 
 			testRequest := map[string]interface{}{
-				"path":  `sh`,
+				"path":  `bash`,
 				"args":  []string{"-s"},
-				"stdin": `#!/bin/bash\necho "First line.";\necho "Second line.";\necho "Third lime.";\n`,
-				"stdinsignature": `untrusted comment: signature from minisign secret key
-RWQ3ly9IPenQ6Yds9dwf0ZbgW3nOe6pwhgdaFPeoXSO8eNNInMRE5UEe+lsGuWG016SeNAbWKtuZVOV5QxBcuTNukoMmB8+z7A0=
-trusted comment: timestamp:1631633837	file:echo.sh
-XSx0EYiti1RA1IEQd7HCLyF0cEEKj5xXSmiKV9BnPmrRHKcS5Et35Xhpynlu0t1RLlZUQDueRqAwmyaunxjqAw==				
-`,
+				"stdin": "#!/bin/bash\necho \"First line.\";\necho \"Second line.\";\necho \"Third lime.\";\n\npos=1\nfor arg in \"$@\"; do\n  echo \"$pos-th argument : $arg\"\n  (( pos += 1 ))\ndone\n\n\n",
 			}
 
-			expectedOutput := `First line.\nSecond line.\nThird lime.\n`
+			expectedOutput := `{"exitcode":0,"output":"First line.\nSecond line.\nThird lime.\n1-th argument : arg1\n"}`
 
 			output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
 
