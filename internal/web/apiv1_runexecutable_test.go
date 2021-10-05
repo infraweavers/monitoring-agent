@@ -129,54 +129,42 @@ trusted comment: timestamp:1629361789	file:uname.txt
 	})
 
 	t.Run("Returns HTTP status 400 bad request with invalid supplied", func(t *testing.T) {
-		var scriptBodyToTest = RunExecutableWithTimeoutTestCase{
-			ScriptToRun{
-				Path: "sh",
-				Args: []string{"sh", "-s"},
-			},
-			Timeout{
-				Timeout: "2",
-			},
+
+		testRequest := map[string]interface{}{
+			"path":    `sh`,
+			"args":    []string{"-c", "-s"},
+			"Timeout": "2",
 		}
+
+		output := RunTestRequest(t, http.MethodPost, "/v1/runexecutable", JsonSerialize(testRequest))
+
 		assert := assert.New(t)
-
-		jsonBody, _ := json.Marshal(scriptBodyToTest)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runexecutable", bytes.NewBuffer(jsonBody))
-
-		output := TestHTTPRequestWithDefaultCredentials(t, request)
-
 		assert.Equal(http.StatusBadRequest, output.ResponseStatus, "Response code should be Bad Request")
 		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - Invalid timeout supplied: '2'"}`, output.ResponseBody)
 	})
 
 	t.Run("Returns HTTP status 200 and \"exitcode: 3, output: The script timed out\" when timeout exceeded", func(t *testing.T) {
-		var osSpecifiTestCases = map[string]RunExecutableWithTimeoutTestCase{
-			"linux": {
-				ScriptToRun{
-					Path: "sh",
-					Args: []string{"-c", "sleep 2"},
-				},
-				Timeout{
-					Timeout: "1s",
-				},
-			},
-			"windows": {
-				ScriptToRun{
-					Path: `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
-					Args: []string{"-command", `Start-Sleep -seconds 2`},
-				},
-				Timeout{
-					Timeout: "1s",
-				},
-			},
+
+		testRequest := map[string]interface{}{}
+
+		if runtime.GOOS == "windows" {
+			testRequest = map[string]interface{}{
+				"path":    `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
+				"args":    []string{"-command", `Start-Sleep -seconds 2`},
+				"Timeout": "1s",
+			}
 		}
+		if runtime.GOOS == "linux" {
+			testRequest = map[string]interface{}{
+				"path":    `sh`,
+				"args":    []string{"-c", "sleep 2"},
+				"Timeout": "1s",
+			}
+		}
+
+		output := RunTestRequest(t, http.MethodPost, "/v1/runexecutable", JsonSerialize(testRequest))
+
 		assert := assert.New(t)
-
-		jsonBody, _ := json.Marshal(osSpecifiTestCases[runtime.GOOS])
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runexecutable", bytes.NewBuffer(jsonBody))
-
-		output := TestHTTPRequestWithDefaultCredentials(t, request)
-
 		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be Service Unavailable")
 		assert.Equal(`{"exitcode":3,"output":"The script timed out"}`, output.ResponseBody)
 	})
