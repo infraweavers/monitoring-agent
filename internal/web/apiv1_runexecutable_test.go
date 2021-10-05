@@ -14,7 +14,7 @@ func TestRunexecutableApiHandler(t *testing.T) {
 	TestSetup()
 	defer TestTeardown()
 
-	t.Run("When running on windows, and supplied a executable, returns HTTP status 200 and expected script output", func(t *testing.T) {
+	t.Run("When supplied an executable, returns HTTP status 200 and expected script output", func(t *testing.T) {
 		testRequest := map[string]interface{}{}
 		expectedResult := ""
 
@@ -40,7 +40,7 @@ func TestRunexecutableApiHandler(t *testing.T) {
 		assert.Equal(expectedResult, output.ResponseBody, "Response output did not match case")
 	})
 
-	t.Run("Returns HTTP status 400 bad request with erronous post", func(t *testing.T) {
+	t.Run("When provided with a entirely incorrect request we return HTTP status 400 bad request", func(t *testing.T) {
 
 		testRequest := map[string]interface{}{
 			"foo": `bar`,
@@ -54,7 +54,7 @@ func TestRunexecutableApiHandler(t *testing.T) {
 		assert.Equal(`{"exitcode":3,"output":"400 Bad Request"}`, output.ResponseBody)
 	})
 
-	t.Run("Returns HTTP status 400 bad request with stdin supplied", func(t *testing.T) {
+	t.Run("When provided a request with stdin an  HTTP status 400 bad request is returned", func(t *testing.T) {
 
 		testRequest := map[string]interface{}{
 			"path":           `sh`,
@@ -70,7 +70,7 @@ func TestRunexecutableApiHandler(t *testing.T) {
 		assert.Equal(`{"exitcode":3,"output":"400 Bad Request"}`, output.ResponseBody)
 	})
 
-	t.Run("Returns HTTP status 400 bad request with invalid supplied", func(t *testing.T) {
+	t.Run("When provided with an invalid timeout, returns HTTP status 400 bad request", func(t *testing.T) {
 
 		testRequest := map[string]interface{}{
 			"path":    `sh`,
@@ -85,7 +85,7 @@ func TestRunexecutableApiHandler(t *testing.T) {
 		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - Invalid timeout supplied: '2'"}`, output.ResponseBody)
 	})
 
-	t.Run("Returns HTTP status 200 and \"exitcode: 3, output: The script timed out\" when timeout exceeded", func(t *testing.T) {
+	t.Run(`When the underlying command times out an HTTP status 200 and "exitcode: 3, output: The script timed out" is returned`, func(t *testing.T) {
 
 		testRequest := map[string]interface{}{}
 
@@ -111,7 +111,7 @@ func TestRunexecutableApiHandler(t *testing.T) {
 		assert.Equal(`{"exitcode":3,"output":"The script timed out"}`, output.ResponseBody)
 	})
 
-	t.Run("Returns HTTP status 200 when timeout not exceeded", func(t *testing.T) {
+	t.Run("When the command completes with in the timeout an HTTP 200 OK is returned", func(t *testing.T) {
 
 		testRequest := map[string]interface{}{}
 
@@ -137,7 +137,7 @@ func TestRunexecutableApiHandler(t *testing.T) {
 		assert.Equal(`{"exitcode":0,"output":""}`, output.ResponseBody)
 	})
 
-	t.Run("200 Response to Approved Path and Arguments", func(t *testing.T) {
+	t.Run("When the submitted request is included in the ApprovedExecutables and the ApprovedExecutablesOnly is enabled then a HTTP 200 OK Response with the command output is returned", func(t *testing.T) {
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
 		configuration.Settings.Security.ApprovedExecutableArguments = map[string][][]string{
 			`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`: {{"-command", "-"}, {"-command", `write-host "Hello, World"`}, {"-command"}},
@@ -169,7 +169,7 @@ func TestRunexecutableApiHandler(t *testing.T) {
 		assert.Equal(expectedOutput, output.ResponseBody)
 	})
 
-	t.Run("Bad request due to invalid path/arg combo", func(t *testing.T) {
+	t.Run("When the submitted request is not included in the ApprovedExecutables and the ApprovedExecutablesOnly is enabled then the request is rejected", func(t *testing.T) {
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
 		configuration.Settings.Security.ApprovedExecutableArguments = map[string][][]string{
 			`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`: {{"-command", "-"}, {"-command", "start-sleep 1"}, {"-command"}},
