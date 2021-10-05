@@ -137,16 +137,39 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
+		configuration.Settings.Security.AllowScriptArguments.IsTrue = false
 
-		jsonBody, _ := json.Marshal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
+		testRequest := map[string]interface{}{}
+		expectedOutput := ""
 
-		output := TestHTTPRequestWithDefaultCredentials(t, request)
+		if runtime.GOOS == "windows" {
+			testRequest = map[string]interface{}{
+				"path":  `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
+				"args":  []string{"-command", "-"},
+				"stdin": `Write-Host 'Hello, World'`,
+				"stdinsignature": "untrusted comment: signature from minisign secret key\nRWTV8L06+shYIx/hkk/yLgwyrJvVfYNoGDsCsv6/+2Tp1Feq/S6DLwpOENGpsUe15ZedtCZzjmXQrJ+vVeC2oNB3vR88G25o0wo=\ntrusted comment: timestamp:1629361915	file:writehost.txt\nOfDNTVG4KeQatDps8OzEXZGNhSQrfHOWTYJ2maNyrWe+TGss7VchEEFMrKMvvTP5q0NL9YoLvbyxoWxCd2H0Cg==\n",
+			}
+			expectedOutput = `{"exitcode":0,"output":"Hello, World\n"}`
+		}
+		if runtime.GOOS == "linux" {
+			testRequest = map[string]interface{}{
+				"path":  `sh`,
+				"args":  []string{"-s"},
+				"stdin": `uname`,
+				"stdinsignature": `untrusted comment: signature from minisign secret key
+RWTV8L06+shYI8mVzlQxqbNt9+ldPNoPREsedr+sAHAnkrkyg80yQo1UrrYD7+ScU9ZXqYv79ukLN3nEgK8tsQ4uUSH7Sgpw1AY=
+trusted comment: timestamp:1629361789	file:uname.txt
+6ZxQL0d64hC8LCCPpKct+oyPN/JV1zqnD+92Uk9z9dEYnugpYmgVv9ZXabaLePEIP3bfNYe5JeD83YHWYS4/Aw==
+`,
+			}
+			expectedOutput = `{"exitcode":0,"output":"Linux\n"}`
+		}
+
+		output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
 
 		assert := assert.New(t)
-
 		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
-		assert.Equal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ExpectedResult.Output, output.ResponseBody, "Body did not match expected output")
+		assert.Equal(expectedOutput, output.ResponseBody, "Body did not match expected output")
 	})
 
 	t.Run("Runs unsigned script, returns HTTP status 400 and expected failed signiture verification", func(t *testing.T) {
