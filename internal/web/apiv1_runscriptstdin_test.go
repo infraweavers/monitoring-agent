@@ -233,32 +233,38 @@ U54CjtRd9nA/jp4iEhdbQ35eE4yWQRY0nbJlw4elRwilslde8nrZwfaIK1a2R+7gzfeuiZq8xTlKtIvT
 	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
+		configuration.Settings.Security.AllowScriptArguments.IsTrue = false
 
-		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
+		testRequest := map[string]interface{}{}
+
 		if runtime.GOOS == "windows" {
-			osSpecificRunScript.StdIn.StdIn = `Write-Host 'This script is a test.'`
-			osSpecificRunScript.StdInSignature.StdInSignature = `untrusted comment: signature from minisign secret key
+			testRequest = map[string]interface{}{
+				"path":  `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
+				"args":  []string{"-command", "-"},
+				"stdin": `Write-Host 'This script is a test.'`,
+				"stdinsignature": `untrusted comment: signature from minisign secret key
 RWTV8L06+shYI0gq2Ph8MRbdPBrxVEXwzw12yn6b6qG4uyBcnCZ6jTBVULVTZPlMwx6mBnLL2ayCwL/NC83wHJMBtcg3oY/uDQk=
 trusted comment: timestamp:1629362484	file:whtest.txt
 tbOXpkm9GyEQlUflmVX4cDy2k5fJWU3wtxscvAqSu19C227SFQU6SHlUZbpXB85pBoFJTJK+tQVBN1u1RmaOCw==
-`
+`,
+			}
 		}
 		if runtime.GOOS == "linux" {
-			osSpecificRunScript.StdIn.StdIn = `echo "This script is a test."`
-			osSpecificRunScript.StdInSignature.StdInSignature = `untrusted comment: signature from minisign secret key
+			testRequest = map[string]interface{}{
+				"path":  `sh`,
+				"args":  []string{"-s"},
+				"stdin": `echo "This script is a test."`,
+				"stdinsignature": `untrusted comment: signature from minisign secret key
 RWTV8L06+shYI+aL2MAm12HN97gM83Cd1c2H10PMtGhFAmYlxsEWnJGZEFMyFtB46Ity/6iK36IEw66L+5KjcLJEOhw7TMwjZQs=
 trusted comment: timestamp:1629368840	file:echotest.txt
 U54CjtRd9nA/jp4iEhdbQ35eE4yWQRY0nbJlw4elRwilslde8nrZwfaIK1a2R+7gzfeuiZq8xTlKtIvTOg5aAA==
-`
+`,
+			}
 		}
 
-		jsonBody, _ := json.Marshal(osSpecificRunScript)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
-
-		output := TestHTTPRequestWithDefaultCredentials(t, request)
+		output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
 
 		assert := assert.New(t)
-
 		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
 		assert.Equal(`{"exitcode":0,"output":"This script is a test.\n"}`, output.ResponseBody, "Body did not match expected output")
 	})
