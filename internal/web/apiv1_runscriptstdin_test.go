@@ -14,7 +14,7 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 	TestSetup()
 	defer TestTeardown()
 
-	t.Run("Script supplied through stdin, returns HTTP status 200 and expected script output", func(t *testing.T) {
+	t.Run("When script is supplied through stdin, returns HTTP status 200 and expected script output", func(t *testing.T) {
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = false
 		configuration.Settings.Security.AllowScriptArguments.IsTrue = false
