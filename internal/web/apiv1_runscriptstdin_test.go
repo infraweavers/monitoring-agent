@@ -503,7 +503,7 @@ trusted comment: timestamp:1629361789	file:uname.txt
 			"scriptarguments": []string{"arg1", ">", "outputfile.temp"},
 		}
 
-		expectedOutput := `{"exitcode":0,"output":"First line.\nSecond line.\nThird lime.\n1-th argument : arg1\n2-th argument : >\n3-th argument : outputfile.temp\n"}`
+		expectedOutput := `{"exitcode":0,"output":"First line.\nSecond line.\nThird lime.\n1-th argument : arg1\n2-th argument : \u003e\n3-th argument : outputfile.temp\n"}`
 
 		output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
 
@@ -524,7 +524,7 @@ trusted comment: timestamp:1629361789	file:uname.txt
 			"scriptarguments": []string{"arg1", "<", "inputfile.temp"},
 		}
 
-		expectedOutput := `{"exitcode":0,"output":"First line.\nSecond line.\nThird lime.\n1-th argument : arg1\n2-th argument : <\n3-th argument : inputfile.temp\n"}`
+		expectedOutput := `{"exitcode":0,"output":"First line.\nSecond line.\nThird lime.\n1-th argument : arg1\n2-th argument : \u003c\n3-th argument : inputfile.temp\n"}`
 
 		output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
 
