@@ -182,33 +182,27 @@ trusted comment: timestamp:1629361789	file:uname.txt
 	})
 
 	t.Run("Returns HTTP status 200 when timeout not exceeded", func(t *testing.T) {
-		var osSpecifiTestCases = map[string]RunExecutableWithTimeoutTestCase{
-			"linux": {
-				ScriptToRun{
-					Path: "sh",
-					Args: []string{"-c", "sleep 1"},
-				},
-				Timeout{
-					Timeout: "2s",
-				},
-			},
-			"windows": {
-				ScriptToRun{
-					Path: `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
-					Args: []string{"-command", `Start-Sleep -seconds 1`},
-				},
-				Timeout{
-					Timeout: "2s",
-				},
-			},
+
+		testRequest := map[string]interface{}{}
+
+		if runtime.GOOS == "windows" {
+			testRequest = map[string]interface{}{
+				"path":    `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
+				"args":    []string{"-command", `Start-Sleep -seconds 1`},
+				"Timeout": "2s",
+			}
 		}
+		if runtime.GOOS == "linux" {
+			testRequest = map[string]interface{}{
+				"path":    `sh`,
+				"args":    []string{"-c", "sleep 1"},
+				"Timeout": "2s",
+			}
+		}
+
+		output := RunTestRequest(t, http.MethodPost, "/v1/runexecutable", JsonSerialize(testRequest))
+
 		assert := assert.New(t)
-
-		jsonBody, _ := json.Marshal(osSpecifiTestCases[runtime.GOOS])
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runexecutable", bytes.NewBuffer(jsonBody))
-
-		output := TestHTTPRequestWithDefaultCredentials(t, request)
-
 		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
 		assert.Equal(`{"exitcode":0,"output":""}`, output.ResponseBody)
 	})
