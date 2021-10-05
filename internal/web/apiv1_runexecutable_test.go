@@ -19,53 +19,35 @@ type RunExecutableWithTimeoutTestCase struct {
 	Timeout
 }
 
-var osSpecifiTestCases = map[string]RunExecutableTestCase{
-	"linux": {
-		ScriptToRun{
-			Path: "sh",
-			Args: []string{"-c", "uname"},
-		},
-		ExpectedResult{
-			Output: `{"exitcode":0,"output":"Linux\n"}`,
-		},
-	},
-	"windows": {
-		ScriptToRun{
-			Path: `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
-			Args: []string{"-command", `write-host "Hello, World"`},
-		},
-		ExpectedResult{
-			Output: `{"exitcode":0,"output":"Hello, World\n"}`,
-		},
-	},
-}
-
 func TestRunexecutableApiHandler(t *testing.T) {
 
 	TestSetup()
 	defer TestTeardown()
 
-	t.Run("Runs supplied script, returns HTTP status 200 and expected script output", func(t *testing.T) {
+	t.Run("When running on windows, and supplied a executable, returns HTTP status 200 and expected script output", func(t *testing.T) {
 		testRequest := map[string]interface{}{}
+		expectedResult := ""
 
 		if runtime.GOOS == "windows" {
 			testRequest = map[string]interface{}{
 				"path": `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
 				"args": []string{"-command", `write-host "Hello, World"`},
 			}
+			expectedResult = `{"exitcode":0,"output":"Hello, World\n"}`
 		}
 		if runtime.GOOS == "linux" {
 			testRequest = map[string]interface{}{
 				"path": `sh`,
 				"args": []string{"-c", "uname"},
 			}
+			expectedResult = `{"exitcode":0,"output":"Linux\n"}`
 		}
 
 		output := RunTestRequest(t, http.MethodPost, "/v1/runexecutable", JsonSerialize(testRequest))
 
 		assert := assert.New(t)
 		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
-		assert.Equal(osSpecifiTestCases[runtime.GOOS].ExpectedResult.Output, output.ResponseBody, "Response output did not match case")
+		assert.Equal(expectedResult, output.ResponseBody, "Response output did not match case")
 	})
 
 	t.Run("Returns HTTP status 400 bad request with erronous post", func(t *testing.T) {
