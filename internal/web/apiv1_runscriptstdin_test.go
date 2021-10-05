@@ -450,25 +450,23 @@ trusted comment: timestamp:1629361789	file:uname.txt
 	})
 
 	t.Run("When script arguments are provided the underlying script received them", func(t *testing.T) {
-		if runtime.GOOS == "linux" {
-			configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
-			configuration.Settings.Security.SignedStdInOnly.IsTrue = false
-			configuration.Settings.Security.AllowScriptArguments.IsTrue = true
+		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
+		configuration.Settings.Security.SignedStdInOnly.IsTrue = false
+		configuration.Settings.Security.AllowScriptArguments.IsTrue = true
 
-			testRequest := map[string]interface{}{
-				"path":            `bash`,
-				"args":            []string{"-s"},
-				"stdin":           "#!/bin/bash\necho \"First line.\";\necho \"Second line.\";\necho \"Third lime.\";\n\npos=1\nfor arg in \"$@\"; do\n  echo \"$pos-th argument : $arg\"\n  (( pos += 1 ))\ndone\n\n\n",
-				"scriptarguments": []string{"arg1"},
-			}
-
-			expectedOutput := `{"exitcode":0,"output":"First line.\nSecond line.\nThird lime.\n1-th argument : arg1\n"}`
-
-			output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
-
-			assert := assert.New(t)
-			assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
-			assert.Equal(expectedOutput, output.ResponseBody)
+		testRequest := map[string]interface{}{
+			"path":            `bash`,
+			"args":            []string{"-s"},
+			"stdin":           "#!/bin/bash\necho \"First line.\";\necho \"Second line.\";\necho \"Third lime.\";\n\npos=1\nfor arg in \"$@\"; do\n  echo \"$pos-th argument : $arg\"\n  (( pos += 1 ))\ndone\n\n\n",
+			"scriptarguments": []string{"arg1"},
 		}
+
+		expectedOutput := `{"exitcode":0,"output":"First line.\nSecond line.\nThird lime.\n1-th argument : arg1\n"}`
+
+		output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
+
+		assert := assert.New(t)
+		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
+		assert.Equal(expectedOutput, output.ResponseBody)
 	})
 }
