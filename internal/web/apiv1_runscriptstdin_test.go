@@ -453,7 +453,7 @@ trusted comment: timestamp:1629361789	file:uname.txt
 		if runtime.GOOS == "linux" {
 			configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
 			configuration.Settings.Security.SignedStdInOnly.IsTrue = false
-			configuration.Settings.Security.AllowScriptArguments.IsTrue = false
+			configuration.Settings.Security.AllowScriptArguments.IsTrue = true
 
 			testRequest := map[string]interface{}{
 				"path":            `bash`,
