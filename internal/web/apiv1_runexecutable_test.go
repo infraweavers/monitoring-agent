@@ -220,17 +220,29 @@ trusted comment: timestamp:1629361789	file:uname.txt
 			"sh": {{"-c", "uname"}},
 		}
 
-		osSpecificRunExecutable := osSpecifiTestCases[runtime.GOOS].ScriptToRun
+		testRequest := map[string]interface{}{}
+		expectedOutput := ""
 
-		jsonBody, _ := json.Marshal(osSpecificRunExecutable)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runexecutable", bytes.NewBuffer(jsonBody))
+		if runtime.GOOS == "windows" {
+			testRequest = map[string]interface{}{
+				"path": `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
+				"args": []string{"-command", `write-host "Hello, World"`},
+			}
+			expectedOutput = `{"exitcode":0,"output":"Hello, World\n"}`
+		}
+		if runtime.GOOS == "linux" {
+			testRequest = map[string]interface{}{
+				"path": `sh`,
+				"args": []string{"-c", "uname"},
+			}
+			expectedOutput = `{"exitcode":0,"output":"Linux\n"}`
+		}
 
-		output := TestHTTPRequestWithDefaultCredentials(t, request)
+		output := RunTestRequest(t, http.MethodPost, "/v1/runexecutable", JsonSerialize(testRequest))
 
 		assert := assert.New(t)
-
 		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
-		assert.Equal(osSpecifiTestCases[runtime.GOOS].ExpectedResult.Output, output.ResponseBody)
+		assert.Equal(expectedOutput, output.ResponseBody)
 	})
 
 	t.Run("Bad request due to invalid path/arg combo", func(t *testing.T) {
