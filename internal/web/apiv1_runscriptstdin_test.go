@@ -14,7 +14,7 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 	TestSetup()
 	defer TestTeardown()
 
-	t.Run("Runs supplied script, returns HTTP status 200 and expected script output", func(t *testing.T) {
+	t.Run("Script supplied through stdin, returns HTTP status 200 and expected script output", func(t *testing.T) {
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = false
 		configuration.Settings.Security.AllowScriptArguments.IsTrue = false
@@ -27,7 +27,6 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 				"path":  `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
 				"args":  []string{"-command", "-"},
 				"stdin": `Write-Host 'Hello, World'`,
-				"stdinsignature": "untrusted comment: signature from minisign secret key\nRWTV8L06+shYIx/hkk/yLgwyrJvVfYNoGDsCsv6/+2Tp1Feq/S6DLwpOENGpsUe15ZedtCZzjmXQrJ+vVeC2oNB3vR88G25o0wo=\ntrusted comment: timestamp:1629361915	file:writehost.txt\nOfDNTVG4KeQatDps8OzEXZGNhSQrfHOWTYJ2maNyrWe+TGss7VchEEFMrKMvvTP5q0NL9YoLvbyxoWxCd2H0Cg==\n",
 			}
 			expectedOutput = `{"exitcode":0,"output":"Hello, World\n"}`
 		}
@@ -36,11 +35,6 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 				"path":  `sh`,
 				"args":  []string{"-s"},
 				"stdin": `uname`,
-				"stdinsignature": `untrusted comment: signature from minisign secret key
-RWTV8L06+shYI8mVzlQxqbNt9+ldPNoPREsedr+sAHAnkrkyg80yQo1UrrYD7+ScU9ZXqYv79ukLN3nEgK8tsQ4uUSH7Sgpw1AY=
-trusted comment: timestamp:1629361789	file:uname.txt
-6ZxQL0d64hC8LCCPpKct+oyPN/JV1zqnD+92Uk9z9dEYnugpYmgVv9ZXabaLePEIP3bfNYe5JeD83YHWYS4/Aw==
-`,
 			}
 			expectedOutput = `{"exitcode":0,"output":"Linux\n"}`
 		}
@@ -52,7 +46,7 @@ trusted comment: timestamp:1629361789	file:uname.txt
 		assert.Equal(expectedOutput, output.ResponseBody, "Body did not match expected output")
 	})
 
-	t.Run("Returns HTTP status 400 bad request with erronous post", func(t *testing.T) {
+	t.Run("When provided a request with totally the wrong shape, a 400 is returned", func(t *testing.T) {
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = false
 
@@ -68,7 +62,7 @@ trusted comment: timestamp:1629361789	file:uname.txt
 		assert.Equal(`{"exitcode":3,"output":"400 Bad Request"}`, output.ResponseBody)
 	})
 
-	t.Run("Returns HTTP status 400 bad request without stdin supplied", func(t *testing.T) {
+	t.Run("When provided a request missing just stdin, a 400 is returned", func(t *testing.T) {
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
 		configuration.Settings.Security.AllowScriptArguments.IsTrue = false
@@ -95,7 +89,7 @@ trusted comment: timestamp:1629361789	file:uname.txt
 		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - Only signed stdin can be executed"}`, output.ResponseBody)
 	})
 
-	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
+	t.Run("When provided a stdin and a valid signature, the script should be executed, an HTTP 200 returned, exit code of 0 and the output in the response", func(t *testing.T) {
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
 		configuration.Settings.Security.AllowScriptArguments.IsTrue = false
@@ -133,7 +127,7 @@ trusted comment: timestamp:1629361789	file:uname.txt
 		assert.Equal(expectedOutput, output.ResponseBody, "Body did not match expected output")
 	})
 
-	t.Run("Runs unsigned script, returns HTTP status 400 and expected failed signiture verification", func(t *testing.T) {
+	t.Run("When provided with stdin but an invalid signature, returns HTTP status 400 and expected failed signiture verification", func(t *testing.T) {
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
 		configuration.Settings.Security.AllowScriptArguments.IsTrue = false
@@ -172,7 +166,7 @@ U54CjtRd9nA/jp4iEhdbQ35eE4yWQRY0nbJlw4elRwilslde8nrZwfaIK1a2R+7gzfeuiZq8xTlKtIvT
 		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - Signature not valid"}`, output.ResponseBody)
 	})
 
-	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
+	t.Run("When provided provided stdin and a valid signature the supplied signed script is executed, an HTTP 200 and the output from the script are returned", func(t *testing.T) {
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
 		configuration.Settings.Security.AllowScriptArguments.IsTrue = false
@@ -211,7 +205,7 @@ U54CjtRd9nA/jp4iEhdbQ35eE4yWQRY0nbJlw4elRwilslde8nrZwfaIK1a2R+7gzfeuiZq8xTlKtIvT
 		assert.Equal(`{"exitcode":0,"output":"This script is a test.\n"}`, output.ResponseBody, "Body did not match expected output")
 	})
 
-	t.Run("Runs supplied unsigned script while script signing is set to false, returns HTTP status 200 and expected script output", func(t *testing.T) {
+	t.Run("When approved executables are enabled but stdin signatures are disabled and provided with a whitelisted command, a success response is returned", func(t *testing.T) {
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = false
 		configuration.Settings.Security.AllowScriptArguments.IsTrue = false
@@ -242,7 +236,7 @@ U54CjtRd9nA/jp4iEhdbQ35eE4yWQRY0nbJlw4elRwilslde8nrZwfaIK1a2R+7gzfeuiZq8xTlKtIvT
 		assert.Equal(`{"exitcode":0,"output":"This script is a test.\n"}`, output.ResponseBody, "Body did not match expected output")
 	})
 
-	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
+	t.Run("When approved executables are enabled and stdin signatures are enabled and provided with a whitelisted command, a success response is returned", func(t *testing.T) {
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
 		configuration.Settings.Security.AllowScriptArguments.IsTrue = false
@@ -281,7 +275,7 @@ U54CjtRd9nA/jp4iEhdbQ35eE4yWQRY0nbJlw4elRwilslde8nrZwfaIK1a2R+7gzfeuiZq8xTlKtIvT
 		assert.Equal(`{"exitcode":0,"output":"This script is a test.\n"}`, output.ResponseBody, "Body did not match expected output")
 	})
 
-	t.Run("Runs supplied signed script, returns HTTP status 200 and expected script output", func(t *testing.T) {
+	t.Run("When approved executables are enabled and stdin signatures are enabled and provided with a whitelisted command, a success response and command output is returned", func(t *testing.T) {
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
 		configuration.Settings.Security.AllowScriptArguments.IsTrue = false
@@ -319,7 +313,7 @@ JkeUlACQaVsrlHmFWg0U0Y5AcnbusFKHNF4bF3kGyixXS3B3/fCZ9T9LMyMbPwZyUJyMGBpfAVXgAQQd
 		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
 	})
 
-	t.Run("Runs valid path/arg supplied, returns HTTP status 200 and expected output", func(t *testing.T) {
+	t.Run("When approved executables and arguments and stdin signatures are enabled and provided with a whitelisted command, a success response and command output is returned", func(t *testing.T) {
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
 		configuration.Settings.Security.AllowScriptArguments.IsTrue = false
@@ -357,7 +351,7 @@ trusted comment: timestamp:1629361789	file:uname.txt
 		assert.Equal(expectedOutput, output.ResponseBody, "Body did not match expected output")
 	})
 
-	t.Run("Bad request due to invalid path/arg combo", func(t *testing.T) {
+	t.Run("When ApprovedExecutablesOnly is enabled and we are provided with arguments that don't match then the request is rejected", func(t *testing.T) {
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
 		configuration.Settings.Security.AllowScriptArguments.IsTrue = false
@@ -397,7 +391,7 @@ trusted comment: timestamp:1629361789	file:uname.txt
 		assert.Equal(expectedOutput, output.ResponseBody, "Body did not match expected output")
 	})
 
-	t.Run("Tries to run invalid path configured but incorrect, returns HTTP status 200 and error output", func(t *testing.T) {
+	t.Run("When given an executable that does not exist, returns HTTP status 200 containing exit code 3 and the error output", func(t *testing.T) {
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
 
@@ -434,7 +428,7 @@ trusted comment: timestamp:1629361789	file:uname.txt
 		assert.Equal(expectedOutput, output.ResponseBody)
 	})
 
-	t.Run("Tries to run invalid path configured but incorrect, returns HTTP status 200 and error output", func(t *testing.T) {
+	t.Run("When script arguments are disabled, passing scriptarguments should be rejected", func(t *testing.T) {
 
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
