@@ -119,15 +119,24 @@ func TestRunScriptStdInApiHandler(t *testing.T) {
 	t.Run("Returns HTTP status 400 bad request without stdin supplied", func(t *testing.T) {
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
-		var test = ScriptToRun{
-			Path: "sh",
-			Args: []string{"sh", "-s"},
+		configuration.Settings.Security.AllowScriptArguments.IsTrue = false
+
+		testRequest := map[string]interface{}{}
+
+		if runtime.GOOS == "windows" {
+			testRequest = map[string]interface{}{
+				"path": `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
+				"args": []string{"-command", "-"},
+			}
+		}
+		if runtime.GOOS == "linux" {
+			testRequest = map[string]interface{}{
+				"path": `sh`,
+				"args": []string{"-s"},
+			}
 		}
 
-		jsonBody, _ := json.Marshal(test)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
-
-		output := TestHTTPRequestWithDefaultCredentials(t, request)
+		output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
 
 		assert := assert.New(t)
 		assert.Equal(http.StatusBadRequest, output.ResponseStatus)
