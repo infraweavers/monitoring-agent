@@ -448,4 +448,31 @@ trusted comment: timestamp:1629361789	file:uname.txt
 		assert.Equal(http.StatusBadRequest, output.ResponseStatus, "Response code should be Bad Request")
 		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - Script Arguments Passed But Not Permitted"}`, output.ResponseBody, "Body did not match expected output")
 	})
+
+	t.Run("Linux arguments are passed through to end script", func(t *testing.T) {
+		if runtime.GOOS == "linux" {
+			configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
+			configuration.Settings.Security.SignedStdInOnly.IsTrue = false
+			configuration.Settings.Security.AllowScriptArguments.IsTrue = false
+
+			testRequest := map[string]interface{}{
+				"path":  `sh`,
+				"args":  []string{"-s"},
+				"stdin": `#!/bin/bash\necho "First line.";\necho "Second line.";\necho "Third lime.";\n`,
+				"stdinsignature": `untrusted comment: signature from minisign secret key
+RWQ3ly9IPenQ6Yds9dwf0ZbgW3nOe6pwhgdaFPeoXSO8eNNInMRE5UEe+lsGuWG016SeNAbWKtuZVOV5QxBcuTNukoMmB8+z7A0=
+trusted comment: timestamp:1631633837	file:echo.sh
+XSx0EYiti1RA1IEQd7HCLyF0cEEKj5xXSmiKV9BnPmrRHKcS5Et35Xhpynlu0t1RLlZUQDueRqAwmyaunxjqAw==				
+`,
+			}
+
+			expectedOutput := `First line.\nSecond line.\nThird lime.\n`
+
+			output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
+
+			assert := assert.New(t)
+			assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
+			assert.Equal(expectedOutput, output.ResponseBody)
+		}
+	})
 }
