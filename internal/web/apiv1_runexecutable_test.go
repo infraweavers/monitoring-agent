@@ -240,16 +240,26 @@ trusted comment: timestamp:1629361789	file:uname.txt
 			"sh": {{"-c", "-s"}},
 		}
 
-		osSpecificRunExecutable := osSpecifiTestCases[runtime.GOOS].ScriptToRun
+		testRequest := map[string]interface{}{}
 
-		jsonBody, _ := json.Marshal(osSpecificRunExecutable)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runexecutable", bytes.NewBuffer(jsonBody))
+		if runtime.GOOS == "windows" {
+			testRequest = map[string]interface{}{
+				"path": `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
+				"args": []string{"-command", `write-host "Hello, World"`},
+			}
+		}
+		if runtime.GOOS == "linux" {
+			testRequest = map[string]interface{}{
+				"path": `sh`,
+				"args": []string{"-c", "uname"},
+			}
+		}
 
-		output := TestHTTPRequestWithDefaultCredentials(t, request)
+		output := RunTestRequest(t, http.MethodPost, "/v1/runexecutable", JsonSerialize(testRequest))
 
 		assert := assert.New(t)
-
 		assert.Equal(http.StatusBadRequest, output.ResponseStatus)
 		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - Unapproved Path/Args"}`, output.ResponseBody)
 	})
+
 }
