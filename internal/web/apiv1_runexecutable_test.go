@@ -111,104 +111,84 @@ trusted comment: timestamp:1629361789	file:uname.txt
 	})
 
 	t.Run("Returns HTTP status 400 bad request with stdin supplied", func(t *testing.T) {
-		scriptBodyToTest := map[string]interface{}{
+
+		testRequest := map[string]interface{}{
 			"path":           `sh`,
 			"args":           []string{"-s"},
 			"stdin":          `uname`,
 			"stdinsignature": ``,
 		}
+
+		output := RunTestRequest(t, http.MethodPost, "/v1/runexecutable", JsonSerialize(testRequest))
+
 		assert := assert.New(t)
-
-		jsonBody, _ := json.Marshal(scriptBodyToTest)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runexecutable", bytes.NewBuffer(jsonBody))
-
-		output := TestHTTPRequestWithDefaultCredentials(t, request)
-
 		assert.Equal(http.StatusBadRequest, output.ResponseStatus, "Response code should be Bad Request")
 		assert.Equal(`{"exitcode":3,"output":"400 Bad Request"}`, output.ResponseBody)
 	})
 
 	t.Run("Returns HTTP status 400 bad request with invalid supplied", func(t *testing.T) {
-		var scriptBodyToTest = RunExecutableWithTimeoutTestCase{
-			ScriptToRun{
-				Path: "sh",
-				Args: []string{"sh", "-s"},
-			},
-			Timeout{
-				Timeout: "2",
-			},
+
+		testRequest := map[string]interface{}{
+			"path":    `sh`,
+			"args":    []string{"-c", "-s"},
+			"Timeout": "2",
 		}
+
+		output := RunTestRequest(t, http.MethodPost, "/v1/runexecutable", JsonSerialize(testRequest))
+
 		assert := assert.New(t)
-
-		jsonBody, _ := json.Marshal(scriptBodyToTest)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runexecutable", bytes.NewBuffer(jsonBody))
-
-		output := TestHTTPRequestWithDefaultCredentials(t, request)
-
 		assert.Equal(http.StatusBadRequest, output.ResponseStatus, "Response code should be Bad Request")
 		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - Invalid timeout supplied: '2'"}`, output.ResponseBody)
 	})
 
 	t.Run("Returns HTTP status 200 and \"exitcode: 3, output: The script timed out\" when timeout exceeded", func(t *testing.T) {
-		var osSpecifiTestCases = map[string]RunExecutableWithTimeoutTestCase{
-			"linux": {
-				ScriptToRun{
-					Path: "sh",
-					Args: []string{"-c", "sleep 2"},
-				},
-				Timeout{
-					Timeout: "1s",
-				},
-			},
-			"windows": {
-				ScriptToRun{
-					Path: `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
-					Args: []string{"-command", `Start-Sleep -seconds 2`},
-				},
-				Timeout{
-					Timeout: "1s",
-				},
-			},
+
+		testRequest := map[string]interface{}{}
+
+		if runtime.GOOS == "windows" {
+			testRequest = map[string]interface{}{
+				"path":    `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
+				"args":    []string{"-command", `Start-Sleep -seconds 2`},
+				"Timeout": "1s",
+			}
 		}
+		if runtime.GOOS == "linux" {
+			testRequest = map[string]interface{}{
+				"path":    `sh`,
+				"args":    []string{"-c", "sleep 2"},
+				"Timeout": "1s",
+			}
+		}
+
+		output := RunTestRequest(t, http.MethodPost, "/v1/runexecutable", JsonSerialize(testRequest))
+
 		assert := assert.New(t)
-
-		jsonBody, _ := json.Marshal(osSpecifiTestCases[runtime.GOOS])
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runexecutable", bytes.NewBuffer(jsonBody))
-
-		output := TestHTTPRequestWithDefaultCredentials(t, request)
-
 		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be Service Unavailable")
 		assert.Equal(`{"exitcode":3,"output":"The script timed out"}`, output.ResponseBody)
 	})
 
 	t.Run("Returns HTTP status 200 when timeout not exceeded", func(t *testing.T) {
-		var osSpecifiTestCases = map[string]RunExecutableWithTimeoutTestCase{
-			"linux": {
-				ScriptToRun{
-					Path: "sh",
-					Args: []string{"-c", "sleep 1"},
-				},
-				Timeout{
-					Timeout: "2s",
-				},
-			},
-			"windows": {
-				ScriptToRun{
-					Path: `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
-					Args: []string{"-command", `Start-Sleep -seconds 1`},
-				},
-				Timeout{
-					Timeout: "2s",
-				},
-			},
+
+		testRequest := map[string]interface{}{}
+
+		if runtime.GOOS == "windows" {
+			testRequest = map[string]interface{}{
+				"path":    `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
+				"args":    []string{"-command", `Start-Sleep -seconds 1`},
+				"Timeout": "2s",
+			}
 		}
+		if runtime.GOOS == "linux" {
+			testRequest = map[string]interface{}{
+				"path":    `sh`,
+				"args":    []string{"-c", "sleep 1"},
+				"Timeout": "2s",
+			}
+		}
+
+		output := RunTestRequest(t, http.MethodPost, "/v1/runexecutable", JsonSerialize(testRequest))
+
 		assert := assert.New(t)
-
-		jsonBody, _ := json.Marshal(osSpecifiTestCases[runtime.GOOS])
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runexecutable", bytes.NewBuffer(jsonBody))
-
-		output := TestHTTPRequestWithDefaultCredentials(t, request)
-
 		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
 		assert.Equal(`{"exitcode":0,"output":""}`, output.ResponseBody)
 	})
@@ -220,17 +200,29 @@ trusted comment: timestamp:1629361789	file:uname.txt
 			"sh": {{"-c", "uname"}},
 		}
 
-		osSpecificRunExecutable := osSpecifiTestCases[runtime.GOOS].ScriptToRun
+		testRequest := map[string]interface{}{}
+		expectedOutput := ""
 
-		jsonBody, _ := json.Marshal(osSpecificRunExecutable)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runexecutable", bytes.NewBuffer(jsonBody))
+		if runtime.GOOS == "windows" {
+			testRequest = map[string]interface{}{
+				"path": `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
+				"args": []string{"-command", `write-host "Hello, World"`},
+			}
+			expectedOutput = `{"exitcode":0,"output":"Hello, World\n"}`
+		}
+		if runtime.GOOS == "linux" {
+			testRequest = map[string]interface{}{
+				"path": `sh`,
+				"args": []string{"-c", "uname"},
+			}
+			expectedOutput = `{"exitcode":0,"output":"Linux\n"}`
+		}
 
-		output := TestHTTPRequestWithDefaultCredentials(t, request)
+		output := RunTestRequest(t, http.MethodPost, "/v1/runexecutable", JsonSerialize(testRequest))
 
 		assert := assert.New(t)
-
 		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
-		assert.Equal(osSpecifiTestCases[runtime.GOOS].ExpectedResult.Output, output.ResponseBody)
+		assert.Equal(expectedOutput, output.ResponseBody)
 	})
 
 	t.Run("Bad request due to invalid path/arg combo", func(t *testing.T) {
@@ -240,16 +232,26 @@ trusted comment: timestamp:1629361789	file:uname.txt
 			"sh": {{"-c", "-s"}},
 		}
 
-		osSpecificRunExecutable := osSpecifiTestCases[runtime.GOOS].ScriptToRun
+		testRequest := map[string]interface{}{}
 
-		jsonBody, _ := json.Marshal(osSpecificRunExecutable)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runexecutable", bytes.NewBuffer(jsonBody))
+		if runtime.GOOS == "windows" {
+			testRequest = map[string]interface{}{
+				"path": `C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`,
+				"args": []string{"-command", `write-host "Hello, World"`},
+			}
+		}
+		if runtime.GOOS == "linux" {
+			testRequest = map[string]interface{}{
+				"path": `sh`,
+				"args": []string{"-c", "uname"},
+			}
+		}
 
-		output := TestHTTPRequestWithDefaultCredentials(t, request)
+		output := RunTestRequest(t, http.MethodPost, "/v1/runexecutable", JsonSerialize(testRequest))
 
 		assert := assert.New(t)
-
 		assert.Equal(http.StatusBadRequest, output.ResponseStatus)
 		assert.Equal(`{"exitcode":3,"output":"400 Bad Request - Unapproved Path/Args"}`, output.ResponseBody)
 	})
+
 }
