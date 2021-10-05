@@ -111,19 +111,17 @@ trusted comment: timestamp:1629361789	file:uname.txt
 	})
 
 	t.Run("Returns HTTP status 400 bad request with stdin supplied", func(t *testing.T) {
-		scriptBodyToTest := map[string]interface{}{
+
+		testRequest := map[string]interface{}{
 			"path":           `sh`,
 			"args":           []string{"-s"},
 			"stdin":          `uname`,
 			"stdinsignature": ``,
 		}
+
+		output := RunTestRequest(t, http.MethodPost, "/v1/runexecutable", JsonSerialize(testRequest))
+
 		assert := assert.New(t)
-
-		jsonBody, _ := json.Marshal(scriptBodyToTest)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runexecutable", bytes.NewBuffer(jsonBody))
-
-		output := TestHTTPRequestWithDefaultCredentials(t, request)
-
 		assert.Equal(http.StatusBadRequest, output.ResponseStatus, "Response code should be Bad Request")
 		assert.Equal(`{"exitcode":3,"output":"400 Bad Request"}`, output.ResponseBody)
 	})
