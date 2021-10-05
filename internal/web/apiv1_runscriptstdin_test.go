@@ -298,23 +298,6 @@ JkeUlACQaVsrlHmFWg0U0Y5AcnbusFKHNF4bF3kGyixXS3B3/fCZ9T9LMyMbPwZyUJyMGBpfAVXgAQQd
 	t.Run("Runs valid path/arg supplied, returns HTTP status 200 and expected output", func(t *testing.T) {
 		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
 		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
-
-		osSpecificRunScript := osSpecificRunScriptStdinTestCases[runtime.GOOS].ScriptAsStdInToRun
-
-		jsonBody, _ := json.Marshal(osSpecificRunScript)
-		request, _ := http.NewRequest(http.MethodPost, GetTestServerURL(t)+"/v1/runscriptstdin", bytes.NewBuffer(jsonBody))
-
-		output := TestHTTPRequestWithDefaultCredentials(t, request)
-
-		assert := assert.New(t)
-
-		assert.Equal(http.StatusOK, output.ResponseStatus, "Response code should be OK")
-		assert.Equal(osSpecificRunScriptStdinTestCases[runtime.GOOS].ExpectedResult.Output, output.ResponseBody, "Body did not match expected output")
-	})
-
-	t.Run("Runs valid path/arg supplied, returns HTTP status 200 and expected output", func(t *testing.T) {
-		configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = true
-		configuration.Settings.Security.SignedStdInOnly.IsTrue = true
 		configuration.Settings.Security.AllowScriptArguments.IsTrue = false
 
 		testRequest := map[string]interface{}{}
