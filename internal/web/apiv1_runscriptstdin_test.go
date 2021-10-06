@@ -542,7 +542,7 @@ trusted comment: timestamp:1629361789	file:uname.txt
 		}
 	})
 
-	t.Run("When script arguments are provided with special characters the underlying script received them and a file is not read", func(t *testing.T) {
+	t.Run("When script arguments are provided with special (statement ending) characters the underlying script received them", func(t *testing.T) {
 		if runtime.GOOS == "linux" {
 			configuration.Settings.Security.ApprovedExecutablesOnly.IsTrue = false
 			configuration.Settings.Security.SignedStdInOnly.IsTrue = false
