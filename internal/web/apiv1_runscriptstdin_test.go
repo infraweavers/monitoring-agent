@@ -555,7 +555,7 @@ trusted comment: timestamp:1629361789	file:uname.txt
 				"scriptarguments": []string{"arg1", "&", ";", "`", "$()"},
 			}
 
-			expectedOutput := `{"exitcode":0,"output":"First line.\nSecond line.\nThird lime.\n1-th argument : arg1\n2-th argument : \u0026\n3-th argument : ;\n4-th argument : \u00B4\n5-th argument : ${}\n"}`
+			expectedOutput := "{\"exitcode\":0,\"output\":\"First line.\\nSecond line.\\nThird lime.\\n1-th argument : arg1\\n2-th argument : \\u0026\\n3-th argument : ;\\n4-th argument : `\\n5-th argument : $()\\n\"}"
 
 			output := RunTestRequest(t, http.MethodPost, "/v1/runscriptstdin", JsonSerialize(testRequest))
 
