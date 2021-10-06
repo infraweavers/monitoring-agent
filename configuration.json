@@ -33,6 +33,9 @@
             "sh": [
                 ["-s"]
             ],
+            "bash": [
+                ["-s"]
+            ],
             "perl": [
                 ["-"],
                 ["/etc/monitoring-agent/scripts/check_disks.pl", "/dev/sda", "/dev/sdb"]
