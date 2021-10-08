@@ -1,4 +1,4 @@
-name: Make Tag For Release
+name: Launch Release
 
 on:
   workflow_dispatch
