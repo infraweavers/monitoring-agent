@@ -62,7 +62,7 @@ Output:
 
 See the [Monitoring Agent Scripts Repository](https://github.com/infraweavers/monitoring-agent-scripts)
 
-For the performance optimised `check_nrpe` equivilent see the [Monitoring Agent Client Repository](https://github.com/infraweavers/monitoring-agent-client)
+For the performance optimised `check_nrpe` equivalent see the [Monitoring Agent Client Repository](https://github.com/infraweavers/monitoring-agent-client)
 
 ### Wiki
 
