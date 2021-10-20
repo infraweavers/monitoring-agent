@@ -16,7 +16,7 @@
 
 	<Package Id='*' Keywords='Installer' Description="$(var.ProductName) Installer - $(var.GitSha)"
 	  Comments='Copyright © 2021 Codeweavers Limited; Available under The MIT License' Manufacturer='Codeweavers Ltd'
-	  InstallerVersion='200' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
+	  InstallerVersion='200' Languages='1033' Compressed='yes' SummaryCodepage='1252' InstallScope='perMachine' />
 
 	<MajorUpgrade AllowDowngrades="no" DowngradeErrorMessage="A newer version of $(var.ProductName) is already installed." />
 
