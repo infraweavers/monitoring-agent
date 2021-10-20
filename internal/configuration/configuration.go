@@ -9,6 +9,7 @@ import (
 	"path"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"strconv"
 	"time"
 
@@ -20,6 +21,8 @@ var Settings = Config{}
 
 // ConfigurationDirectory represents the path to the JSON configuration file
 var ConfigurationDirectory string
+
+var version string = "0.0.0 (" + runtime.GOOS + " " + runtime.GOARCH + ")"
 
 // Initialise loads the settings from the configurationfile
 func Initialise(configurationDirectory string) {
@@ -36,6 +39,8 @@ func Initialise(configurationDirectory string) {
 	if err != nil {
 		panic(err)
 	}
+
+	Settings.MonitoringAgentVersion = version
 
 	Settings.Paths.Reset(paths)
 }

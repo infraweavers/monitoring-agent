@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"monitoringagent/internal/configuration"
 	"monitoringagent/internal/logwrapper"
 	"monitoringagent/internal/web"
@@ -73,9 +74,16 @@ func main() {
 	var configDirectory string
 
 	flag.StringVar(&configDirectory, "configurationDirectory", "", "Override the directory containing the configuration.")
+	showVersion := flag.Bool("version", false, "Show version number and exit")
 	flag.Parse()
 
 	configuration.Initialise(configurationDirectory(configDirectory))
+
+	if *showVersion {
+		fmt.Printf("monitoring-agent %s\n", configuration.Settings.MonitoringAgentVersion)
+		os.Exit(0)
+	}
+
 	logwrapper.Initialise(service.Interactive(), NewLine)
 
 	serviceConfiguration := &service.Config{
