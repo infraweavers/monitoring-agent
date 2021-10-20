@@ -146,7 +146,7 @@ jobs:
           pushd ${{ env.SRCPATH }}
           
           GO111MODULE=on GOOS=$os GOARCH=$arch go get ./...
-          GO111MODULE=on GOOS=$os GOARCH=$arch go build -o ${{ env.SRCPATH }}/monitoring-agent$suffix
+          GO111MODULE=on GOOS=$os GOARCH=$arch go build -ldflags "-X monitoringagent/internal/configuration.maVersion=${{needs.get-version-number.outputs.version}} -X monitoringagent/internal/configuration.operatingSystem=${{ matrix.os }} -X monitoringagent/internal/configuration.arch=${{ matrix.arch }} -X monitoringagent/internal/configuration.goVersion=Go${{ matrix.go-version }}" -o ${{ env.SRCPATH }}/monitoring-agent$suffix
           popd
           cp ${{ env.SRCPATH }}/monitoring-agent$suffix ./release/monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}-BIN/monitoring-agent$suffix
 
