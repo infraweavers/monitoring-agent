@@ -258,7 +258,8 @@ jobs:
           cp ./monitoring-agent.service deb-package/lib/systemd/system
           sed -i 's|"LogFilePath": "output.log",|"LogFilePath": "/var/log/monitoring-agent.log",|' deb-package/etc/monitoring-agent/configuration.json
           sed -i 's|Architecture: UPDATEME|Architecture: ${{ matrix.arch }}|' deb-package/DEBIAN/control
-          
+          sed -i 's|Version: UPDATEME|Version: ${{ needs.get-version-number.outputs.version }}|' deb-package/DEBIAN/control
+                    
           chmod 600 deb-package/etc/monitoring-agent/*
           chmod 755 deb-package/DEBIAN/postinst
           chmod 755 deb-package/DEBIAN/prerm
