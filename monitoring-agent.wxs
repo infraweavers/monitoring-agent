@@ -22,6 +22,7 @@
 
 	<Media Id='1' Cabinet='Sample.cab' EmbedCab='yes' DiskPrompt="CD-ROM #1" />
 	<Property Id='DiskPrompt' Value="Monitoring Agent Installation [1]" />
+	<Property Id="REBOOT" Value="ReallySuppress" />
 
 	<Directory Id='TARGETDIR' Name='SourceDir'>
 	  <Directory Id="$(var.PlatformProgramFilesFolder)">
