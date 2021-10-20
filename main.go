@@ -80,7 +80,7 @@ func main() {
 	configuration.Initialise(configurationDirectory(configDirectory))
 
 	if *showVersion {
-		fmt.Printf("monitoring-agent %s\n", configuration.Settings.MonitoringAgentVersion)
+		fmt.Printf("%s\n", configuration.Settings.MonitoringAgentVersion)
 		os.Exit(0)
 	}
 
