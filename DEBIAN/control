@@ -5,6 +5,7 @@ Priority: optional
 Architecture: UPDATEME
 Installed-Size: 11264
 Depends: 
-Recommends: monitoring-plugins
+Recommends:
+Suggests: monitoring-plugins-basic
 Maintainer: Infrastructure Team <monitoring-agent@codeweavers.net>
 Description: Cross platform HTTP based monitoring agent, essentially a replacement for nrpe
