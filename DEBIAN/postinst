@@ -2,6 +2,7 @@
 set -e
 
 adduser --system --home /nonexistent --no-create-home monitoring-agent 
+chown monitoring-agent /etc/monitoring-agent/*
 
 #DEBHELPER
 
