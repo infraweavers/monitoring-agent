@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-if [[ `id monitoring-agent -g -n` != "monitoring-agent" ]] ; then
+if [[ `id monitoring-agent -u -n` != "monitoring-agent" ]] ; then
   adduser --system --home /nonexistent --no-create-home monitoring-agent
 fi
   
