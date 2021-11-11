@@ -4,8 +4,11 @@ set -e
 if [[ `id monitoring-agent -u -n` != "monitoring-agent" ]] ; then
   adduser --system --home /nonexistent --no-create-home monitoring-agent
 fi
-  
-mkdir /var/log/monitoring-agent
+
+if [[ ! -d /var/log/monitoring-agent ]]; then
+  mkdir /var/log/monitoring-agent
+fi
+
 chown monitoring-agent /etc/monitoring-agent/*
 chown monitoring-agent:adm /var/log/monitoring-agent
 
