@@ -1,10 +1,14 @@
 #!/bin/bash
 set -e
 
-adduser --system --home /nonexistent --no-create-home monitoring-agent 
+if [[ `id monitoring-agent -g -n` != "monitoring-agent" ]] ; then
+  adduser --system --home /nonexistent --no-create-home monitoring-agent
+fi
+  
 mkdir /var/log/monitoring-agent
 chown monitoring-agent /etc/monitoring-agent/*
 chown monitoring-agent:adm /var/log/monitoring-agent
+
 #DEBHELPER
 
 if [[ -x "/usr/bin/deb-systemd-helper" ]]; then
