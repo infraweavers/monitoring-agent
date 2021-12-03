@@ -87,7 +87,7 @@ jobs:
       matrix:
         go-version: [1.16.x, 1.17.x]
         os: [linux, windows, freebsd]
-        arch: [i386, amd64, arm64]
+        arch: [386, amd64, arm64]
         exclude:
           - os: windows
             arch: arm64
@@ -170,7 +170,7 @@ jobs:
       matrix:
         go-version: [1.17.x]
         os: [windows]
-        arch: [i386, amd64]
+        arch: [386, amd64]
         
     runs-on: windows-latest
 
@@ -200,7 +200,7 @@ jobs:
           $goversion="${{ matrix.go-version }}"
           
           $win_arch = "x64"
-          if ($arch -eq "i386") { $win_arch = "x86" }
+          if ($arch -eq "386") { $win_arch = "x86" }
           
           Write-Host "Building monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}.msi"
           
@@ -222,7 +222,7 @@ jobs:
       matrix:
         go-version: [1.17.x]
         os: [linux]
-        arch: [i386, amd64, arm64]
+        arch: [386, amd64, arm64]
 
     runs-on: ubuntu-latest
   
@@ -307,7 +307,7 @@ jobs:
       matrix:
         go-version: [1.17.x]
         os: [windows]
-        arch: [i386, amd64]
+        arch: [386, amd64]
 
     runs-on: ubuntu-latest
 
@@ -338,7 +338,7 @@ jobs:
       matrix:
         go-version: [1.17.x]
         os: [linux]
-        arch: [i386, amd64, arm64]
+        arch: [386, amd64, arm64]
 
     runs-on: ubuntu-latest
 
@@ -369,7 +369,7 @@ jobs:
       matrix:
         go-version: [1.16.x, 1.17.x]
         os: [linux, windows, freebsd]
-        arch: [i386, amd64, arm64]
+        arch: [386, amd64, arm64]
         exclude:
           - os: windows
             arch: arm64
