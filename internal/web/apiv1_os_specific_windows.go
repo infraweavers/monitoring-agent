@@ -25,6 +25,7 @@ func ReadPerformanceCounter(counter string) (CounterResult, error) {
 	if ret != win.ERROR_SUCCESS {
 		return returnvalue, errors.New("unable to open query through dll call")
 	}
+	defer win.PdhCloseQuery(queryHandle)
 
 	// test path
 	ret = win.PdhValidatePath(counter)
