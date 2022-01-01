@@ -1,7 +1,10 @@
 package web
 
-func getResult(counter string) CounterResult {
-	returnvalue := CounterResult{}
+type OSSpecificRequest struct{}
+type OSSpecificResult struct{}
 
-	return returnvalue
+func getResult(osspecificrequest OSSpecificRequest) (OSSpecificResult, error) {
+	returnvalue := OSSpecificResult{}
+
+	return returnvalue, nil
 }

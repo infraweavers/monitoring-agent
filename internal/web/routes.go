@@ -24,5 +24,6 @@ var declaredRoutes = routes{
 	route{"apiv1RunscriptstdinPost", "POST", "/v1/runscriptstdin", APIV1RunscriptstdinPostHandler},
 	route{"apiv1InfoGet", "GET", "/v1/info", APIV1InfoGetHandler},
 	route{"apiv1Version", "GET", "/v1/version", APIV1VersionHandler},
-	route{"apiv1OSSpecific", "GET", "/v1/os_specific", APIV1OSSpecificHandler},
+	route{"apiv1OSSpecific", "GET", "/v1/os_specific", APIV1OSSpecificGetHandler},
+	route{"apiv1OSSpecific", "POST", "/v1/os_specific", APIV1OSSpecificPostHandler},
 }

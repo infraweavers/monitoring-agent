@@ -8,15 +8,23 @@ import (
 	"github.com/lxn/win"
 )
 
-func getResult(counter string) CounterResult {
-	counterValue, _ := ReadPerformanceCounter(counter)
-
-	return counterValue
+type OSSpecificRequest struct {
+	CounterPath string
+}
+type OSSpecificResult struct {
+	Name  string
+	Value string
 }
 
-func ReadPerformanceCounter(counter string) (CounterResult, error) {
+func getResult(osspecificrequest OSSpecificRequest) (OSSpecificResult, error) {
+	counter := osspecificrequest.CounterPath
+	counterValue, err := ReadPerformanceCounter(counter)
+	return counterValue, err
+}
 
-	returnvalue := CounterResult{}
+func ReadPerformanceCounter(counter string) (OSSpecificResult, error) {
+
+	returnvalue := OSSpecificResult{}
 
 	var queryHandle win.PDH_HQUERY
 	var counterHandle win.PDH_HCOUNTER
@@ -35,7 +43,7 @@ func ReadPerformanceCounter(counter string) (CounterResult, error) {
 
 	ret = win.PdhAddEnglishCounter(queryHandle, counter, 0, &counterHandle)
 	if ret != win.ERROR_SUCCESS {
-		return returnvalue, fmt.Errorf("unable to add process counter. error code is %x", ret)
+		return returnvalue, fmt.Errorf("unable to add process counter ('%s'). error code is %x; see https://docs.microsoft.com/en-us/windows/win32/perfctrs/pdh-error-codes", counter, ret)
 	}
 
 	ret = win.PdhCollectQueryData(queryHandle)
