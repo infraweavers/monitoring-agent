@@ -36,7 +36,7 @@ jobs:
     steps:
 
       - id: make-tag
-        uses: tvdias/github-tagger@v0.0.1
+        uses: tvdias/github-tagger@v0.0.2
         with:
           repo-token: "${{ secrets.INFRAWEAVERS_ACTION_PAT }}"
           tag: "${{needs.get-release-version-number.outputs.major}}.${{needs.get-release-version-number.outputs.minor}}.${{needs.get-release-version-number.outputs.revision}}"
