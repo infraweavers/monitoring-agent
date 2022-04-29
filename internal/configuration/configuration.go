@@ -46,7 +46,7 @@ func Initialise(configurationDirectory string) {
 		panic(err)
 	}
 
-	Settings.MonitoringAgentVersion = strings.Join([]string{"monitoring-agent " + maVersion, operatingSystem + " " + arch, goVersion}, ";")
+	Settings.MonitoringAgentVersion = strings.Join([]string{"monitoring-agent " + maVersion, operatingSystem + " " + arch, goVersion}, "; ")
 
 	Settings.Paths.Reset(paths)
 }
