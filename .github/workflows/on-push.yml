@@ -23,12 +23,12 @@ jobs:
     steps:
       
       - id: install-go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: ${{ matrix.go-version }}
             
       - id: checkout-code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: ${{ env.SRCPATH }}
 
@@ -102,18 +102,18 @@ jobs:
     steps:
 
       - id: install-go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: ${{ matrix.go-version }}
             
       - id: checkout-code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: ${{ env.SRCPATH }}
 
       - id: upload-wix-definition-file
         if: ${{ matrix.os == 'windows' }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ needs.get-commit-sha.outputs.short-sha }}-wix-wxs"
           path: "${{ env.SRCPATH }}/monitoring-agent.wxs"
@@ -121,7 +121,7 @@ jobs:
           
       - id: upload-deb-build-files
         if: ${{ matrix.os == 'linux' }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ needs.get-commit-sha.outputs.short-sha }}-DEBIAN"
           path: "${{ env.SRCPATH }}/DEBIAN"
@@ -129,7 +129,7 @@ jobs:
 
       - id: upload-systemd-unit-file
         if: ${{ matrix.os == 'linux' }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ needs.get-commit-sha.outputs.short-sha }}-systemd-unit-file"
           path: "${{ env.SRCPATH }}/monitoring-agent.service"
@@ -154,7 +154,7 @@ jobs:
           cp ${{ env.SRCPATH }}/monitoring-agent$suffix ./release/monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}-BIN/monitoring-agent$suffix
 
       - id: upload-builds
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: "monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}-BIN"
           path: release/monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}-BIN/
@@ -184,12 +184,12 @@ jobs:
         run: |
           mkdir ./release
       - id: download-windows-build
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: "monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}-BIN"
           
       - id: download-wix-definition-file
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ needs.get-commit-sha.outputs.short-sha }}-wix-wxs"
 
@@ -210,7 +210,7 @@ jobs:
           Move-Item -Path ./monitoring-agent.msi -Destination "./release/monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}.msi"
           
       - id: upload-msi
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: "monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}.msi"
           path: release/
@@ -231,18 +231,18 @@ jobs:
     steps:
 
       - id: download-linux-build
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: "monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}-BIN"
 
       - id: download-deb-build-files
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ needs.get-commit-sha.outputs.short-sha }}-DEBIAN"
           path: "DEBIAN"
 
       - id: download-systemd-unit-file
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ needs.get-commit-sha.outputs.short-sha }}-systemd-unit-file"
 
@@ -274,7 +274,7 @@ jobs:
           sudo dpkg-deb --build ./deb-package ~/monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}.deb
 
       - id: upload-deb
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: "monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}.deb"
           path: "~/monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}.deb"
@@ -318,7 +318,7 @@ jobs:
 
       - id: download-release-msi
         if: startsWith(github.ref, 'refs/tags/')
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: "monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}.msi"
 
@@ -349,7 +349,7 @@ jobs:
 
       - id: download-release-deb
         if: startsWith(github.ref, 'refs/tags/')
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: "monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}.deb"
 
@@ -383,7 +383,7 @@ jobs:
 
       - id: download-release-binary
         if: startsWith(github.ref, 'refs/tags/')
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: "monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}-BIN"
 
