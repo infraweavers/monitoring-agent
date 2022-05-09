@@ -12,6 +12,9 @@ type OSSpecificRequest struct {
 	CounterPath string
 }
 type OSSpecificResult struct {
+	Results []OSSpecificResultItem
+}
+type OSSpecificResultItem struct {
 	Name  string
 	Value string
 }
@@ -64,6 +67,7 @@ func ReadPerformanceCounter(counter string) (OSSpecificResult, error) {
 			filledBuf := make([]win.PDH_FMT_COUNTERVALUE_ITEM_DOUBLE, bufCount*size)
 			ret = win.PdhGetFormattedCounterArrayDouble(counterHandle, &bufSize, &bufCount, &filledBuf[0])
 			if ret == win.ERROR_SUCCESS {
+				returnvalue.Results = make([]OSSpecificResultItem, bufCount)
 				for i := 0; i < int(bufCount); i++ {
 					c := filledBuf[i]
 					s := win.UTF16PtrToString(c.SzName)
@@ -73,8 +77,11 @@ func ReadPerformanceCounter(counter string) (OSSpecificResult, error) {
 						metricName = fmt.Sprintf("%s.%s", counter, s)
 					}
 
-					returnvalue.Name = metricName
-					returnvalue.Value = fmt.Sprintf("%f", c.FmtValue.DoubleValue)
+					thisAnswer := OSSpecificResultItem{}
+
+					thisAnswer.Name = metricName
+					thisAnswer.Value = fmt.Sprintf("%f", c.FmtValue.DoubleValue)
+					returnvalue.Results[i] = thisAnswer
 				}
 			}
 		}
