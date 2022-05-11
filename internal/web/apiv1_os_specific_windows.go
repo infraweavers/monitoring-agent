@@ -15,7 +15,8 @@ type OSSpecificResult struct {
 	Results []OSSpecificResultItem
 }
 type OSSpecificResultItem struct {
-	Name  string
+	CounterName  string
+	InstanceName string
 	Value string
 }
 
@@ -72,14 +73,9 @@ func ReadPerformanceCounter(counter string) (OSSpecificResult, error) {
 					c := filledBuf[i]
 					s := win.UTF16PtrToString(c.SzName)
 
-					metricName := counter
-					if len(s) > 0 {
-						metricName = fmt.Sprintf("%s.%s", counter, s)
-					}
-
 					thisAnswer := OSSpecificResultItem{}
-
-					thisAnswer.Name = metricName
+					thisAnswer.CounterName = counter
+					thisAnswer.InstanceName = s
 					thisAnswer.Value = fmt.Sprintf("%f", c.FmtValue.DoubleValue)
 					returnvalue.Results[i] = thisAnswer
 				}
