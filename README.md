@@ -24,7 +24,7 @@ Released
 
 ### Features in Development
 
-* None
+* Potentially peformance counter integration for Windows
 
 ### Simple Usage Examples
 
