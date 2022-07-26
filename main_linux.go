@@ -1,8 +1,5 @@
 package main
 
-// NewLine is a const representing the newline characters on the given OS
-const NewLine = "\n"
-
 import (
 	"log"
 	"os"
@@ -10,6 +7,8 @@ import (
 	"github.com/rclone/rclone/fs/config"
 	"golang.org/x/sys/unix"
 )
+
+const NewLine = "\n"
 
 // redirectStderr to the file passed in
 func redirectStderr(f *os.File) {
