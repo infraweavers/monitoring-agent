@@ -52,6 +52,7 @@ func LaunchServer() {
 		ReadTimeout:       requestTimeout,
 		ReadHeaderTimeout: requestTimeout,
 		IdleTimeout:       requestTimeout,
+		ErrorLog:          logwrapper.Log,
 	}
 
 	logwrapper.LogInfof("Launching web server: https://%s", configuration.Settings.Server.BindAddress)
