@@ -104,4 +104,5 @@ func main() {
 	if instanceError != nil {
 		logwrapper.Log.Fatalf(instanceError.Error())
 	}
+	logwrapper.LogInfo("End of Main")
 }
