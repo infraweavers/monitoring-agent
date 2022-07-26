@@ -84,6 +84,9 @@ func main() {
 		os.Exit(0)
 	}
 
+	logFile, _ := os.OpenFile(configuration.Settings.Logging.LogFilePath+".stdout", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0755)
+	redirectStderr(logFile)
+
 	logwrapper.Initialise(service.Interactive(), NewLine)
 
 	serviceConfiguration := &service.Config{
