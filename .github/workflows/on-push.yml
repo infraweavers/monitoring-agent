@@ -48,7 +48,7 @@ jobs:
     steps:
         
       - id: short-sha
-        uses: benjlevesque/short-sha@v1.2
+        uses: benjlevesque/short-sha@v2.0
         with:
           length: 7
 
