@@ -160,9 +160,11 @@ func runScriptWithStdIn(responseWriter http.ResponseWriter, scriptToRun ScriptEx
 	runningProcesses.mutex.Unlock()
 
 	processKiller := time.AfterFunc(timeout, func() {
-		command.Process.Kill()
-		logwrapper.LogWarningf("Request Timed Out. Timeout: '%s'; Command: '%s'; Arguments: %#v", timeout, scriptToRun.Path, scriptToRun.Args)
-		timeoutOccured = true
+		if command.Process != nil {
+			command.Process.Kill()
+			logwrapper.LogWarningf("Request Timed Out. Timeout: '%s'; Command: '%s'; Arguments: %#v", timeout, scriptToRun.Path, scriptToRun.Args)
+			timeoutOccured = true
+		}
 	})
 
 	output, errorVariable := command.CombinedOutput()
