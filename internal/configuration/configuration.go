@@ -9,9 +9,7 @@ import (
 	"path"
 	"path/filepath"
 	"reflect"
-	"runtime"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/jedisct1/go-minisign"
@@ -23,15 +21,8 @@ var Settings = Config{}
 // ConfigurationDirectory represents the path to the JSON configuration file
 var ConfigurationDirectory string
 
-var maVersion string = "0.0.0"
-var operatingSystem string = runtime.GOOS
-var arch string = runtime.GOARCH
-var goVersion = ""
-
-//var version string = "0.0.0 \n" + runtime.GOOS + " " + runtime.GOARCH + "\n" + runtime.Version()
-
 // Initialise loads the settings from the configurationfile
-func Initialise(configurationDirectory string) {
+func Initialise(configurationDirectory string, monitoringAgentVersionString string) {
 
 	paths := InitialisePaths(configurationDirectory)
 
@@ -46,7 +37,7 @@ func Initialise(configurationDirectory string) {
 		panic(err)
 	}
 
-	Settings.MonitoringAgentVersion = strings.Join([]string{"monitoring-agent " + maVersion, operatingSystem + " " + arch, goVersion}, "; ")
+	Settings.MonitoringAgentVersion = monitoringAgentVersionString
 
 	Settings.Paths.Reset(paths)
 }
@@ -57,7 +48,7 @@ func TestingInitialise() {
 	configurationDirectoryTemp, _ := os.Getwd()
 	configurationDirectory := filepath.FromSlash(configurationDirectoryTemp + "/../../")
 
-	Initialise(configurationDirectory)
+	Initialise(configurationDirectory, "monitoring-agent 0.0.0.0")
 
 	Settings.Server.BindAddress = "127.0.0.1:9000"
 	Settings.Server.HTTPRequestTimeout.Duration = time.Second * 11
