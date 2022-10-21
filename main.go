@@ -8,9 +8,16 @@ import (
 	"monitoringagent/internal/web"
 	"os"
 	"path/filepath"
+	"runtime"
+	"strings"
 
 	"github.com/kardianos/service"
 )
+
+var maVersion string = "0.0.0"
+var operatingSystem string = runtime.GOOS
+var arch string = runtime.GOARCH
+var goVersion = ""
 
 type program struct{}
 
@@ -77,12 +84,14 @@ func main() {
 	showVersion := flag.Bool("version", false, "Show version number and exit")
 	flag.Parse()
 
-	configuration.Initialise(configurationDirectory(configDirectory))
+	monitoringAgentVersionString := strings.Join([]string{"monitoring-agent " + maVersion, operatingSystem + " " + arch, goVersion}, "; ")
 
 	if *showVersion {
-		fmt.Printf("%s\n", configuration.Settings.MonitoringAgentVersion)
+		fmt.Printf("%s\n", monitoringAgentVersionString)
 		os.Exit(0)
 	}
+
+	configuration.Initialise(configurationDirectory(configDirectory), monitoringAgentVersionString)
 
 	logFile, _ := os.OpenFile(configuration.Settings.Logging.LogFilePath+".stdout", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0755)
 	redirectStderr(logFile)
