@@ -3,6 +3,7 @@ package web
 import (
 	"errors"
 	"fmt"
+	"time"
 	"unsafe"
 
 	"github.com/lxn/win"
@@ -17,7 +18,7 @@ type OSSpecificResult struct {
 type OSSpecificResultItem struct {
 	CounterName  string
 	InstanceName string
-	Value string
+	Value        string
 }
 
 func getResult(osspecificrequest OSSpecificRequest) (OSSpecificResult, error) {
@@ -54,6 +55,8 @@ func ReadPerformanceCounter(counter string) (OSSpecificResult, error) {
 	if ret != win.ERROR_SUCCESS {
 		return returnvalue, fmt.Errorf("got an error: 0x%x", ret)
 	}
+
+	time.Sleep(1 * time.Second)
 
 	ret = win.PdhCollectQueryData(queryHandle)
 	if ret == win.ERROR_SUCCESS {
