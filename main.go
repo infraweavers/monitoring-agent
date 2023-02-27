@@ -3,9 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"monitoringagent/internal/configuration"
 	"monitoringagent/internal/logwrapper"
 	"monitoringagent/internal/web"
+	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -77,6 +80,10 @@ func configurationDirectory(commandLineDirectory string) string {
 }
 
 func main() {
+
+	go func() {
+		log.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
 
 	var configDirectory string
 
