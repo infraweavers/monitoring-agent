@@ -85,7 +85,7 @@ jobs:
   
     strategy:
       matrix:
-        go-version: [1.17.x, 1.18.x]
+        go-version: [1.18.x, 1.19.x]
         os: [linux, windows, freebsd]
         arch: [386, amd64, arm64]
         exclude:
@@ -168,7 +168,7 @@ jobs:
 
     strategy:
       matrix:
-        go-version: [1.17.x, 1.18.x]
+        go-version: [1.18.x, 1.19.x]
         os: [windows]
         arch: [386, amd64]
         
@@ -220,7 +220,7 @@ jobs:
   
     strategy:
       matrix:
-        go-version: [1.17.x, 1.18.x]
+        go-version: [1.18.x, 1.19.x]
         os: [linux]
         arch: [386, amd64, arm64]
 
@@ -306,7 +306,7 @@ jobs:
 
     strategy:
       matrix:
-        go-version: [1.17.x, 1.18.x]
+        go-version: [1.18.x, 1.19.x]
         os: [windows]
         arch: [386, amd64]
 
@@ -337,7 +337,7 @@ jobs:
 
     strategy:
       matrix:
-        go-version: [1.17.x, 1.18.x]
+        go-version: [1.18.x, 1.19.x]
         os: [linux]
         arch: [386, amd64, arm64]
 
@@ -368,7 +368,7 @@ jobs:
 
     strategy:
       matrix:
-        go-version: [1.17.x, 1.18.x]
+        go-version: [1.18.x, 1.19.x]
         os: [linux, windows, freebsd]
         arch: [386, amd64, arm64]
         exclude:
