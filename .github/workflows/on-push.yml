@@ -113,7 +113,7 @@ jobs:
 
       - id: upload-wix-definition-file
         if: ${{ matrix.os == 'windows' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ needs.get-commit-sha.outputs.short-sha }}-wix-wxs"
           path: "${{ env.SRCPATH }}/monitoring-agent.wxs"
@@ -121,7 +121,7 @@ jobs:
           
       - id: upload-deb-build-files
         if: ${{ matrix.os == 'linux' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ needs.get-commit-sha.outputs.short-sha }}-DEBIAN"
           path: "${{ env.SRCPATH }}/DEBIAN"
@@ -129,7 +129,7 @@ jobs:
 
       - id: upload-systemd-unit-file
         if: ${{ matrix.os == 'linux' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{ needs.get-commit-sha.outputs.short-sha }}-systemd-unit-file"
           path: "${{ env.SRCPATH }}/monitoring-agent.service"
@@ -154,7 +154,7 @@ jobs:
           cp ${{ env.SRCPATH }}/monitoring-agent$suffix ./release/monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}-BIN/monitoring-agent$suffix
 
       - id: upload-builds
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}-BIN"
           path: release/monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}-BIN/
@@ -210,7 +210,7 @@ jobs:
           Move-Item -Path ./monitoring-agent.msi -Destination "./release/monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}.msi"
           
       - id: upload-msi
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}.msi"
           path: release/
@@ -274,7 +274,7 @@ jobs:
           sudo dpkg-deb --build ./deb-package ~/monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}.deb
 
       - id: upload-deb
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}.deb"
           path: "~/monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}.deb"
