@@ -178,8 +178,8 @@ jobs:
 
       - id: install-wix-tool-set
         run: |
-          Invoke-WebRequest -UseBasicParsing -Uri https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311.exe -OutFile wix311.exe
-          & ".\wix311.exe" "/q"
+          Invoke-WebRequest -UseBasicParsing -Uri https://github.com/wixtoolset/wix3/releases/download/wix3141rtm/wix314.exe -OutFile wix314.exe
+          & ".\wix314.exe" "/q"
       - id: create-release-folder
         run: |
           mkdir ./release
@@ -204,8 +204,8 @@ jobs:
           
           Write-Host "Building monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}.msi"
           
-          & 'C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe' .\monitoring-agent.wxs -arch $win_arch -dPlatform="$($win_arch)" -dMajorVersion="${{needs.get-version-number.outputs.major}}" -dMinorVersion="${{needs.get-version-number.outputs.minor}}" -dRevisionNumber="${{needs.get-version-number.outputs.revision}}" -dGitSha="${{ needs.get-commit-sha.outputs.short-sha }}"
-          & "C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe" ".\monitoring-agent.wixobj"
+          & 'C:\Program Files (x86)\WiX Toolset v3.14\bin\candle.exe' .\monitoring-agent.wxs -arch $win_arch -dPlatform="$($win_arch)" -dMajorVersion="${{needs.get-version-number.outputs.major}}" -dMinorVersion="${{needs.get-version-number.outputs.minor}}" -dRevisionNumber="${{needs.get-version-number.outputs.revision}}" -dGitSha="${{ needs.get-commit-sha.outputs.short-sha }}"
+          & "C:\Program Files (x86)\WiX Toolset v3.14\bin\light.exe" ".\monitoring-agent.wixobj"
           
           Move-Item -Path ./monitoring-agent.msi -Destination "./release/monitoring-agent-${{ matrix.os }}-${{ matrix.arch }}-Go${{ matrix.go-version }}-${{needs.get-version-number.outputs.version}}.msi"
           
