@@ -1,6 +1,6 @@
 module monitoringagent
 
-go 1.21
+go 1.25
 
 require (
 	github.com/BurntSushi/toml v0.4.1 // indirect
